@@ -1,7 +1,5 @@
 import 'package:application_budget_app/pages/page-authentification/page-bienvenue.dart';
 import 'package:flutter/material.dart';
-import 'animation/temps-affichage-animation.dart';
-import 'package:flutter/material.dart';
 
 void main() {
   runApp(MyApp());

@@ -1,4 +1,5 @@
 import 'package:application_budget_app/animation/temps-affichage-animation.dart';
+import 'package:application_budget_app/pages/page-authentification/page-social.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -13,7 +14,7 @@ class bienvenuePage extends StatelessWidget {
           horizontal: 30,
         ),
         child: Column(children: [
-          TempsAnimation(
+          /*TempsAnimation(
               delai: 1500,
               child: Container(
                 margin: const EdgeInsets.only(top: 20, bottom: 20),
@@ -25,22 +26,19 @@ class bienvenuePage extends StatelessWidget {
                       fontSize: 60,
                       fontWeight: FontWeight.bold),
                 ),
-              )),
+              )),*/
           TempsAnimation(
               delai: 2500,
               child: Container(
-                margin: const EdgeInsets.only(
-                  right: 40,
-                ),
-                height: 400,
+                height: 450,
                 child: Image.asset('assets/images/logo-budget.png'),
               )),
           TempsAnimation(
               delai: 3500,
               child: Container(
-                margin: const EdgeInsets.only(top: 10, bottom: 20),
+                margin: const EdgeInsets.only(top: 50, bottom: 20),
                 child: Text(
-                  "Bienvenue sur une appli de gestion de budget",
+                  "Bienvenue sur une application dédiée à la gestion budgétaire",
                   textAlign: TextAlign.center,
                   style: GoogleFonts.poppins(
                     color: Colors.grey,
@@ -51,10 +49,21 @@ class bienvenuePage extends StatelessWidget {
           TempsAnimation(
               delai: 4500,
               child: Container(
+                margin: const EdgeInsets.only(top: 20),
                 width: double.infinity,
                 child: ElevatedButton(
-                  child: const Text("Continuer"),
-                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(
+                      primary: Color.fromARGB(255, 0, 26, 255),
+                      shape: StadiumBorder(),
+                      padding: EdgeInsets.all(13)),
+                  child: const Text("CONTINUER"),
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => PageSocial(),
+                        ));
+                  },
                 ),
               )),
         ]),
