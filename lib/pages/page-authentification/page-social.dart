@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:application_budget_app/animation/temps-affichage-animation.dart';
+import 'package:application_budget_app/pages/page-authentification/page-creer-compte.dart';
+import 'package:application_budget_app/pages/page-authentification/page-connexion.dart';
 
 class PageSocial extends StatelessWidget {
   @override
@@ -37,7 +39,14 @@ class PageSocial extends StatelessWidget {
                   child: Column(
                     children: [
                       ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => page_connexion_compte(),
+                              ),
+                            );
+                          },
                           style: ElevatedButton.styleFrom(
                               primary: Colors.blue[900],
                               shape: StadiumBorder(),
@@ -63,7 +72,14 @@ class PageSocial extends StatelessWidget {
                         height: 30,
                       ),
                       ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => page_creation_compte(),
+                              ),
+                            );
+                          },
                           style: ElevatedButton.styleFrom(
                               primary: Colors.blue[900],
                               shape: StadiumBorder(),
