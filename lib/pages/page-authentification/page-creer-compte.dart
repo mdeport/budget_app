@@ -159,7 +159,7 @@ class _page_creation_compteState extends State<page_creation_compte> {
                       delai: 500,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          primary: Colors.blue[900],
+                          primary: const Color.fromRGBO(13, 71, 161, 1),
                           shape: const StadiumBorder(),
                           padding: const EdgeInsets.symmetric(
                             horizontal: 125,
