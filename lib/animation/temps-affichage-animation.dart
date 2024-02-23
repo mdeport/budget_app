@@ -4,7 +4,7 @@ import 'dart:async';
 class TempsAnimation extends StatefulWidget {
   final Widget child;
   final int delai;
-  const TempsAnimation({required this.child, required this.delai});
+  const TempsAnimation({super.key, required this.child, required this.delai});
 
   @override
   State<TempsAnimation> createState() => _TempsAnimationState();
@@ -15,6 +15,7 @@ class _TempsAnimationState extends State<TempsAnimation>
   late AnimationController _controller;
   late Animation<Offset> _animOffset;
 
+  @override
   void initState() {
     super.initState();
 

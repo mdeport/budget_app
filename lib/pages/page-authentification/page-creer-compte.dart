@@ -1,7 +1,10 @@
-import 'package:application_budget_app/main.dart';
+import 'package:application_budget_app/models/UserModel.dart';
+import 'package:application_budget_app/pages/services/UserService.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:application_budget_app/animation/temps-affichage-animation.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:application_budget_app/pages/page-contenue-app/page-bienvenue-app/page-accueil.dart';
 
 class page_creation_compte extends StatefulWidget {
   const page_creation_compte({super.key});
@@ -11,8 +14,10 @@ class page_creation_compte extends StatefulWidget {
 }
 
 class _page_creation_compteState extends State<page_creation_compte> {
-  var _obsuretext1 = true;
-  var _obsuretext2 = true;
+  UserService _userService = UserService();
+
+  final _obsuretext1 = true;
+  final _obsuretext2 = true;
   var _email;
   var _password;
   var _passwordconfirmation;
@@ -159,7 +164,7 @@ class _page_creation_compteState extends State<page_creation_compte> {
                       delai: 500,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          primary: const Color.fromRGBO(13, 71, 161, 1),
+                          backgroundColor: Colors.blue[900],
                           shape: const StadiumBorder(),
                           padding: const EdgeInsets.symmetric(
                             horizontal: 125,
@@ -176,9 +181,21 @@ class _page_creation_compteState extends State<page_creation_compte> {
                         ),
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
-                            print(_email);
-                            print(_password);
-                            print(_passwordconfirmation);
+                            _userService
+                                .auth(UserModel(
+                                  email: _email,
+                                  password: _password,
+                                ))
+                                .then(
+                                  (value) => print(value.toJson()),
+                                );
+
+                            /*Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const Page_accueil(),
+                              ),
+                            );*/
                           }
                         },
                       ),
