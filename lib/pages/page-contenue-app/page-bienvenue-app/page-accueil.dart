@@ -1,4 +1,5 @@
 import 'package:application_budget_app/pages/page-authentification/page-bienvenue.dart';
+import 'package:application_budget_app/pages/page-authentification/page-social.dart';
 import 'package:application_budget_app/pages/services/UserService.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -24,11 +25,11 @@ class _Page_accueilState extends State<Page_accueil> {
             Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => bienvenuePage(),
+                  builder: (context) => const PageSocial(),
                 ),
                 (route) => false);
           },
-          child: Text('Se déconnecter'),
+          child: const Text('Se déconnecter'),
         ),
       ),
     );

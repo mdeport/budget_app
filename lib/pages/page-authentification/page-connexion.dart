@@ -4,6 +4,7 @@ import 'package:application_budget_app/animation/temps-affichage-animation.dart'
 import 'package:google_fonts/google_fonts.dart';
 import 'package:application_budget_app/models/UserModel.dart';
 import 'package:application_budget_app/pages/services/UserService.dart';
+import 'package:flutter/services.dart';
 
 class page_connexion_compte extends StatefulWidget {
   const page_connexion_compte({super.key});
@@ -22,20 +23,38 @@ class _page_connexion_compteState extends State<page_connexion_compte> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final RegExp emailRegex = RegExp(r"[a-z0-9\._-]+@[a-z0-9\._-]+\.[a-z]+");
 
+  Future<void> _showError(String errorMessage, BuildContext context) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // User must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Erreur'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(errorMessage),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Color.fromARGB(255, 21, 41, 255),
-            Color.fromARGB(234, 91, 230, 255),
-            Color.fromARGB(197, 91, 230, 255),
-          ],
-        ),
-      ),
+      decoration:
+          const BoxDecoration(color: Color.fromARGB(255, 255, 255, 255)),
       child: Scaffold(
           backgroundColor: Colors.transparent,
           appBar: AppBar(
@@ -161,13 +180,15 @@ class _page_connexion_compteState extends State<page_connexion_compte> {
                             onPressed: () {
                               if (_formKey.currentState!.validate()) {
                                 _userService
-                                    .auth(UserModel(
+                                    .signIn(UserModel(
                                   email: _email,
                                   password: _password,
                                 ))
                                     .then(
                                   (value) {
-                                    if (value.uid != null) {
+                                    if (value.errorMessage != null) {
+                                      _showError(value.errorMessage!, context);
+                                    } else {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
@@ -192,156 +213,3 @@ class _page_connexion_compteState extends State<page_connexion_compte> {
     );
   }
 }
-
-
-
-
-
-
-
-
-/*
-class page_connexion_compte extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.white.withOpacity(0),
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back,
-            color: Colors.black,
-            size: 30,
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Container(
-              margin: const EdgeInsets.symmetric(vertical: 70, horizontal: 40),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Connexion',
-                    style: GoogleFonts.poppins(
-                      fontSize: 25,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blue,
-                    ),
-                  ),
-                  SizedBox(height: 22),
-                  Text(
-                    "Pour accéder à votre compte en toute sécurité, veuillez vous connecter avec votre adresse e-mail.",
-                    style: GoogleFonts.poppins(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.grey,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            LoginForm(),
-            SizedBox(height: 45),
-            TempsAnimation(
-              delai: 500,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  primary: Colors.blue[900],
-                  shape: StadiumBorder(),
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 125,
-                    vertical: 13,
-                  ),
-                ),
-                child: Text(
-                  "CONNEXION",
-                  style: GoogleFonts.poppins(
-                    fontSize: 15,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => MyApp(),
-                    ),
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class LoginForm extends StatefulWidget {
-  @override
-  State<LoginForm> createState() => _LoginFormState();
-}
-
-class _LoginFormState extends State<LoginForm> {
-  var _obsuretext1 = true;
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 30),
-      child: Column(
-        children: [
-          TextFormField(
-            decoration: InputDecoration(
-              labelText: 'Adresse e-mail',
-              labelStyle: GoogleFonts.poppins(
-                fontSize: 15,
-                fontWeight: FontWeight.w500,
-                color: Colors.grey,
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-          ),
-          const SizedBox(height: 20),
-          TextFormField(
-            obscureText: _obsuretext1,
-            decoration: InputDecoration(
-              labelText: 'Mot de passe',
-              labelStyle: GoogleFonts.poppins(
-                fontSize: 15,
-                fontWeight: FontWeight.w500,
-                color: Colors.grey,
-              ),
-              /*suffixIcon: IconButton(
-                icon: const Icon(
-                  Icons.visibility,
-                  color: Colors.black,
-                ),
-                onPressed: () {
-                  setState(
-                    () {
-                      _obsuretext1 = !_obsuretext1;
-                    },
-                  );
-                },
-              ),*/
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-*/
