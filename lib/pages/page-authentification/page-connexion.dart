@@ -1,6 +1,9 @@
+import 'package:application_budget_app/pages/page-contenue-app/page-bienvenue-app/page-accueil.dart';
 import 'package:flutter/material.dart';
 import 'package:application_budget_app/animation/temps-affichage-animation.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:application_budget_app/models/UserModel.dart';
+import 'package:application_budget_app/pages/services/UserService.dart';
 
 class page_connexion_compte extends StatefulWidget {
   const page_connexion_compte({super.key});
@@ -10,6 +13,8 @@ class page_connexion_compte extends StatefulWidget {
 }
 
 class _page_connexion_compteState extends State<page_connexion_compte> {
+  UserService _userService = UserService();
+
   final _obsuretext1 = true;
   //var _obsuretext2 = true;
   var _email;
@@ -155,8 +160,24 @@ class _page_connexion_compteState extends State<page_connexion_compte> {
                             ),
                             onPressed: () {
                               if (_formKey.currentState!.validate()) {
-                                print(_email);
-                                print(_password);
+                                _userService
+                                    .auth(UserModel(
+                                  email: _email,
+                                  password: _password,
+                                ))
+                                    .then(
+                                  (value) {
+                                    if (value.uid != null) {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              const Page_accueil(),
+                                        ),
+                                      );
+                                    }
+                                  },
+                                );
                               }
                             },
                           ),

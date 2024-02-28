@@ -183,12 +183,22 @@ class _page_creation_compteState extends State<page_creation_compte> {
                           if (_formKey.currentState!.validate()) {
                             _userService
                                 .auth(UserModel(
-                                  email: _email,
-                                  password: _password,
-                                ))
+                              email: _email,
+                              password: _password,
+                            ))
                                 .then(
-                                  (value) => print(value.toJson()),
-                                );
+                              (value) {
+                                if (value.uid != null) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const Page_accueil(),
+                                    ),
+                                  );
+                                }
+                              },
+                            );
 
                             /*Navigator.push(
                               context,
