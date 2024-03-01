@@ -5,6 +5,8 @@ import 'package:application_budget_app/pages/page-authentification/page-creer-co
 import 'package:application_budget_app/pages/page-authentification/page-connexion.dart';
 
 class PageSocial extends StatelessWidget {
+  const PageSocial({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -40,7 +42,7 @@ class PageSocial extends StatelessWidget {
             children: [
               TempsAnimation(
                   delai: 250,
-                  child: Container(
+                  child: SizedBox(
                     height: 290,
                     child: Image.asset('assets/images/image-gestion.png'),
                   )),
@@ -56,18 +58,20 @@ class PageSocial extends StatelessWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => page_connexion_compte(),
+                                  builder: (context) =>
+                                      const page_connexion_compte(),
                                 ),
                               );
                             },
                             style: ElevatedButton.styleFrom(
-                                primary: Colors.blue[900],
-                                shape: StadiumBorder(),
-                                padding: EdgeInsets.all(13)),
+                                backgroundColor: Colors.blue[900],
+                                shape: const StadiumBorder(),
+                                padding: const EdgeInsets.all(18)),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const Icon(Icons.contact_mail),
+                                const Icon(Icons.contact_mail,
+                                    color: Colors.white),
                                 const SizedBox(
                                   width: 10,
                                 ),
@@ -89,18 +93,20 @@ class PageSocial extends StatelessWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => page_creation_compte(),
+                                  builder: (context) =>
+                                      const page_creation_compte(),
                                 ),
                               );
                             },
                             style: ElevatedButton.styleFrom(
-                                primary: Colors.blue[900],
-                                shape: StadiumBorder(),
-                                padding: EdgeInsets.all(13)),
+                                backgroundColor: Colors.blue[900],
+                                shape: const StadiumBorder(),
+                                padding: const EdgeInsets.all(18)),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const Icon(Icons.mail_outline_outlined),
+                                const Icon(Icons.mail_outline_outlined,
+                                    color: Colors.white),
                                 const SizedBox(
                                   width: 10,
                                 ),

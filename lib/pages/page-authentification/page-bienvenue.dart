@@ -1,9 +1,12 @@
 import 'package:application_budget_app/animation/temps-affichage-animation.dart';
 import 'package:application_budget_app/pages/page-authentification/page-social.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class bienvenuePage extends StatelessWidget {
+  const bienvenuePage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -42,7 +45,7 @@ class bienvenuePage extends StatelessWidget {
               )),*/
               TempsAnimation(
                   delai: 2500,
-                  child: Container(
+                  child: SizedBox(
                     height: 450,
                     child: Image.asset('assets/images/logo-budget.png'),
                   )),
@@ -67,15 +70,20 @@ class bienvenuePage extends StatelessWidget {
                   width: double.infinity,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                        primary: Color.fromARGB(255, 0, 26, 255),
-                        shape: StadiumBorder(),
-                        padding: EdgeInsets.all(13)),
-                    child: const Text("CONTINUER"),
+                        backgroundColor: Colors.blue[900],
+                        shape: const StadiumBorder(),
+                        padding: const EdgeInsets.all(16)),
+                    child: const Text("CONTINUER",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        )),
                     onPressed: () {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => PageSocial(),
+                            builder: (context) => const PageSocial(),
                           ));
                     },
                   ),
