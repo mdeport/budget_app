@@ -1,4 +1,4 @@
-import 'package:application_budget_app/pages/page-contenue-app/page-bienvenue-app/page-accueil.dart';
+import 'package:application_budget_app/pages/page-contenue-app/page-accueil/page-accueil-principal.dart';
 import 'package:flutter/material.dart';
 import 'package:application_budget_app/animation/temps-affichage-animation.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -193,7 +193,7 @@ class _page_connexion_compteState extends State<page_connexion_compte> {
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) =>
-                                              const Page_accueil(),
+                                              const Page_accueil_principal(),
                                         ),
                                       );
                                     }
