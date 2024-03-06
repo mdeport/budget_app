@@ -34,24 +34,6 @@ class BottomNavBar extends StatelessWidget {
           backgroundColor: Color.fromARGB(255, 33, 120, 241),
         ),
       ],
-      /*items: const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home),
-          label: 'Accueil',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.attach_money),
-          label: 'Budget',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.help),
-          label: 'Conseils',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.settings),
-          label: 'Paramètres',
-        ),
-      ],*/
     );
   }
 }
