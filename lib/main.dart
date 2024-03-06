@@ -1,5 +1,5 @@
 import 'package:application_budget_app/pages/page-authentification/page-bienvenue.dart';
-import 'package:application_budget_app/pages/page-contenue-app/page-bienvenue-app/page-accueil.dart';
+import 'package:application_budget_app/pages/page-contenue-app/page-accueil/page-accueil-principal.dart';
 import 'package:application_budget_app/pages/services/UserService.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.active) {
             if (snapshot.hasData) {
-              return const Page_accueil();
+              return const Page_accueil_principal();
             }
             return const bienvenuePage();
           }
