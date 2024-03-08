@@ -1,8 +1,10 @@
 import 'package:application_budget_app/pages/navbottombar/navbottombar.dart';
 import 'package:application_budget_app/pages/page-contenue-app/page-accueil/page-accueil-principal.dart';
+import 'package:application_budget_app/pages/page-contenue-app/page-budget/page-depense-revenue-objectif/depense.dart';
+import 'package:application_budget_app/pages/page-contenue-app/page-budget/page-depense-revenue-objectif/objectif.dart';
+import 'package:application_budget_app/pages/page-contenue-app/page-budget/page-depense-revenue-objectif/revenue.dart';
 import 'package:application_budget_app/pages/page-contenue-app/page-conseil/page-conseil-principal.dart';
 import 'package:application_budget_app/pages/page-contenue-app/page-parametre/page-parametre-principal.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class Page_budget_principal extends StatefulWidget {
@@ -16,9 +18,10 @@ class _Page_budget_principalState extends State<Page_budget_principal> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: const Center(
-        child: Text('Budget'),
+      appBar: AppBar(
+        title: const Text('Budget'),
       ),
+      body: const Text('Budget'),
       bottomNavigationBar: BottomNavBar(
         currentIndex: 1,
         onTap: (index) {
