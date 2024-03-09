@@ -15,13 +15,110 @@ class Page_budget_principal extends StatefulWidget {
 }
 
 class _Page_budget_principalState extends State<Page_budget_principal> {
+  int _selectedIndex = 0; // Index de la page sélectionnée
+
+  final List<Widget> _pages = [
+    // Les pages correspondant aux options de navigation
+    DepensePage(),
+    RevenuePage(),
+    ObjectifPage(),
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Budget'),
+        title: const Text('Budget',
+            style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+                fontSize: 30.0)),
+        automaticallyImplyLeading: false,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Color.fromARGB(255, 21, 41, 255),
+                Color.fromARGB(234, 91, 230, 255),
+                Color.fromARGB(197, 91, 230, 255),
+              ],
+            ),
+          ),
+        ),
+        backgroundColor: Colors.blue,
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(50.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                height: 2,
+                color: Colors.grey,
+              ),
+              SizedBox(height: 10.0),
+              Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        setState(() {
+                          _selectedIndex = 0;
+                        });
+                      },
+                      child: Text(
+                        'Dépenses',
+                        style: TextStyle(
+                          color:
+                              _selectedIndex == 0 ? Colors.black : Colors.grey,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 17,
+                        ),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        setState(() {
+                          _selectedIndex = 1;
+                        });
+                      },
+                      child: Text(
+                        'Revenus',
+                        style: TextStyle(
+                          color:
+                              _selectedIndex == 1 ? Colors.black : Colors.grey,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 17,
+                        ),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        setState(() {
+                          _selectedIndex = 2;
+                        });
+                      },
+                      child: Text(
+                        'Objectifs',
+                        style: TextStyle(
+                          color:
+                              _selectedIndex == 2 ? Colors.black : Colors.grey,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 17,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 10.0),
+            ],
+          ),
+        ),
       ),
-      body: const Text('Budget'),
+      body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavBar(
         currentIndex: 1,
         onTap: (index) {
@@ -56,6 +153,34 @@ class _Page_budget_principalState extends State<Page_budget_principal> {
           }
         },
       ),
+    );
+  }
+}
+
+// Exemple de pages pour chaque option de navigation
+class DepensePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Text('Page Dépenses'),
+    );
+  }
+}
+
+class RevenuePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Text('Page Revenus'),
+    );
+  }
+}
+
+class ObjectifPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Text('Page Objectifs'),
     );
   }
 }
