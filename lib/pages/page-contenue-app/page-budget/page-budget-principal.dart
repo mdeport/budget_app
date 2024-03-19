@@ -1,10 +1,9 @@
 import 'package:application_budget_app/pages/navbottombar/navbottombar.dart';
 import 'package:application_budget_app/pages/page-contenue-app/page-accueil/page-accueil-principal.dart';
-import 'package:application_budget_app/pages/page-contenue-app/page-budget/page-depense-revenue-objectif/depense.dart';
-import 'package:application_budget_app/pages/page-contenue-app/page-budget/page-depense-revenue-objectif/objectif.dart';
-import 'package:application_budget_app/pages/page-contenue-app/page-budget/page-depense-revenue-objectif/revenue.dart';
 import 'package:application_budget_app/pages/page-contenue-app/page-conseil/page-conseil-principal.dart';
 import 'package:application_budget_app/pages/page-contenue-app/page-parametre/page-parametre-principal.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:syncfusion_flutter_charts/sparkcharts.dart';
 import 'package:flutter/material.dart';
 
 class Page_budget_principal extends StatefulWidget {
@@ -157,14 +156,49 @@ class _Page_budget_principalState extends State<Page_budget_principal> {
   }
 }
 
-// Exemple de pages pour chaque option de navigation
+// Nouvelle classe pour la page de dépenses avec le graphique en cercle
 class DepensePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text('Page Dépenses'),
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          const Text(
+            'Graphique Dépenses',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+            ),
+          ),
+          const SizedBox(height: 20),
+          SfCircularChart(
+            series: <CircularSeries>[
+              PieSeries<ChartData, String>(
+                dataSource: <ChartData>[
+                  ChartData('Expense 1', 30),
+                  ChartData('Expense 2', 20),
+                  ChartData('Expense 3', 25),
+                  ChartData('Expense 4', 15),
+                  ChartData('Expense 5', 10),
+                ],
+                xValueMapper: (ChartData data, _) => data.x,
+                yValueMapper: (ChartData data, _) => data.y,
+                dataLabelSettings: const DataLabelSettings(isVisible: true),
+              )
+            ],
+          ),
+        ],
+      ),
     );
   }
+}
+
+// Modèle de données pour le graphique
+class ChartData {
+  ChartData(this.x, this.y);
+  final String x;
+  final double y;
 }
 
 class RevenuePage extends StatelessWidget {
