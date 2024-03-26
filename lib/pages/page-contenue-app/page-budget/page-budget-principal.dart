@@ -2,8 +2,8 @@ import 'package:application_budget_app/pages/navbottombar/navbottombar.dart';
 import 'package:application_budget_app/pages/page-contenue-app/page-accueil/page-accueil-principal.dart';
 import 'package:application_budget_app/pages/page-contenue-app/page-conseil/page-conseil-principal.dart';
 import 'package:application_budget_app/pages/page-contenue-app/page-parametre/page-parametre-principal.dart';
+import 'package:application_budget_app/pages/page-contenue-app/page-budget/Page-depense/page-ajouts-dépense.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter/material.dart';
 
 class Page_budget_principal extends StatefulWidget {
@@ -14,10 +14,9 @@ class Page_budget_principal extends StatefulWidget {
 }
 
 class _Page_budget_principalState extends State<Page_budget_principal> {
-  int _selectedIndex = 0; // Index de la page sélectionnée
+  int _selectedIndex = 0;
 
   final List<Widget> _pages = [
-    // Les pages correspondant aux options de navigation
     DepensePage(),
     RevenuePage(),
     ObjectifPage(),
@@ -192,118 +191,6 @@ class DepensePage extends StatelessWidget {
         },
         label: const Text('Ajouter des dépenses'),
         backgroundColor: Colors.indigoAccent,
-      ),
-    );
-  }
-}
-
-class AjouterDepensePage extends StatefulWidget {
-  @override
-  _AjouterDepensePageState createState() => _AjouterDepensePageState();
-}
-
-class _AjouterDepensePageState extends State<AjouterDepensePage> {
-  IconData selectedIcon = FontAwesomeIcons.shoppingBasket; // Icone par défaut
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Ajouter une dépense'),
-        backgroundColor: Colors.indigo,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const SizedBox(height: 40),
-            const Text(
-              'Montant',
-              style: TextStyle(fontSize: 20, color: Colors.indigo),
-            ),
-            const SizedBox(height: 10),
-            SizedBox(
-              width: 200,
-              child: TextField(
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 18),
-                decoration: InputDecoration(
-                  hintText: 'Entrez le montant',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20.0),
-                  ),
-                ),
-                keyboardType: TextInputType.number,
-              ),
-            ),
-            const SizedBox(height: 30),
-            const Text(
-              'Choisissez une icône',
-              style: TextStyle(fontSize: 20, color: Colors.indigo),
-            ),
-            const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                IconButton(
-                  icon: const Icon(FontAwesomeIcons.shoppingBasket),
-                  onPressed: () {
-                    setState(() {
-                      selectedIcon = FontAwesomeIcons.shoppingBasket;
-                    });
-                  },
-                  color: selectedIcon == FontAwesomeIcons.shoppingBasket
-                      ? Colors.indigo
-                      : Colors.grey,
-                ),
-                IconButton(
-                  icon: const Icon(FontAwesomeIcons.car),
-                  onPressed: () {
-                    setState(() {
-                      selectedIcon = FontAwesomeIcons.car;
-                    });
-                  },
-                  color: selectedIcon == FontAwesomeIcons.car
-                      ? Colors.indigo
-                      : Colors.grey,
-                ),
-              ],
-            ),
-            const SizedBox(height: 30),
-            const Text(
-              'Nom de la catégorie',
-              style: TextStyle(fontSize: 20, color: Colors.indigo),
-            ),
-            const SizedBox(height: 10),
-            SizedBox(
-              width: 200,
-              child: TextField(
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 18),
-                decoration: InputDecoration(
-                  hintText: 'Entrez le nom de la catégorie',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20.0),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 40),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.indigo,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20.0),
-                ),
-              ),
-              child: const Text('Valider'),
-            ),
-          ],
-        ),
       ),
     );
   }
