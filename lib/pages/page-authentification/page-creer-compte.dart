@@ -1,6 +1,5 @@
 import 'package:application_budget_app/models/UserModel.dart';
 import 'package:application_budget_app/pages/services/UserService.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:application_budget_app/animation/temps-affichage-animation.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -21,6 +20,7 @@ class _page_creation_compteState extends State<page_creation_compte> {
   final _obsuretext2 = true;
   var _email;
   var _password;
+  // ignore: unused_field
   var _passwordconfirmation;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final RegExp emailRegex = RegExp(r"[a-z0-9\._-]+@[a-z0-9\._-]+\.[a-z]+");

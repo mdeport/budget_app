@@ -1,5 +1,6 @@
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:application_budget_app/base-de-données/page-depense-controlleur.dart';
+import 'package:application_budget_app/base-de-donnees/page-depense-controlleur.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class AjouterDepensePage extends StatefulWidget {
@@ -9,6 +10,8 @@ class AjouterDepensePage extends StatefulWidget {
 
 class _AjouterDepensePageState extends State<AjouterDepensePage> {
   IconData selectedIcon = FontAwesomeIcons.shoppingBasket;
+
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   TextEditingController prixControlleur = TextEditingController();
   TextEditingController nomDepenseControlleur = TextEditingController();
@@ -102,7 +105,9 @@ class _AjouterDepensePageState extends State<AjouterDepensePage> {
             const SizedBox(height: 40),
             ElevatedButton(
               onPressed: () {
-                String userId = "user123";
+                User? user = _auth.currentUser;
+
+                String userId = user!.uid;
                 String nomDepense = nomDepenseControlleur.text;
                 double prix = double.parse(prixControlleur.text);
                 String iconUrl = "test";

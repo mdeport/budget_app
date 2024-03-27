@@ -26,7 +26,7 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  UserService _userService = UserService();
+  final UserService _userService = UserService();
 
   @override
   Widget build(BuildContext context) {

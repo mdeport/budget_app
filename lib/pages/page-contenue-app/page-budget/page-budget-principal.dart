@@ -2,7 +2,8 @@ import 'package:application_budget_app/pages/navbottombar/navbottombar.dart';
 import 'package:application_budget_app/pages/page-contenue-app/page-accueil/page-accueil-principal.dart';
 import 'package:application_budget_app/pages/page-contenue-app/page-conseil/page-conseil-principal.dart';
 import 'package:application_budget_app/pages/page-contenue-app/page-parametre/page-parametre-principal.dart';
-import 'package:application_budget_app/pages/page-contenue-app/page-budget/Page-depense/page-ajouts-dépense.dart';
+import 'package:application_budget_app/pages/page-contenue-app/page-budget/Page-depense/page-ajouts-depense.dart';
+import 'package:application_budget_app/base-de-donnees/page-depense-controlleur.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:flutter/material.dart';
 
@@ -162,25 +163,78 @@ class DepensePage extends StatelessWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          SfCircularChart(
-            series: <CircularSeries>[
-              PieSeries<ChartData, String>(
-                dataSource: <ChartData>[
-                  ChartData('Expense 1', 30),
-                  ChartData('Expense 2', 20),
-                  ChartData('Expense 3', 25),
-                  ChartData('Expense 4', 15),
-                  ChartData('Expense 5', 10),
-                  ChartData('Expense 6', 60),
-                  ChartData('Expense 7', 70),
-                ],
-                xValueMapper: (ChartData data, _) => data.x,
-                yValueMapper: (ChartData data, _) => data.y,
-                dataLabelSettings: const DataLabelSettings(isVisible: true),
-              )
-            ],
+          FutureBuilder<List<ChartData>>(
+            future: fetchChartDataFromFirestore(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              } else if (snapshot.hasError) {
+                return Center(
+                  child: Text('Erreur: ${snapshot.error}'),
+                );
+              } else {
+                List<ChartData>? chartDataList = snapshot.data;
+                return SfCircularChart(
+                  series: <CircularSeries>[
+                    PieSeries<ChartData, String>(
+                      dataSource: chartDataList!,
+                      xValueMapper: (ChartData data, _) => data.x,
+                      yValueMapper: (ChartData data, _) => data.y,
+                      dataLabelSettings:
+                          const DataLabelSettings(isVisible: true),
+                    )
+                  ],
+                );
+              }
+            },
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => AjouterDepensePage()),
+          );
+        },
+        label: const Text('Ajouter des dépenses'),
+        backgroundColor: Colors.indigoAccent,
+      ),
+    );
+  }
+}
+
+/*class DepensePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: FutureBuilder<List<ChartData>>(
+        future: fetchChartDataFromFirestore(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text('Erreur: ${snapshot.error}'),
+            );
+          } else {
+            List<ChartData>? chartDataList = snapshot.data;
+            return SfCircularChart(
+              series: <CircularSeries>[
+                PieSeries<ChartData, String>(
+                  dataSource: chartDataList!,
+                  xValueMapper: (ChartData data, _) => data.x,
+                  yValueMapper: (ChartData data, _) => data.y,
+                  dataLabelSettings: const DataLabelSettings(isVisible: true),
+                )
+              ],
+            );
+          }
+        },
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
@@ -201,6 +255,7 @@ class ChartData {
   final String x;
   final double y;
 }
+*/
 
 class RevenuePage extends StatelessWidget {
   @override
