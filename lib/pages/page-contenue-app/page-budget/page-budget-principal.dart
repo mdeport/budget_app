@@ -163,32 +163,113 @@ class DepensePage extends StatelessWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          FutureBuilder<List<ChartData>>(
-            future: fetchChartDataFromFirestore(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(
-                  child: CircularProgressIndicator(),
-                );
-              } else if (snapshot.hasError) {
-                return Center(
-                  child: Text('Erreur: ${snapshot.error}'),
-                );
-              } else {
-                List<ChartData>? chartDataList = snapshot.data;
-                return SfCircularChart(
-                  series: <CircularSeries>[
-                    PieSeries<ChartData, String>(
-                      dataSource: chartDataList!,
-                      xValueMapper: (ChartData data, _) => data.x,
-                      yValueMapper: (ChartData data, _) => data.y,
-                      dataLabelSettings:
-                          const DataLabelSettings(isVisible: true),
-                    )
-                  ],
-                );
-              }
-            },
+          Expanded(
+            child: FutureBuilder<List<ChartData>>(
+              future: fetchChartDataFromFirestore(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else if (snapshot.hasError) {
+                  return Center(
+                    child: Text('Erreur: ${snapshot.error}'),
+                  );
+                } else {
+                  List<ChartData>? chartDataList = snapshot.data;
+                  double totalValue = calculateTotalValue(chartDataList!);
+                  return Stack(
+                    children: [
+                      if (chartDataList.isEmpty)
+                        const Center(
+                          child: Text(
+                            'Veuillez ajouter des dépenses pour commencer a voir le graphique et les dépenses.',
+                            style: TextStyle(
+                                color: Colors.red,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20),
+                          ),
+                        )
+                      else
+                        Center(
+                          child: SfCircularChart(
+                            series: <CircularSeries>[
+                              DoughnutSeries<ChartData, String>(
+                                dataSource: chartDataList,
+                                xValueMapper: (ChartData data, _) => data.x,
+                                yValueMapper: (ChartData data, _) => data.y,
+                                dataLabelSettings:
+                                    const DataLabelSettings(isVisible: true),
+                                innerRadius: '50%',
+                              )
+                            ],
+                          ),
+                        ),
+                      if (chartDataList.isEmpty)
+                        const Center(
+                          child: Text(
+                            'Veuillez ajouter des dépenses pour commencer a voir le graphique et les dépenses.',
+                            style: TextStyle(
+                                color: Colors.red,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20),
+                          ),
+                        )
+                      else
+                        Center(
+                          child: Text(
+                            '$totalValue',
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                    ],
+                  );
+                }
+              },
+            ),
+          ),
+          Expanded(
+            child: SizedBox(
+              child: FutureBuilder<List<RechercheDepense>>(
+                future: fetchExpensesFromFirestore(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  } else if (snapshot.hasError) {
+                    return Center(
+                      child: Text('Erreur: ${snapshot.error}'),
+                    );
+                  } else {
+                    List<RechercheDepense>? listDepense = snapshot.data;
+                    return ListView.builder(
+                      itemCount: listDepense!.length,
+                      itemBuilder: (context, index) {
+                        RechercheDepense expense = listDepense[index];
+                        return ListTile(
+                          leading: Icon(Icons.money),
+                          title: Text(expense.nom_depense),
+                          trailing: SizedBox(
+                            width: 100,
+                            child: TextFormField(
+                              initialValue: expense.prix.toString(),
+                              onChanged: (newValue) {
+                                // Mettre à jour la valeur dans la base de données
+                                // ou dans une liste temporaire selon vos besoins
+                              },
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  }
+                },
+              ),
+            ),
           ),
         ],
       ),
@@ -203,6 +284,14 @@ class DepensePage extends StatelessWidget {
         backgroundColor: Colors.indigoAccent,
       ),
     );
+  }
+
+  double calculateTotalValue(List<ChartData> data) {
+    double total = 0;
+    for (var item in data) {
+      total += item.y;
+    }
+    return total;
   }
 }
 
