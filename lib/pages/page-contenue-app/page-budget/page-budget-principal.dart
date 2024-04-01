@@ -249,6 +249,71 @@ class DepensePage extends StatelessWidget {
                     return ListView.builder(
                       itemCount: listDepense!.length,
                       itemBuilder: (context, index) {
+                        RechercheDepense depense = listDepense[index];
+                        return Dismissible(
+                          key: Key(depense.nom_depense),
+                          direction: DismissDirection.endToStart,
+                          background: Container(
+                            color: Colors.red,
+                            alignment: Alignment.centerRight,
+                            padding: const EdgeInsets.only(right: 20.0),
+                            child:
+                                const Icon(Icons.delete, color: Colors.white),
+                          ),
+                          confirmDismiss: (direction) async {
+                            // cela va afficher une boîte de dialogue de confirmation pour supprimer la dépense
+                            return await showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text("Confirmation"),
+                                  content: const Text(
+                                      "Voulez-vous vraiment supprimer la depense ?"),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(false),
+                                      child: const Text("Annuler"),
+                                    ),
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(true),
+                                      child: const Text("Supprimer"),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                          onDismissed: (direction) {
+                            // Supprimer la dépense de la base de données
+                            supprimerDepense(depense.nom_depense);
+                          },
+                          child: ListTile(
+                            leading: const Icon(Icons.money),
+                            title: Text(depense.nom_depense),
+                            trailing: SizedBox(
+                              width: 100,
+                              child: TextFormField(
+                                initialValue: depense.prix.toString(),
+                                onChanged: (newValue) {
+                                  // Mettre à jour la valeur dans la base de données
+                                  double newPrice =
+                                      double.tryParse(newValue) ?? 0.0;
+                                  updateDepensePrix(
+                                      depense.nom_depense, newPrice);
+                                  // ou dans une liste temporaire selon vos besoins
+                                  print(newValue);
+                                },
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                    /*return ListView.builder(
+                      itemCount: listDepense!.length,
+                      itemBuilder: (context, index) {
                         RechercheDepense expense = listDepense[index];
                         return ListTile(
                           leading: Icon(Icons.money),
@@ -265,7 +330,7 @@ class DepensePage extends StatelessWidget {
                           ),
                         );
                       },
-                    );
+                    );*/
                   }
                 },
               ),
@@ -291,60 +356,9 @@ class DepensePage extends StatelessWidget {
     for (var item in data) {
       total += item.y;
     }
-    return total;
+    return double.parse(total.toStringAsFixed(2));
   }
 }
-
-/*class DepensePage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: FutureBuilder<List<ChartData>>(
-        future: fetchChartDataFromFirestore(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          } else if (snapshot.hasError) {
-            return Center(
-              child: Text('Erreur: ${snapshot.error}'),
-            );
-          } else {
-            List<ChartData>? chartDataList = snapshot.data;
-            return SfCircularChart(
-              series: <CircularSeries>[
-                PieSeries<ChartData, String>(
-                  dataSource: chartDataList!,
-                  xValueMapper: (ChartData data, _) => data.x,
-                  yValueMapper: (ChartData data, _) => data.y,
-                  dataLabelSettings: const DataLabelSettings(isVisible: true),
-                )
-              ],
-            );
-          }
-        },
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => AjouterDepensePage()),
-          );
-        },
-        label: const Text('Ajouter des dépenses'),
-        backgroundColor: Colors.indigoAccent,
-      ),
-    );
-  }
-}
-
-class ChartData {
-  ChartData(this.x, this.y);
-  final String x;
-  final double y;
-}
-*/
 
 class RevenuePage extends StatelessWidget {
   @override

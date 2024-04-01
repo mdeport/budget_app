@@ -83,3 +83,39 @@ Future<List<RechercheDepense>> fetchExpensesFromFirestore() async {
   }
   return listDepense;
 }
+
+// Supprimer une dépense de la base de données
+Future<void> supprimerDepense(String nomDepense) async {
+  User? user = FirebaseAuth.instance.currentUser;
+  try {
+    final depenseRef = FirebaseFirestore.instance
+        .collection('depense')
+        .doc(user?.uid)
+        .collection('depenses')
+        .doc(nomDepense);
+
+    await depenseRef.delete();
+    print('L\'élément a été supprimé avec succès');
+  } catch (error) {
+    print('Erreur lors de la suppression de l\'élément: $error');
+  }
+}
+
+Future<void> updateDepensePrix(String nomDepense, double newPrix) async {
+  User? user = FirebaseAuth.instance.currentUser;
+  try {
+    // Référence à l'élément à mettre à jour
+    final depenseRef = FirebaseFirestore.instance
+        .collection('depense')
+        .doc(user?.uid)
+        .collection('depenses')
+        .doc(nomDepense);
+
+    // Mise à jour du prix de la dépense
+    await depenseRef.update({'prix': newPrix});
+    print('Le prix de la dépense a été mis à jour avec succès');
+  } catch (error) {
+    print('Erreur lors de la mise à jour du prix de la dépense: $error');
+    // Gérer l'erreur selon vos besoins
+  }
+}
