@@ -71,11 +71,11 @@ Future<List<RechercheDepense>> fetchExpensesFromFirestore() async {
           .collection('depenses')
           .get();
       querySnapshot.docs.forEach((doc) {
-        RechercheDepense expense = RechercheDepense(
+        RechercheDepense depense = RechercheDepense(
           nom_depense: doc['nom_depense'],
           prix: doc['prix'],
         );
-        listDepense.add(expense);
+        listDepense.add(depense);
       });
     }
   } catch (e) {
@@ -101,7 +101,9 @@ Future<void> supprimerDepense(String nomDepense) async {
   }
 }
 
-Future<void> updateDepensePrix(String nomDepense, double newPrix) async {
+// Mettre à jour le prix et le nom d'une dépense dans la base de données
+Future<void> updateDepensePrix(
+    String nomDepense, double newPrix /*, String newNomDepense*/) async {
   User? user = FirebaseAuth.instance.currentUser;
   try {
     // Référence à l'élément à mettre à jour
@@ -112,7 +114,9 @@ Future<void> updateDepensePrix(String nomDepense, double newPrix) async {
         .doc(nomDepense);
 
     // Mise à jour du prix de la dépense
-    await depenseRef.update({'prix': newPrix});
+    await depenseRef.update({
+      'prix': newPrix, /*'nom_depense': newNomDepense*/
+    });
     print('Le prix de la dépense a été mis à jour avec succès');
   } catch (error) {
     print('Erreur lors de la mise à jour du prix de la dépense: $error');

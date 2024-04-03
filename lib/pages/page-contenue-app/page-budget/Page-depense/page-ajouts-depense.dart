@@ -1,3 +1,4 @@
+import 'package:application_budget_app/pages/page-contenue-app/page-budget/page-budget-principal.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:application_budget_app/base-de-donnees/page-depense-controlleur.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -112,7 +113,12 @@ class _AjouterDepensePageState extends State<AjouterDepensePage> {
                 double prix = double.parse(prixControlleur.text);
                 String iconUrl = "test";
                 ajoutDepense(userId, nomDepense, prix, iconUrl).then((_) {
-                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const Page_budget_principal(),
+                    ),
+                  );
                 });
               },
               style: ElevatedButton.styleFrom(
