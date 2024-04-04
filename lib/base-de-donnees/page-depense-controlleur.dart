@@ -1,9 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 
 // Ajoutez une dépense en Base de données
-Future<void> ajoutDepense(
-    String userId, String nomDepense, double prix, String IconUrl) async {
+Future<void> ajoutDepense(String userId, String nomDepense, double prix,
+    String IconUrl, String CouleurIcon) async {
   try {
     await FirebaseFirestore.instance
         .collection('depense')
@@ -15,6 +16,7 @@ Future<void> ajoutDepense(
       'nom_depense': nomDepense,
       'prix': prix,
       'icon_url': IconUrl,
+      'couleur_icon': CouleurIcon,
     });
     print('Expense added for user: $userId');
   } catch (e) {
@@ -53,13 +55,16 @@ Future<List<ChartData>> fetchChartDataFromFirestore() async {
 class RechercheDepense {
   final String nom_depense;
   final double prix;
+  final String? Icon;
 
   RechercheDepense({
     required this.nom_depense,
     required this.prix,
+    this.Icon,
   });
 }
 
+//recuperer les depenses de la base de données
 Future<List<RechercheDepense>> fetchExpensesFromFirestore() async {
   List<RechercheDepense> listDepense = [];
   try {
@@ -74,6 +79,7 @@ Future<List<RechercheDepense>> fetchExpensesFromFirestore() async {
         RechercheDepense depense = RechercheDepense(
           nom_depense: doc['nom_depense'],
           prix: doc['prix'],
+          Icon: doc['icon_url'],
         );
         listDepense.add(depense);
       });

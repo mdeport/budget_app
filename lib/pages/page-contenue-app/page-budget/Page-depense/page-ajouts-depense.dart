@@ -2,6 +2,7 @@ import 'package:application_budget_app/pages/page-contenue-app/page-budget/page-
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:application_budget_app/base-de-donnees/page-depense-controlleur.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
 import 'package:flutter/material.dart';
 
 class AjouterDepensePage extends StatefulWidget {
@@ -10,15 +11,71 @@ class AjouterDepensePage extends StatefulWidget {
 }
 
 class _AjouterDepensePageState extends State<AjouterDepensePage> {
-  IconData selectedIcon = FontAwesomeIcons.shoppingBasket;
+  IconData selectedIcon = Icons.shopping_basket;
+  Color selectedColor = Colors.blue;
+  IconData? chosenIcon;
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   TextEditingController prixControlleur = TextEditingController();
   TextEditingController nomDepenseControlleur = TextEditingController();
 
+  List<IconData> depenseIcons = [
+    FontAwesomeIcons.shoppingBasket,
+    FontAwesomeIcons.car,
+    FontAwesomeIcons.utensils,
+    FontAwesomeIcons.home,
+    FontAwesomeIcons.heart,
+    FontAwesomeIcons.medkit,
+    FontAwesomeIcons.paw,
+    FontAwesomeIcons.bolt,
+    FontAwesomeIcons.book,
+    FontAwesomeIcons.briefcase,
+    FontAwesomeIcons.bus,
+    FontAwesomeIcons.plane,
+    FontAwesomeIcons.coffee,
+    FontAwesomeIcons.creditCard,
+    FontAwesomeIcons.cut,
+    FontAwesomeIcons.bed,
+    FontAwesomeIcons.dumbbell,
+    FontAwesomeIcons.cocktail,
+    FontAwesomeIcons.fileInvoiceDollar,
+    FontAwesomeIcons.gasPump,
+    FontAwesomeIcons.graduationCap,
+    FontAwesomeIcons.hamburger,
+    FontAwesomeIcons.heartbeat,
+    FontAwesomeIcons.mortarPestle,
+    FontAwesomeIcons.music,
+    FontAwesomeIcons.paintBrush,
+    FontAwesomeIcons.paperPlane,
+    FontAwesomeIcons.pencilAlt,
+    FontAwesomeIcons.phone,
+    FontAwesomeIcons.running,
+    FontAwesomeIcons.snowflake,
+    FontAwesomeIcons.smoking,
+    FontAwesomeIcons.shoppingBag,
+    FontAwesomeIcons.spa,
+    FontAwesomeIcons.suitcase,
+    FontAwesomeIcons.sun,
+    FontAwesomeIcons.swimmingPool,
+    FontAwesomeIcons.taxi,
+    FontAwesomeIcons.ticketAlt,
+    FontAwesomeIcons.train,
+    FontAwesomeIcons.tree,
+    FontAwesomeIcons.tv,
+    FontAwesomeIcons.wineBottle,
+    FontAwesomeIcons.wallet,
+    FontAwesomeIcons.video,
+    FontAwesomeIcons.shoppingCart,
+  ];
+
+  bool showAllIcons = false;
+
   @override
   Widget build(BuildContext context) {
+    List<IconData> displayedIcons =
+        showAllIcons ? depenseIcons : depenseIcons.take(10).toList();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Ajouter une dépense'),
@@ -29,7 +86,7 @@ class _AjouterDepensePageState extends State<AjouterDepensePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const SizedBox(height: 40),
+            const SizedBox(height: 20),
             const Text(
               'Montant',
               style: TextStyle(fontSize: 20, color: Colors.indigo),
@@ -56,32 +113,102 @@ class _AjouterDepensePageState extends State<AjouterDepensePage> {
               style: TextStyle(fontSize: 20, color: Colors.indigo),
             ),
             const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                IconButton(
-                  icon: const Icon(FontAwesomeIcons.shoppingBasket),
+            GridView.builder(
+              shrinkWrap: true,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 6,
+                mainAxisSpacing: 10.0,
+                crossAxisSpacing: 10.0,
+                childAspectRatio: 1.0,
+              ),
+              itemCount: displayedIcons.length,
+              itemBuilder: (context, index) {
+                final icon = displayedIcons[index];
+                return IconButton(
+                  icon: Icon(icon, color: selectedColor),
                   onPressed: () {
                     setState(() {
-                      selectedIcon = FontAwesomeIcons.shoppingBasket;
+                      selectedIcon = icon;
+                      // pour sauvegarder le nom d'une icone dans la bdd il faut faire
+                      chosenIcon = icon;
                     });
                   },
-                  color: selectedIcon == FontAwesomeIcons.shoppingBasket
-                      ? Colors.indigo
-                      : Colors.grey,
+                  color: selectedIcon == icon ? Colors.indigo : Colors.grey,
+                );
+              },
+            ),
+            const SizedBox(height: 10),
+            if (!showAllIcons)
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    showAllIcons = true;
+                  });
+                },
+                child: const Text(
+                  'Voir plus',
+                  style: TextStyle(color: Colors.indigo),
                 ),
-                IconButton(
-                  icon: const Icon(FontAwesomeIcons.car),
-                  onPressed: () {
-                    setState(() {
-                      selectedIcon = FontAwesomeIcons.car;
-                    });
+              ),
+            if (showAllIcons)
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    showAllIcons = false;
+                  });
+                },
+                child: const Text(
+                  'Voir moins',
+                  style: TextStyle(color: Colors.indigo),
+                ),
+              ),
+            const SizedBox(height: 30),
+            const Text(
+              'Choisissez une couleur',
+              style: TextStyle(fontSize: 20, color: Colors.indigo),
+            ),
+            const SizedBox(height: 10),
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: selectedColor,
+                shape: BoxShape.circle,
+              ),
+            ),
+            const SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text('Choisir une couleur'),
+                      content: SingleChildScrollView(
+                        child: MaterialColorPicker(
+                          selectedColor: selectedColor,
+                          onColorChange: (Color color) {
+                            setState(() {
+                              selectedColor = color;
+                            });
+                          },
+                          circleSize: 40.0,
+                          spacing: 10.0,
+                        ),
+                      ),
+                      actions: <Widget>[
+                        TextButton(
+                          child: const Text('OK'),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ],
+                    );
                   },
-                  color: selectedIcon == FontAwesomeIcons.car
-                      ? Colors.indigo
-                      : Colors.grey,
-                ),
-              ],
+                );
+              },
+              child: const Text('Choisir'),
             ),
             const SizedBox(height: 30),
             const Text(
@@ -90,7 +217,7 @@ class _AjouterDepensePageState extends State<AjouterDepensePage> {
             ),
             const SizedBox(height: 10),
             SizedBox(
-              width: 200,
+              width: 300,
               child: TextField(
                 controller: nomDepenseControlleur,
                 textAlign: TextAlign.center,
@@ -106,20 +233,39 @@ class _AjouterDepensePageState extends State<AjouterDepensePage> {
             const SizedBox(height: 40),
             ElevatedButton(
               onPressed: () {
-                User? user = _auth.currentUser;
-
-                String userId = user!.uid;
-                String nomDepense = nomDepenseControlleur.text;
-                double prix = double.parse(prixControlleur.text);
-                String iconUrl = "test";
-                ajoutDepense(userId, nomDepense, prix, iconUrl).then((_) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const Page_budget_principal(),
+                if (nomDepenseControlleur.text.isEmpty ||
+                    prixControlleur.text.isEmpty ||
+                    chosenIcon == null) {
+                  // Afficher un message d'alerte si un champ est vide ou si aucune icône n'est choisie
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                          'Veuillez remplir tous les champs et choisir une icône.'),
                     ),
                   );
-                });
+                } else {
+                  // Tous les champs sont remplis, procéder à l'ajout de la dépense
+                  User? user = _auth.currentUser;
+                  String userId = user!.uid;
+                  String nomDepense = nomDepenseControlleur.text;
+                  double prix = double.parse(prixControlleur.text);
+                  String iconUrl = chosenIcon!.codePoint.toString();
+                  String couleur = selectedColor.toString();
+                  ajoutDepense(
+                    userId,
+                    nomDepense,
+                    prix,
+                    iconUrl,
+                    couleur,
+                  ).then((_) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const Page_budget_principal(),
+                      ),
+                    );
+                  });
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.indigo,
@@ -129,7 +275,7 @@ class _AjouterDepensePageState extends State<AjouterDepensePage> {
               ),
               child: const Text(
                 'Valider',
-                style: TextStyle(color: Colors.white, fontSize: 15),
+                style: TextStyle(color: Colors.white, fontSize: 18),
               ),
             ),
           ],

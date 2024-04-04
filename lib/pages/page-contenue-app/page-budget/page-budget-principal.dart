@@ -161,8 +161,6 @@ class DepensePage extends StatefulWidget {
 
   @override
   State<DepensePage> createState() => _DepensePageState();
-
-  void refreshData() {}
 }
 
 class _DepensePageState extends State<DepensePage> {
