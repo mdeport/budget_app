@@ -4,6 +4,7 @@ import 'package:application_budget_app/pages/page-contenue-app/page-conseil/page
 import 'package:application_budget_app/pages/page-contenue-app/page-parametre/page-parametre-principal.dart';
 import 'package:application_budget_app/pages/page-contenue-app/page-budget/Page-depense/page-ajouts-depense.dart';
 import 'package:application_budget_app/base-de-donnees/page-depense-controlleur.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:flutter/material.dart';
 
@@ -164,6 +165,55 @@ class DepensePage extends StatefulWidget {
 }
 
 class _DepensePageState extends State<DepensePage> {
+  final icons = {
+    'shoppingBasket': FontAwesomeIcons.shoppingBasket,
+    'car': FontAwesomeIcons.car,
+    'utensils': FontAwesomeIcons.utensils,
+    'home': FontAwesomeIcons.home,
+    'heart': FontAwesomeIcons.heart,
+    'medkit': FontAwesomeIcons.medkit,
+    'paw': FontAwesomeIcons.paw,
+    'bolt': FontAwesomeIcons.bolt,
+    'book': FontAwesomeIcons.book,
+    'briefcase': FontAwesomeIcons.briefcase,
+    'bus': FontAwesomeIcons.bus,
+    'plane': FontAwesomeIcons.plane,
+    'coffee': FontAwesomeIcons.coffee,
+    'creditCard': FontAwesomeIcons.creditCard,
+    'cut': FontAwesomeIcons.cut,
+    'bed': FontAwesomeIcons.bed,
+    'dumbbell': FontAwesomeIcons.dumbbell,
+    'cocktail': FontAwesomeIcons.cocktail,
+    'fileInvoiceDollar': FontAwesomeIcons.fileInvoiceDollar,
+    'gasPump': FontAwesomeIcons.gasPump,
+    'graduationCap': FontAwesomeIcons.graduationCap,
+    'hamburger': FontAwesomeIcons.hamburger,
+    'heartbeat': FontAwesomeIcons.heartbeat,
+    'mortarPestle': FontAwesomeIcons.mortarPestle,
+    'music': FontAwesomeIcons.music,
+    'paintBrush': FontAwesomeIcons.paintBrush,
+    'paperPlane': FontAwesomeIcons.paperPlane,
+    'pencilAlt': FontAwesomeIcons.pencilAlt,
+    'phone': FontAwesomeIcons.phone,
+    'running': FontAwesomeIcons.running,
+    'snowflake': FontAwesomeIcons.snowflake,
+    'smoking': FontAwesomeIcons.smoking,
+    'shoppingBag': FontAwesomeIcons.shoppingBag,
+    'spa': FontAwesomeIcons.spa,
+    'suitcase': FontAwesomeIcons.suitcase,
+    'sun': FontAwesomeIcons.sun,
+    'swimmingPool': FontAwesomeIcons.swimmingPool,
+    'taxi': FontAwesomeIcons.taxi,
+    'ticketAlt': FontAwesomeIcons.ticketAlt,
+    'train': FontAwesomeIcons.train,
+    'tree': FontAwesomeIcons.tree,
+    'tv': FontAwesomeIcons.tv,
+    'wineBottle': FontAwesomeIcons.wineBottle,
+    'wallet': FontAwesomeIcons.wallet,
+    'video': FontAwesomeIcons.video,
+    'shoppingCart': FontAwesomeIcons.shoppingCart,
+  };
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -172,7 +222,7 @@ class _DepensePageState extends State<DepensePage> {
         children: [
           Expanded(
             child: FutureBuilder<List<ChartData>>(
-              future: fetchChartDataFromFirestore(),
+              future: listDepenseChartDataList(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(
@@ -203,11 +253,13 @@ class _DepensePageState extends State<DepensePage> {
                             series: <CircularSeries>[
                               DoughnutSeries<ChartData, String>(
                                 dataSource: chartDataList,
+                                pointColorMapper: (ChartData data, _) =>
+                                    Color(int.parse('0xff' + data.color)),
                                 xValueMapper: (ChartData data, _) => data.x,
                                 yValueMapper: (ChartData data, _) => data.y,
                                 dataLabelSettings:
                                     const DataLabelSettings(isVisible: true),
-                                innerRadius: '50%',
+                                innerRadius: '60%',
                               )
                             ],
                           ),
@@ -241,7 +293,7 @@ class _DepensePageState extends State<DepensePage> {
           Expanded(
             child: SizedBox(
               child: FutureBuilder<List<RechercheDepense>>(
-                future: fetchExpensesFromFirestore(),
+                future: listDepense(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(
@@ -257,351 +309,164 @@ class _DepensePageState extends State<DepensePage> {
                       itemCount: listDepense!.length,
                       itemBuilder: (context, index) {
                         RechercheDepense depense = listDepense[index];
-                        return Dismissible(
-                          key: Key(depense.nom_depense),
-                          direction: DismissDirection.endToStart,
-                          background: Container(
-                            color: Colors.red,
-                            alignment: Alignment.centerRight,
-                            padding: const EdgeInsets.only(right: 20.0),
-                            child:
-                                const Icon(Icons.delete, color: Colors.white),
+                        return Container(
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 15, vertical: 5),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey, width: 1.0),
+                            borderRadius: BorderRadius.circular(10.0),
                           ),
-                          confirmDismiss: (direction) async {
-                            return await showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: const Text("Confirmation"),
-                                  content: const Text(
-                                      "Voulez-vous vraiment supprimer la depense ?"),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      onPressed: () =>
-                                          Navigator.of(context).pop(false),
-                                      child: const Text("Annuler"),
-                                    ),
-                                    TextButton(
-                                      onPressed: () =>
-                                          Navigator.of(context).pop(true),
-                                      child: const Text("Supprimer"),
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                          },
-                          onDismissed: (direction) {
-                            // Supprimer la dépense de la base de données
-                            supprimerDepense(depense.nom_depense);
-                          },
-                          child: ListTile(
-                            onTap: () {
-                              showDialog(
+                          child: Dismissible(
+                            key: Key(depense.nom_depense),
+                            direction: DismissDirection.endToStart,
+                            background: Container(
+                              color: Colors.red,
+                              alignment: Alignment.centerRight,
+                              padding: const EdgeInsets.only(right: 20.0),
+                              child:
+                                  const Icon(Icons.delete, color: Colors.white),
+                            ),
+                            confirmDismiss: (direction) async {
+                              return await showDialog(
                                 context: context,
                                 builder: (BuildContext context) {
-                                  String newNomDepense = depense.nom_depense;
-                                  String newPrix = depense.prix.toString();
-                                  return StatefulBuilder(
-                                    builder: (BuildContext context,
-                                        StateSetter setState) {
-                                      return AlertDialog(
-                                        title:
-                                            const Text("Modifier la dépense"),
-                                        content: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            TextField(
-                                              decoration: const InputDecoration(
-                                                  labelText:
-                                                      'Nom de la dépense'),
-                                              onChanged: (value) {
-                                                setState(() {
-                                                  newNomDepense = value;
-                                                });
-                                              },
-                                              controller: TextEditingController(
-                                                  text: newNomDepense),
-                                            ),
-                                            TextField(
-                                              decoration: const InputDecoration(
-                                                  labelText: 'Montant'),
-                                              onChanged: (value) {
-                                                setState(() {
-                                                  newPrix = value;
-                                                });
-                                              },
-                                              controller: TextEditingController(
-                                                  text: newPrix),
-                                            ),
-                                          ],
-                                        ),
-                                        actions: <Widget>[
-                                          TextButton(
-                                            onPressed: () {
-                                              Navigator.of(context).pop();
-                                            },
-                                            child: const Text("Annuler"),
-                                          ),
-                                          TextButton(
-                                            onPressed: () {
-                                              double newPrice =
-                                                  double.tryParse(newPrix) ??
-                                                      0.0;
-                                              updateDepensePrix(
-                                                  depense.nom_depense,
-                                                  newPrice /*,
-                                                  newNomDepense*/
-                                                  );
-                                              Navigator.of(context).pop();
-                                            },
-                                            child: const Text("Confirmer"),
-                                          ),
-                                        ],
-                                      );
-                                    },
+                                  return AlertDialog(
+                                    title: const Text("Confirmation"),
+                                    content: const Text(
+                                        "Voulez-vous vraiment supprimer la depense ?"),
+                                    actions: <Widget>[
+                                      TextButton(
+                                        onPressed: () =>
+                                            Navigator.of(context).pop(false),
+                                        child: const Text("Annuler"),
+                                      ),
+                                      TextButton(
+                                        onPressed: () =>
+                                            Navigator.of(context).pop(true),
+                                        child: const Text("Supprimer"),
+                                      ),
+                                    ],
                                   );
                                 },
                               );
                             },
-                            leading: const Icon(Icons.money),
-                            title: Text(depense.nom_depense),
-                            trailing: SizedBox(
-                              width: 100,
-                              child: Text(
-                                depense.prix.toString(),
+                            onDismissed: (direction) {
+                              // Supprimer la dépense de la base de données
+                              supprimerDepense(depense.nom_depense);
+                            },
+                            child: ListTile(
+                              onTap: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    String newNomDepense = depense.nom_depense;
+                                    String newPrix = depense.prix.toString();
+                                    final nomDepenseController =
+                                        TextEditingController(
+                                            text: newNomDepense);
+                                    final prixController =
+                                        TextEditingController(text: newPrix);
+
+                                    return StatefulBuilder(
+                                      builder: (BuildContext context,
+                                          StateSetter setState) {
+                                        return AlertDialog(
+                                          title:
+                                              const Text("Modifier la dépense"),
+                                          content: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              TextField(
+                                                decoration:
+                                                    const InputDecoration(
+                                                  labelText:
+                                                      'Nom de la dépense',
+                                                ),
+                                                controller:
+                                                    nomDepenseController,
+                                              ),
+                                              TextField(
+                                                decoration:
+                                                    const InputDecoration(
+                                                  labelText: 'Montant',
+                                                ),
+                                                controller: prixController,
+                                                keyboardType:
+                                                    const TextInputType
+                                                        .numberWithOptions(
+                                                        decimal: true),
+                                              ),
+                                            ],
+                                          ),
+                                          actions: <Widget>[
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                              child: const Text("Annuler"),
+                                            ),
+                                            TextButton(
+                                              onPressed: () {
+                                                String newNomDepense =
+                                                    nomDepenseController.text;
+                                                String newPrix =
+                                                    prixController.text;
+                                                double newPrice =
+                                                    double.tryParse(newPrix) ??
+                                                        0.0;
+                                                updateDepensePrix(
+                                                    depense.nom_depense,
+                                                    newPrice /*,
+                                                  newNomDepense*/
+                                                    );
+                                                Navigator.of(context).pop();
+                                              },
+                                              child: const Text("Confirmer"),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  },
+                                );
+                              },
+                              leading: Icon(
+                                icons[depense.Icon],
+                                color: Color(
+                                    int.parse('0xff' + depense.CouleurIcon)),
+                              ),
+                              title: Text(
+                                depense.nom_depense,
                                 style: const TextStyle(
                                   fontSize: 18,
                                 ),
                               ),
-                            ),
-                          ),
-
-                          /*child: ListTile(
-                            leading: const Icon(Icons.money),
-                            title: Text(depense.nom_depense),
-                            trailing: SizedBox(
-                              width: 100,
-                              child: TextFormField(
-                                initialValue: depense.prix.toString(),
-                                onChanged: (newValue) {
-                                  // Mettre à jour la valeur dans la base de données
-                                  double newPrice =
-                                      double.tryParse(newValue) ?? 0.0;
-                                  updateDepensePrix(
-                                      depense.nom_depense, newPrice);
-                                  // ou dans une liste temporaire selon vos besoins
-                                  print(newValue);
-                                },
-                              ),
-                            ),
-                          ),*/
-                        );
-                      },
-                    );
-                  }
-                },
-              ),
-            ),
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => AjouterDepensePage()),
-          );
-        },
-        label: const Text('Ajouter des dépenses'),
-        backgroundColor: Colors.indigoAccent,
-      ),
-    );
-  }
-
-  double calculateTotalValue(List<ChartData> data) {
-    double total = 0;
-    for (var item in data) {
-      total += item.y;
-    }
-    return double.parse(total.toStringAsFixed(2));
-  }
-}
-/*
-class DepensePage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Expanded(
-            child: FutureBuilder<List<ChartData>>(
-              future: fetchChartDataFromFirestore(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                } else if (snapshot.hasError) {
-                  return Center(
-                    child: Text('Erreur: ${snapshot.error}'),
-                  );
-                } else {
-                  List<ChartData>? chartDataList = snapshot.data;
-                  double totalValue = calculateTotalValue(chartDataList!);
-                  return Stack(
-                    children: [
-                      if (chartDataList.isEmpty)
-                        const Center(
-                          child: Text(
-                            'Veuillez ajouter des dépenses pour commencer a voir le graphique et les dépenses.',
-                            style: TextStyle(
-                                color: Colors.red,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20),
-                          ),
-                        )
-                      else
-                        Center(
-                          child: SfCircularChart(
-                            series: <CircularSeries>[
-                              DoughnutSeries<ChartData, String>(
-                                dataSource: chartDataList,
-                                xValueMapper: (ChartData data, _) => data.x,
-                                yValueMapper: (ChartData data, _) => data.y,
-                                dataLabelSettings:
-                                    const DataLabelSettings(isVisible: true),
-                                innerRadius: '50%',
-                              )
-                            ],
-                          ),
-                        ),
-                      if (chartDataList.isEmpty)
-                        const Center(
-                          child: Text(
-                            'Veuillez ajouter des dépenses pour commencer a voir le graphique et les dépenses.',
-                            style: TextStyle(
-                                color: Colors.red,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20),
-                          ),
-                        )
-                      else
-                        Center(
-                          child: Text(
-                            '$totalValue',
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                    ],
-                  );
-                }
-              },
-            ),
-          ),
-          Expanded(
-            child: SizedBox(
-              child: FutureBuilder<List<RechercheDepense>>(
-                future: fetchExpensesFromFirestore(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  } else if (snapshot.hasError) {
-                    return Center(
-                      child: Text('Erreur: ${snapshot.error}'),
-                    );
-                  } else {
-                    List<RechercheDepense>? listDepense = snapshot.data;
-                    return ListView.builder(
-                      itemCount: listDepense!.length,
-                      itemBuilder: (context, index) {
-                        RechercheDepense depense = listDepense[index];
-                        return Dismissible(
-                          key: Key(depense.nom_depense),
-                          direction: DismissDirection.endToStart,
-                          background: Container(
-                            color: Colors.red,
-                            alignment: Alignment.centerRight,
-                            padding: const EdgeInsets.only(right: 20.0),
-                            child:
-                                const Icon(Icons.delete, color: Colors.white),
-                          ),
-                          confirmDismiss: (direction) async {
-                            return await showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: const Text("Confirmation"),
-                                  content: const Text(
-                                      "Voulez-vous vraiment supprimer la depense ?"),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      onPressed: () =>
-                                          Navigator.of(context).pop(false),
-                                      child: const Text("Annuler"),
+                              trailing: SizedBox(
+                                width:
+                                    120, // Increased width to accommodate the euro sign
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    Text(
+                                      depense.prix.toString(),
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                      ),
                                     ),
-                                    TextButton(
-                                      onPressed: () =>
-                                          Navigator.of(context).pop(true),
-                                      child: const Text("Supprimer"),
+                                    const Text(
+                                      '€',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                      ),
                                     ),
                                   ],
-                                );
-                              },
-                            );
-                          },
-                          onDismissed: (direction) {
-                            // Supprimer la dépense de la base de données
-                            supprimerDepense(depense.nom_depense);
-                          },
-                          child: ListTile(
-                            leading: const Icon(Icons.money),
-                            title: Text(depense.nom_depense),
-                            trailing: SizedBox(
-                              width: 100,
-                              child: TextFormField(
-                                initialValue: depense.prix.toString(),
-                                onChanged: (newValue) {
-                                  // Mettre à jour la valeur dans la base de données
-                                  double newPrice =
-                                      double.tryParse(newValue) ?? 0.0;
-                                  updateDepensePrix(
-                                      depense.nom_depense, newPrice);
-                                  // ou dans une liste temporaire selon vos besoins
-                                  print(newValue);
-                                },
+                                ),
                               ),
                             ),
                           ),
                         );
                       },
                     );
-                    /*return ListView.builder(
-                      itemCount: listDepense!.length,
-                      itemBuilder: (context, index) {
-                        RechercheDepense expense = listDepense[index];
-                        return ListTile(
-                          leading: Icon(Icons.money),
-                          title: Text(expense.nom_depense),
-                          trailing: SizedBox(
-                            width: 100,
-                            child: TextFormField(
-                              initialValue: expense.prix.toString(),
-                              onChanged: (newValue) {
-                                // Mettre à jour la valeur dans la base de données
-                                // ou dans une liste temporaire selon vos besoins
-                              },
-                            ),
-                          ),
-                        );
-                      },
-                    );*/
                   }
                 },
               ),
@@ -629,17 +494,7 @@ class DepensePage extends StatelessWidget {
     }
     return double.parse(total.toStringAsFixed(2));
   }
-
-  Future<void> refreshData() async {
-  List<ChartData> updatedChartDataList = await fetchChartDataFromFirestore();
-  List<RechercheDepense> updatedListDepense = await fetchExpensesFromFirestore();
-  
-  setState(() {
-    chartDataList = updatedChartDataList;
-    listDepense = updatedListDepense;
-  });
 }
-}*/
 
 class RevenuePage extends StatelessWidget {
   @override

@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 
 // Ajoutez une dépense en Base de données
 Future<void> ajoutDepense(String userId, String nomDepense, double prix,
@@ -25,13 +24,14 @@ Future<void> ajoutDepense(String userId, String nomDepense, double prix,
 }
 
 class ChartData {
-  ChartData(this.x, this.y);
+  ChartData(this.x, this.y, this.color);
   final String x;
   final double y;
+  final String color;
 }
 
 // Récupérez les données de dépenses depuis Firestore pour un utilisateur connecté
-Future<List<ChartData>> fetchChartDataFromFirestore() async {
+Future<List<ChartData>> listDepenseChartDataList() async {
   List<ChartData> chartDataList = [];
   try {
     User? user = FirebaseAuth.instance.currentUser;
@@ -43,7 +43,8 @@ Future<List<ChartData>> fetchChartDataFromFirestore() async {
           .get();
       querySnapshot.docs.forEach((doc) {
         double prix = doc['prix'] ?? 0.0;
-        chartDataList.add(ChartData(doc['nom_depense'], prix));
+        String CouleurIcon = doc['couleur_icon'];
+        chartDataList.add(ChartData(doc['nom_depense'], prix, CouleurIcon));
       });
     }
   } catch (e) {
@@ -55,17 +56,19 @@ Future<List<ChartData>> fetchChartDataFromFirestore() async {
 class RechercheDepense {
   final String nom_depense;
   final double prix;
-  final String? Icon;
+  final String Icon;
+  var CouleurIcon;
 
   RechercheDepense({
     required this.nom_depense,
     required this.prix,
-    this.Icon,
+    required this.Icon,
+    required this.CouleurIcon,
   });
 }
 
 //recuperer les depenses de la base de données
-Future<List<RechercheDepense>> fetchExpensesFromFirestore() async {
+Future<List<RechercheDepense>> listDepense() async {
   List<RechercheDepense> listDepense = [];
   try {
     User? user = FirebaseAuth.instance.currentUser;
@@ -80,6 +83,7 @@ Future<List<RechercheDepense>> fetchExpensesFromFirestore() async {
           nom_depense: doc['nom_depense'],
           prix: doc['prix'],
           Icon: doc['icon_url'],
+          CouleurIcon: doc['couleur_icon'],
         );
         listDepense.add(depense);
       });
