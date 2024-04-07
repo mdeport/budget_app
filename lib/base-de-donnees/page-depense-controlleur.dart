@@ -9,8 +9,7 @@ Future<void> ajoutDepense(String userId, String nomDepense, double prix,
         .collection('depense')
         .doc(userId)
         .collection('depenses')
-        .doc(nomDepense)
-        .set({
+        .add({
       'user_id': userId,
       'nom_depense': nomDepense,
       'prix': prix,
@@ -58,12 +57,14 @@ class RechercheDepense {
   final double prix;
   final String Icon;
   var CouleurIcon;
+  final String docId;
 
   RechercheDepense({
     required this.nom_depense,
     required this.prix,
     required this.Icon,
     required this.CouleurIcon,
+    required this.docId,
   });
 }
 
@@ -84,6 +85,7 @@ Future<List<RechercheDepense>> listDepense() async {
           prix: doc['prix'],
           Icon: doc['icon_url'],
           CouleurIcon: doc['couleur_icon'],
+          docId: doc.id,
         );
         listDepense.add(depense);
       });
@@ -95,14 +97,14 @@ Future<List<RechercheDepense>> listDepense() async {
 }
 
 // Supprimer une dépense de la base de données
-Future<void> supprimerDepense(String nomDepense) async {
+Future<void> supprimerDepense(String docId) async {
   User? user = FirebaseAuth.instance.currentUser;
   try {
     final depenseRef = FirebaseFirestore.instance
         .collection('depense')
         .doc(user?.uid)
         .collection('depenses')
-        .doc(nomDepense);
+        .doc(docId);
 
     await depenseRef.delete();
     print('L\'élément a été supprimé avec succès');
@@ -113,23 +115,18 @@ Future<void> supprimerDepense(String nomDepense) async {
 
 // Mettre à jour le prix et le nom d'une dépense dans la base de données
 Future<void> updateDepensePrix(
-    String nomDepense, double newPrix /*, String newNomDepense*/) async {
+    double newPrix, String docId, String newNomDepense) async {
   User? user = FirebaseAuth.instance.currentUser;
   try {
-    // Référence à l'élément à mettre à jour
     final depenseRef = FirebaseFirestore.instance
         .collection('depense')
         .doc(user?.uid)
         .collection('depenses')
-        .doc(nomDepense);
+        .doc(docId);
 
-    // Mise à jour du prix de la dépense
-    await depenseRef.update({
-      'prix': newPrix, /*'nom_depense': newNomDepense*/
-    });
+    await depenseRef.update({'prix': newPrix, 'nom_depense': newNomDepense});
     print('Le prix de la dépense a été mis à jour avec succès');
   } catch (error) {
     print('Erreur lors de la mise à jour du prix de la dépense: $error');
-    // Gérer l'erreur selon vos besoins
   }
 }

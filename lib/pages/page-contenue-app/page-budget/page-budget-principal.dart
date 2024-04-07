@@ -8,6 +8,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:flutter/material.dart';
 
+// ignore: camel_case_types
 class Page_budget_principal extends StatefulWidget {
   const Page_budget_principal({super.key});
 
@@ -15,13 +16,14 @@ class Page_budget_principal extends StatefulWidget {
   State<Page_budget_principal> createState() => _Page_budget_principalState();
 }
 
+// ignore: camel_case_types
 class _Page_budget_principalState extends State<Page_budget_principal> {
   int _selectedIndex = 0;
 
   final List<Widget> _pages = [
-    DepensePage(),
-    RevenuePage(),
-    ObjectifPage(),
+    const DepensePage(),
+    const RevenuePage(),
+    const ObjectifPage(),
   ];
 
   @override
@@ -313,8 +315,17 @@ class _DepensePageState extends State<DepensePage> {
                           margin: const EdgeInsets.symmetric(
                               horizontal: 15, vertical: 5),
                           decoration: BoxDecoration(
+                            color: Colors.white,
                             border: Border.all(color: Colors.grey, width: 1.0),
                             borderRadius: BorderRadius.circular(10.0),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.4),
+                                spreadRadius: 2,
+                                blurRadius: 7,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
                           ),
                           child: Dismissible(
                             key: Key(depense.nom_depense),
@@ -352,7 +363,7 @@ class _DepensePageState extends State<DepensePage> {
                             },
                             onDismissed: (direction) {
                               // Supprimer la dépense de la base de données
-                              supprimerDepense(depense.nom_depense);
+                              supprimerDepense(depense.docId);
                             },
                             child: ListTile(
                               onTap: () {
@@ -415,10 +426,9 @@ class _DepensePageState extends State<DepensePage> {
                                                     double.tryParse(newPrix) ??
                                                         0.0;
                                                 updateDepensePrix(
-                                                    depense.nom_depense,
-                                                    newPrice /*,
-                                                  newNomDepense*/
-                                                    );
+                                                    newPrice,
+                                                    depense.docId,
+                                                    newNomDepense);
                                                 Navigator.of(context).pop();
                                               },
                                               child: const Text("Confirmer"),
@@ -442,8 +452,7 @@ class _DepensePageState extends State<DepensePage> {
                                 ),
                               ),
                               trailing: SizedBox(
-                                width:
-                                    120, // Increased width to accommodate the euro sign
+                                width: 120,
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
@@ -481,7 +490,8 @@ class _DepensePageState extends State<DepensePage> {
             MaterialPageRoute(builder: (context) => AjouterDepensePage()),
           );
         },
-        label: const Text('Ajouter des dépenses'),
+        label: const Text('Ajouter des dépenses',
+            style: TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: Colors.indigoAccent,
       ),
     );
@@ -497,6 +507,8 @@ class _DepensePageState extends State<DepensePage> {
 }
 
 class RevenuePage extends StatelessWidget {
+  const RevenuePage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return const Center(
@@ -506,6 +518,8 @@ class RevenuePage extends StatelessWidget {
 }
 
 class ObjectifPage extends StatelessWidget {
+  const ObjectifPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return const Center(

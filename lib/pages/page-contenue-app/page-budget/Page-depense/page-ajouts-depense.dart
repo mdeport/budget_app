@@ -78,8 +78,24 @@ class _AjouterDepensePageState extends State<AjouterDepensePage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Ajouter une dépense'),
-        backgroundColor: Colors.indigo,
+        title: const Text('Ajouter une dépense',
+            style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+                fontSize: 23)),
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Color.fromARGB(255, 21, 41, 255),
+                Color.fromARGB(234, 91, 230, 255),
+                Color.fromARGB(197, 91, 230, 255),
+              ],
+            ),
+          ),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -124,15 +140,22 @@ class _AjouterDepensePageState extends State<AjouterDepensePage> {
               itemCount: displayedIcons.length,
               itemBuilder: (context, index) {
                 final icon = displayedIcons[index];
-                return IconButton(
-                  icon: Icon(icon, color: selectedColor),
-                  onPressed: () {
+                return GestureDetector(
+                  onTap: () {
                     setState(() {
                       selectedIcon = icon;
                       chosenIcon = icon;
                     });
                   },
-                  color: selectedIcon == icon ? Colors.indigo : Colors.grey,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.all(Radius.circular(25)),
+                      color: selectedIcon == icon
+                          ? Colors.indigo.withOpacity(0.2)
+                          : null,
+                    ),
+                    child: Icon(icon, color: selectedColor),
+                  ),
                 );
               },
             ),
