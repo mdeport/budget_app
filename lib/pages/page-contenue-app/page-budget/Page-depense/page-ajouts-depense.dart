@@ -1,8 +1,8 @@
 import 'package:application_budget_app/pages/page-contenue-app/page-budget/page-budget-principal.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:application_budget_app/base-de-donnees/page-depense-controlleur.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
+import 'package:application_budget_app/base-de-donnees/list-icon.dart';
 import 'package:flutter/material.dart';
 
 class AjouterDepensePage extends StatefulWidget {
@@ -19,55 +19,6 @@ class _AjouterDepensePageState extends State<AjouterDepensePage> {
 
   TextEditingController prixControlleur = TextEditingController();
   TextEditingController nomDepenseControlleur = TextEditingController();
-
-  List<IconData> depenseIcons = [
-    FontAwesomeIcons.shoppingBasket,
-    FontAwesomeIcons.car,
-    FontAwesomeIcons.utensils,
-    FontAwesomeIcons.home,
-    FontAwesomeIcons.heart,
-    FontAwesomeIcons.medkit,
-    FontAwesomeIcons.paw,
-    FontAwesomeIcons.bolt,
-    FontAwesomeIcons.book,
-    FontAwesomeIcons.briefcase,
-    FontAwesomeIcons.bus,
-    FontAwesomeIcons.plane,
-    FontAwesomeIcons.coffee,
-    FontAwesomeIcons.creditCard,
-    FontAwesomeIcons.cut,
-    FontAwesomeIcons.bed,
-    FontAwesomeIcons.dumbbell,
-    FontAwesomeIcons.cocktail,
-    FontAwesomeIcons.fileInvoiceDollar,
-    FontAwesomeIcons.gasPump,
-    FontAwesomeIcons.graduationCap,
-    FontAwesomeIcons.hamburger,
-    FontAwesomeIcons.heartbeat,
-    FontAwesomeIcons.mortarPestle,
-    FontAwesomeIcons.music,
-    FontAwesomeIcons.paintBrush,
-    FontAwesomeIcons.paperPlane,
-    FontAwesomeIcons.pencilAlt,
-    FontAwesomeIcons.phone,
-    FontAwesomeIcons.running,
-    FontAwesomeIcons.snowflake,
-    FontAwesomeIcons.smoking,
-    FontAwesomeIcons.shoppingBag,
-    FontAwesomeIcons.spa,
-    FontAwesomeIcons.suitcase,
-    FontAwesomeIcons.sun,
-    FontAwesomeIcons.swimmingPool,
-    FontAwesomeIcons.taxi,
-    FontAwesomeIcons.ticketAlt,
-    FontAwesomeIcons.train,
-    FontAwesomeIcons.tree,
-    FontAwesomeIcons.tv,
-    FontAwesomeIcons.wineBottle,
-    FontAwesomeIcons.wallet,
-    FontAwesomeIcons.video,
-    FontAwesomeIcons.shoppingCart,
-  ];
 
   bool showAllIcons = false;
 
@@ -309,52 +260,3 @@ class _AjouterDepensePageState extends State<AjouterDepensePage> {
     );
   }
 }
-
-Map<IconData, String> iconNames = {
-  FontAwesomeIcons.shoppingBasket: 'shopping_basket',
-  FontAwesomeIcons.car: 'car',
-  FontAwesomeIcons.utensils: 'utensils',
-  FontAwesomeIcons.home: 'home',
-  FontAwesomeIcons.heart: 'heart',
-  FontAwesomeIcons.medkit: 'medkit',
-  FontAwesomeIcons.paw: 'paw',
-  FontAwesomeIcons.bolt: 'bolt',
-  FontAwesomeIcons.book: 'book',
-  FontAwesomeIcons.briefcase: 'briefcase',
-  FontAwesomeIcons.bus: 'bus',
-  FontAwesomeIcons.plane: 'plane',
-  FontAwesomeIcons.coffee: 'coffee',
-  FontAwesomeIcons.creditCard: 'credit_card',
-  FontAwesomeIcons.cut: 'cut',
-  FontAwesomeIcons.bed: 'bed',
-  FontAwesomeIcons.dumbbell: 'dumbbell',
-  FontAwesomeIcons.cocktail: 'cocktail',
-  FontAwesomeIcons.fileInvoiceDollar: 'file_invoice_dollar',
-  FontAwesomeIcons.gasPump: 'gas_pump',
-  FontAwesomeIcons.graduationCap: 'graduation_cap',
-  FontAwesomeIcons.hamburger: 'hamburger',
-  FontAwesomeIcons.heartbeat: 'heartbeat',
-  FontAwesomeIcons.mortarPestle: 'mortar_pestle',
-  FontAwesomeIcons.music: 'music',
-  FontAwesomeIcons.paintBrush: 'paint_brush',
-  FontAwesomeIcons.paperPlane: 'paper_plane',
-  FontAwesomeIcons.pencilAlt: 'pencil_alt',
-  FontAwesomeIcons.phone: 'phone',
-  FontAwesomeIcons.running: 'running',
-  FontAwesomeIcons.snowflake: 'snowflake',
-  FontAwesomeIcons.smoking: 'smoking',
-  FontAwesomeIcons.shoppingBag: 'shopping_bag',
-  FontAwesomeIcons.spa: 'spa',
-  FontAwesomeIcons.suitcase: 'suitcase',
-  FontAwesomeIcons.sun: 'sun',
-  FontAwesomeIcons.swimmingPool: 'swimming_pool',
-  FontAwesomeIcons.taxi: 'taxi',
-  FontAwesomeIcons.ticketAlt: 'ticket_alt',
-  FontAwesomeIcons.train: 'train',
-  FontAwesomeIcons.tree: 'tree',
-  FontAwesomeIcons.tv: 'tv',
-  FontAwesomeIcons.wineBottle: 'wine_bottle',
-  FontAwesomeIcons.wallet: 'wallet',
-  FontAwesomeIcons.video: 'video',
-  FontAwesomeIcons.shoppingCart: 'shopping_cart',
-};

@@ -3,6 +3,7 @@ import 'package:application_budget_app/pages/page-contenue-app/page-accueil/page
 import 'package:application_budget_app/pages/page-contenue-app/page-conseil/page-conseil-principal.dart';
 import 'package:application_budget_app/pages/page-contenue-app/page-parametre/page-parametre-principal.dart';
 import 'package:application_budget_app/pages/page-contenue-app/page-budget/Page-depense/page-ajouts-depense.dart';
+import 'package:application_budget_app/base-de-donnees/list-icon.dart';
 import 'package:application_budget_app/base-de-donnees/page-depense-controlleur.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -167,55 +168,6 @@ class DepensePage extends StatefulWidget {
 }
 
 class _DepensePageState extends State<DepensePage> {
-  final icons = {
-    'shoppingBasket': FontAwesomeIcons.shoppingBasket,
-    'car': FontAwesomeIcons.car,
-    'utensils': FontAwesomeIcons.utensils,
-    'home': FontAwesomeIcons.home,
-    'heart': FontAwesomeIcons.heart,
-    'medkit': FontAwesomeIcons.medkit,
-    'paw': FontAwesomeIcons.paw,
-    'bolt': FontAwesomeIcons.bolt,
-    'book': FontAwesomeIcons.book,
-    'briefcase': FontAwesomeIcons.briefcase,
-    'bus': FontAwesomeIcons.bus,
-    'plane': FontAwesomeIcons.plane,
-    'coffee': FontAwesomeIcons.coffee,
-    'creditCard': FontAwesomeIcons.creditCard,
-    'cut': FontAwesomeIcons.cut,
-    'bed': FontAwesomeIcons.bed,
-    'dumbbell': FontAwesomeIcons.dumbbell,
-    'cocktail': FontAwesomeIcons.cocktail,
-    'fileInvoiceDollar': FontAwesomeIcons.fileInvoiceDollar,
-    'gasPump': FontAwesomeIcons.gasPump,
-    'graduationCap': FontAwesomeIcons.graduationCap,
-    'hamburger': FontAwesomeIcons.hamburger,
-    'heartbeat': FontAwesomeIcons.heartbeat,
-    'mortarPestle': FontAwesomeIcons.mortarPestle,
-    'music': FontAwesomeIcons.music,
-    'paintBrush': FontAwesomeIcons.paintBrush,
-    'paperPlane': FontAwesomeIcons.paperPlane,
-    'pencilAlt': FontAwesomeIcons.pencilAlt,
-    'phone': FontAwesomeIcons.phone,
-    'running': FontAwesomeIcons.running,
-    'snowflake': FontAwesomeIcons.snowflake,
-    'smoking': FontAwesomeIcons.smoking,
-    'shoppingBag': FontAwesomeIcons.shoppingBag,
-    'spa': FontAwesomeIcons.spa,
-    'suitcase': FontAwesomeIcons.suitcase,
-    'sun': FontAwesomeIcons.sun,
-    'swimmingPool': FontAwesomeIcons.swimmingPool,
-    'taxi': FontAwesomeIcons.taxi,
-    'ticketAlt': FontAwesomeIcons.ticketAlt,
-    'train': FontAwesomeIcons.train,
-    'tree': FontAwesomeIcons.tree,
-    'tv': FontAwesomeIcons.tv,
-    'wineBottle': FontAwesomeIcons.wineBottle,
-    'wallet': FontAwesomeIcons.wallet,
-    'video': FontAwesomeIcons.video,
-    'shoppingCart': FontAwesomeIcons.shoppingCart,
-  };
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
