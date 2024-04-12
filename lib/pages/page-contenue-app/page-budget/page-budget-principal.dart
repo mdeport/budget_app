@@ -350,6 +350,7 @@ class _DepensePageState extends State<DepensePage> {
                             onDismissed: (direction) {
                               // Supprimer la dépense de la base de données
                               supprimerDepense(depense.docId);
+                              _refreshData();
                             },
                             child: ListTile(
                               onTap: () {
