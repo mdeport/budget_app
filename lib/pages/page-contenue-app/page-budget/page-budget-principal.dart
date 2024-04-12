@@ -5,7 +5,6 @@ import 'package:application_budget_app/pages/page-contenue-app/page-parametre/pa
 import 'package:application_budget_app/pages/page-contenue-app/page-budget/Page-depense/page-ajouts-depense.dart';
 import 'package:application_budget_app/base-de-donnees/list-icon.dart';
 import 'package:application_budget_app/base-de-donnees/page-depense-controlleur.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:flutter/material.dart';
 
@@ -168,6 +167,19 @@ class DepensePage extends StatefulWidget {
 }
 
 class _DepensePageState extends State<DepensePage> {
+  bool dataEmpty = true;
+  @override
+  void initState() {
+    super.initState();
+    listDepenseChartDataList();
+  }
+
+  Future<void> _refreshData() async {
+    setState(() {
+      listDepenseChartDataList();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -189,6 +201,7 @@ class _DepensePageState extends State<DepensePage> {
                 } else {
                   List<ChartData>? chartDataList = snapshot.data;
                   double totalValue = calculateTotalValue(chartDataList!);
+                  dataEmpty = chartDataList.isEmpty;
                   return Stack(
                     children: [
                       if (chartDataList.isEmpty)
@@ -214,7 +227,7 @@ class _DepensePageState extends State<DepensePage> {
                                 dataLabelSettings:
                                     const DataLabelSettings(isVisible: true),
                                 innerRadius: '60%',
-                              )
+                              ),
                             ],
                           ),
                         ),
@@ -244,6 +257,7 @@ class _DepensePageState extends State<DepensePage> {
               },
             ),
           ),
+          /*
           const Padding(
             padding: EdgeInsets.only(left: 20.0),
             child: Text(
@@ -263,7 +277,7 @@ class _DepensePageState extends State<DepensePage> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-          ),
+          ),*/
           Expanded(
             child: SizedBox(
               child: FutureBuilder<List<RechercheDepense>>(
@@ -402,6 +416,7 @@ class _DepensePageState extends State<DepensePage> {
                                                     depense.docId,
                                                     newNomDepense);
                                                 Navigator.of(context).pop();
+                                                _refreshData();
                                               },
                                               child: const Text("Confirmer"),
                                             ),
