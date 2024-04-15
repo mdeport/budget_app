@@ -1,16 +1,16 @@
 import 'package:application_budget_app/pages/page-contenue-app/page-budget/page-budget-principal.dart';
-import 'package:application_budget_app/base-de-donnees/page-depense-controlleur.dart';
+import 'package:application_budget_app/base-de-donnees/page-revenu-controlleur.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
-import 'package:application_budget_app/base-de-donnees/Icons/list-icon-depense.dart';
+import 'package:application_budget_app/base-de-donnees/Icons/list-icon-revenu.dart';
 import 'package:flutter/material.dart';
 
-class AjouterDepensePage extends StatefulWidget {
+class AjouterRevenuPage extends StatefulWidget {
   @override
-  _AjouterDepensePageState createState() => _AjouterDepensePageState();
+  _AjouterRevenuPage createState() => _AjouterRevenuPage();
 }
 
-class _AjouterDepensePageState extends State<AjouterDepensePage> {
+class _AjouterRevenuPage extends State<AjouterRevenuPage> {
   IconData selectedIcon = Icons.shopping_basket;
   Color selectedColor = Colors.blue;
   IconData? chosenIcon;
@@ -18,18 +18,18 @@ class _AjouterDepensePageState extends State<AjouterDepensePage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   TextEditingController prixControlleur = TextEditingController();
-  TextEditingController nomDepenseControlleur = TextEditingController();
+  TextEditingController nomRevenuControlleur = TextEditingController();
 
   bool showAllIcons = false;
 
   @override
   Widget build(BuildContext context) {
     List<IconData> displayedIcons =
-        showAllIcons ? depenseIcons : depenseIcons.take(10).toList();
+        showAllIcons ? revenuIcons : revenuIcons.take(10).toList();
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Ajouter une dépense',
+        title: const Text('Ajouter un revenu',
             style: TextStyle(
                 color: Colors.black,
                 fontWeight: FontWeight.bold,
@@ -192,7 +192,7 @@ class _AjouterDepensePageState extends State<AjouterDepensePage> {
             SizedBox(
               width: 300,
               child: TextField(
-                controller: nomDepenseControlleur,
+                controller: nomRevenuControlleur,
                 textAlign: TextAlign.center,
                 style: const TextStyle(fontSize: 18),
                 decoration: InputDecoration(
@@ -206,7 +206,7 @@ class _AjouterDepensePageState extends State<AjouterDepensePage> {
             const SizedBox(height: 40),
             ElevatedButton(
               onPressed: () {
-                if (nomDepenseControlleur.text.isEmpty ||
+                if (nomRevenuControlleur.text.isEmpty ||
                     prixControlleur.text.isEmpty ||
                     chosenIcon == null) {
                   // Afficher un message d'alerte si un champ est vide ou si aucune icône n'est choisie
@@ -220,26 +220,22 @@ class _AjouterDepensePageState extends State<AjouterDepensePage> {
                   // Tous les champs sont remplis, procéder à l'ajout de la dépense
                   User? user = _auth.currentUser;
                   String userId = user!.uid;
-                  String nomDepense = nomDepenseControlleur.text;
+                  String nomRevenue = nomRevenuControlleur.text;
                   double prix = double.parse(prixControlleur.text);
-                  String iconName = iconNames[chosenIcon!] ?? 'icon_inconnu';
+                  String iconName =
+                      iconNamesRevenu[chosenIcon!] ?? 'icon_inconnu';
                   String iconUrl = iconName;
                   String couleur = selectedColor.value.toRadixString(16);
                   print(
-                      'Ajout de la dépense: $nomDepense, $prix, $iconUrl, $couleur');
-                  ajoutDepense(
+                      'Ajout du revenu: $nomRevenue, $prix, $iconUrl, $couleur');
+                  ajoutRevenu(
                     userId,
-                    nomDepense,
+                    nomRevenue,
                     prix,
                     iconUrl,
                     couleur,
                   ).then((_) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const Page_budget_principal(),
-                      ),
-                    );
+                    Navigator.of(context).pop(true);
                   });
                 }
               },
