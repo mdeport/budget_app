@@ -1,4 +1,3 @@
-import 'package:application_budget_app/pages/page-contenue-app/page-budget/page-budget-principal.dart';
 import 'package:application_budget_app/base-de-donnees/page-revenu-controlleur.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
