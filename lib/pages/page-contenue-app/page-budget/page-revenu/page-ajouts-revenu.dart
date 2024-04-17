@@ -208,7 +208,6 @@ class _AjouterRevenuPage extends State<AjouterRevenuPage> {
                 if (nomRevenuControlleur.text.isEmpty ||
                     prixControlleur.text.isEmpty ||
                     chosenIcon == null) {
-                  // Afficher un message d'alerte si un champ est vide ou si aucune icône n'est choisie
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text(
@@ -216,11 +215,12 @@ class _AjouterRevenuPage extends State<AjouterRevenuPage> {
                     ),
                   );
                 } else {
-                  // Tous les champs sont remplis, procéder à l'ajout de la dépense
                   User? user = _auth.currentUser;
                   String userId = user!.uid;
                   String nomRevenue = nomRevenuControlleur.text;
-                  double prix = double.parse(prixControlleur.text);
+                  String prixSansVirgule =
+                      prixControlleur.text.replaceAll(",", ".");
+                  double prix = double.parse(prixSansVirgule);
                   String iconName =
                       iconNamesRevenu[chosenIcon!] ?? 'icon_inconnu';
                   String iconUrl = iconName;

@@ -49,55 +49,73 @@ class _RevenuePageState extends State<RevenuePage> {
                   dataEmpty = chartDataList.isEmpty;
                   return Stack(
                     children: [
-                      if (chartDataList.isEmpty)
-                        const Center(
-                          child: Text(
-                            'Veuillez ajouter des revenus pour commencer a voir le graphique et les revenus.',
-                            style: TextStyle(
-                                color: Colors.red,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20),
-                          ),
-                        )
-                      else
-                        Center(
-                          child: SfCircularChart(
-                            series: <CircularSeries>[
-                              DoughnutSeries<ChartDatarevenu, String>(
-                                dataSource: chartDataList,
-                                pointColorMapper: (ChartDatarevenu data, _) =>
-                                    Color(int.parse('0xff' + data.color)),
-                                xValueMapper: (ChartDatarevenu data, _) =>
-                                    data.x,
-                                yValueMapper: (ChartDatarevenu data, _) =>
-                                    data.y,
-                                dataLabelSettings:
-                                    const DataLabelSettings(isVisible: true),
-                                innerRadius: '60%',
+                      Center(
+                        child: chartDataList.isEmpty
+                            ? Container(
+                                padding: const EdgeInsets.all(20),
+                                margin: const EdgeInsets.all(20),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.5),
+                                      spreadRadius: 2,
+                                      blurRadius: 5,
+                                      offset: const Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: const Text(
+                                  'Aucun revenu enregistré.\n\nAjoutez des revenus pour voir votre graphique ainsi que votre liste de revenus.',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: Colors.red,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20,
+                                  ),
+                                ),
+                              )
+                            : Stack(
+                                children: [
+                                  Center(
+                                    child: SfCircularChart(
+                                      series: <CircularSeries>[
+                                        DoughnutSeries<ChartDatarevenu, String>(
+                                          dataSource: chartDataList,
+                                          pointColorMapper:
+                                              (ChartDatarevenu data, _) =>
+                                                  Color(int.parse(
+                                                      '0xff' + data.color)),
+                                          xValueMapper:
+                                              (ChartDatarevenu data, _) =>
+                                                  data.x,
+                                          yValueMapper:
+                                              (ChartDatarevenu data, _) =>
+                                                  data.y,
+                                          dataLabelSettings:
+                                              const DataLabelSettings(
+                                                  isVisible: true),
+                                          innerRadius: '60%',
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Positioned(
+                                    child: Center(
+                                      child: Text(
+                                        '$totalValue',
+                                        style: const TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                        ),
-                      if (chartDataList.isEmpty)
-                        const Center(
-                          child: Text(
-                            'Veuillez ajouter des revenus pour commencer a voir le graphique et les revenus.',
-                            style: TextStyle(
-                                color: Colors.red,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20),
-                          ),
-                        )
-                      else
-                        Center(
-                          child: Text(
-                            '$totalValue',
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
+                      ),
                     ],
                   );
                 }
@@ -195,7 +213,6 @@ class _RevenuePageState extends State<RevenuePage> {
                               );
                             },
                             onDismissed: (direction) {
-                              // Supprimer la dépense de la base de données
                               supprimerRevenu(revenu.docId);
                               refreshData();
                             },
@@ -224,8 +241,7 @@ class _RevenuePageState extends State<RevenuePage> {
                                               TextField(
                                                 decoration:
                                                     const InputDecoration(
-                                                  labelText:
-                                                      'Nom de la dépense',
+                                                  labelText: 'Nom du revenu',
                                                 ),
                                                 controller: nomRevenuController,
                                               ),
@@ -289,7 +305,11 @@ class _RevenuePageState extends State<RevenuePage> {
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
                                     Text(
-                                      revenu.prix.toString(),
+                                      revenu.prix.toStringAsFixed(
+                                          revenu.prix.truncateToDouble() ==
+                                                  revenu.prix
+                                              ? 0
+                                              : 2),
                                       style: const TextStyle(
                                         fontSize: 18,
                                       ),
@@ -319,8 +339,14 @@ class _RevenuePageState extends State<RevenuePage> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => AjouterRevenuPage()),
-          );
+            MaterialPageRoute(
+              builder: (context) => AjouterRevenuPage(),
+            ),
+          ).then((refresh) {
+            if (refresh != null && refresh) {
+              refreshData();
+            }
+          });
         },
         label: const Text('Ajouter des revenus',
             style: TextStyle(fontWeight: FontWeight.bold)),

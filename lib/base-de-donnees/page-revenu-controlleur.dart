@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-// Ajoutez une dépense en Base de données
+// Ajoutez un revenu en Base de données
 Future<void> ajoutRevenu(String userId, String nomRevenu, double prix,
     String IconUrl, String CouleurIcon) async {
   try {
@@ -18,7 +18,7 @@ Future<void> ajoutRevenu(String userId, String nomRevenu, double prix,
     });
     print('Expense added for user: $userId');
   } catch (e) {
-    print('Error ajout dépense: $e');
+    print('Error ajout revenu: $e');
   }
 }
 
@@ -29,7 +29,7 @@ class ChartDatarevenu {
   final String color;
 }
 
-// Récupérez les données de dépenses depuis Firestore pour un utilisateur connecté
+// Récupérez les données de revenu depuis Firestore pour un utilisateur connecté
 Future<List<ChartDatarevenu>> listRevenuChartDataList() async {
   List<ChartDatarevenu> chartDataList = [];
   try {
@@ -97,7 +97,7 @@ Future<List<RechercheRevenu>> listRevenu() async {
   return listRevenu;
 }
 
-// Supprimer une dépense de la base de données
+// Supprimer un revenu de la base de données
 Future<void> supprimerRevenu(String docId) async {
   User? user = FirebaseAuth.instance.currentUser;
   try {
@@ -114,7 +114,7 @@ Future<void> supprimerRevenu(String docId) async {
   }
 }
 
-// Mettre à jour le prix et le nom d'une dépense dans la base de données
+// Mettre à jour le prix et le nom d'un revenu dans la base de données
 Future<void> updateRevenuPrix(
     double newPrix, String docId, String newNomRevenu) async {
   User? user = FirebaseAuth.instance.currentUser;
@@ -126,8 +126,8 @@ Future<void> updateRevenuPrix(
         .doc(docId);
 
     await revenuRef.update({'prix': newPrix, 'nom_revenu': newNomRevenu});
-    print('Le prix de la dépense a été mis à jour avec succès');
+    print('Le prix du revenu a été mis à jour avec succès');
   } catch (error) {
-    print('Erreur lors de la mise à jour du prix de la dépense: $error');
+    print('Erreur lors de la mise à jour du prix du revenu: $error');
   }
 }
