@@ -122,27 +122,6 @@ class _RevenuePageState extends State<RevenuePage> {
               },
             ),
           ),
-          /*
-          const Padding(
-            padding: EdgeInsets.only(left: 20.0),
-            child: Text(
-              'Total des revenues :',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          const Padding(
-            padding: EdgeInsets.only(left: 20.0),
-            child: Text(
-              'Reste :',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),*/
           Expanded(
             child: SizedBox(
               child: FutureBuilder<List<RechercheRevenu>>(

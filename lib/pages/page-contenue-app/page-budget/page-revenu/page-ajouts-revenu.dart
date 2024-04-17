@@ -5,8 +5,10 @@ import 'package:application_budget_app/base-de-donnees/Icons/list-icon-revenu.da
 import 'package:flutter/material.dart';
 
 class AjouterRevenuPage extends StatefulWidget {
+  const AjouterRevenuPage({super.key});
+
   @override
-  _AjouterRevenuPage createState() => _AjouterRevenuPage();
+  State<AjouterRevenuPage> createState() => _AjouterRevenuPage();
 }
 
 class _AjouterRevenuPage extends State<AjouterRevenuPage> {
@@ -214,6 +216,12 @@ class _AjouterRevenuPage extends State<AjouterRevenuPage> {
                           'Veuillez remplir tous les champs et choisir une icône.'),
                     ),
                   );
+                } else if (double.tryParse(prixControlleur.text) == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text("Le montant n'est pas valide."),
+                    ),
+                  );
                 } else {
                   User? user = _auth.currentUser;
                   String userId = user!.uid;
@@ -225,8 +233,6 @@ class _AjouterRevenuPage extends State<AjouterRevenuPage> {
                       iconNamesRevenu[chosenIcon!] ?? 'icon_inconnu';
                   String iconUrl = iconName;
                   String couleur = selectedColor.value.toRadixString(16);
-                  print(
-                      'Ajout du revenu: $nomRevenue, $prix, $iconUrl, $couleur');
                   ajoutRevenu(
                     userId,
                     nomRevenue,
