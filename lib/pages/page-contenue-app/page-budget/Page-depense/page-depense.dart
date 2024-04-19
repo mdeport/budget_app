@@ -1,4 +1,5 @@
 import 'package:application_budget_app/pages/page-contenue-app/page-budget/Page-depense/page-ajouts-depense.dart';
+import 'package:application_budget_app/base-de-donnees/page-revenu-controlleur.dart';
 import 'package:application_budget_app/base-de-donnees/Icons/list-icon-depense.dart';
 import 'package:application_budget_app/base-de-donnees/page-depense-controlleur.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -12,16 +13,28 @@ class DepensePage extends StatefulWidget {
 }
 
 class _DepensePageState extends State<DepensePage> {
+  double totalRevenu = 0;
   bool dataEmpty = true;
   @override
   void initState() {
     super.initState();
-    listDepenseChartDataList();
+    fetchRevenus();
   }
 
   Future<void> _refreshData() async {
     setState(() {
       listDepenseChartDataList();
+    });
+  }
+
+  Future<void> fetchRevenus() async {
+    List<RechercheRevenu> revenus = await listRevenu();
+    double total = 0;
+    for (var revenu in revenus) {
+      total += revenu.prix;
+    }
+    setState(() {
+      totalRevenu = total;
     });
   }
 
@@ -45,84 +58,107 @@ class _DepensePageState extends State<DepensePage> {
                   );
                 } else {
                   List<ChartData>? chartDataList = snapshot.data;
-                  double totalValue = calculateTotalValue(chartDataList!);
+                  double totalValue = calculTotalDepense(chartDataList!);
+                  double Reste = totalRevenu - totalValue;
+                  Reste = double.parse(Reste.toStringAsFixed(2));
                   dataEmpty = chartDataList.isEmpty;
                   return Stack(
                     children: [
-                      if (chartDataList.isEmpty)
-                        const Center(
-                          child: Text(
-                            'Veuillez ajouter des dépenses pour commencer a voir le graphique et les dépenses.',
-                            style: TextStyle(
-                                color: Colors.red,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20),
-                          ),
-                        )
-                      else
-                        Center(
-                          child: SfCircularChart(
-                            series: <CircularSeries>[
-                              DoughnutSeries<ChartData, String>(
-                                dataSource: chartDataList,
-                                pointColorMapper: (ChartData data, _) =>
-                                    Color(int.parse('0xff' + data.color)),
-                                xValueMapper: (ChartData data, _) => data.x,
-                                yValueMapper: (ChartData data, _) => data.y,
-                                dataLabelSettings:
-                                    const DataLabelSettings(isVisible: true),
-                                innerRadius: '60%',
+                      Center(
+                        child: chartDataList.isEmpty
+                            ? Container(
+                                padding: const EdgeInsets.all(20),
+                                margin: const EdgeInsets.all(20),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.5),
+                                      spreadRadius: 2,
+                                      blurRadius: 5,
+                                      offset: const Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: const Text(
+                                  'Aucune dépense enregistré.\n\nAjoutez des dépenses pour voir votre graphique ainsi que votre liste de dépense.',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: Colors.red,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20,
+                                  ),
+                                ),
+                              )
+                            : Stack(
+                                children: [
+                                  Center(
+                                    child: SfCircularChart(
+                                      series: <CircularSeries>[
+                                        DoughnutSeries<ChartData, String>(
+                                          dataSource: chartDataList,
+                                          pointColorMapper:
+                                              (ChartData data, _) => Color(
+                                                  int.parse(
+                                                      '0xff' + data.color)),
+                                          xValueMapper: (ChartData data, _) =>
+                                              data.x,
+                                          yValueMapper: (ChartData data, _) =>
+                                              data.y,
+                                          dataLabelSettings:
+                                              const DataLabelSettings(
+                                                  isVisible: true),
+                                          innerRadius: '60%',
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Positioned(
+                                    child: Center(
+                                      child: Text(
+                                        '$totalValue €',
+                                        style: const TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 20.0),
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Total des revenues : $totalRevenu €',
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        Text(
+                                          'Reste : $Reste €',
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                        ),
-                      if (chartDataList.isEmpty)
-                        const Center(
-                          child: Text(
-                            'Veuillez ajouter des dépenses pour commencer a voir le graphique et les dépenses.',
-                            style: TextStyle(
-                                color: Colors.red,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20),
-                          ),
-                        )
-                      else
-                        Center(
-                          child: Text(
-                            '$totalValue',
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
+                      ),
                     ],
                   );
                 }
               },
             ),
           ),
-          /*
-          const Padding(
-            padding: EdgeInsets.only(left: 20.0),
-            child: Text(
-              'Total des revenues :',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          const Padding(
-            padding: EdgeInsets.only(left: 20.0),
-            child: Text(
-              'Reste :',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),*/
           Expanded(
             child: SizedBox(
               child: FutureBuilder<List<RechercheDepense>>(
@@ -290,7 +326,11 @@ class _DepensePageState extends State<DepensePage> {
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
                                     Text(
-                                      depense.prix.toString(),
+                                      depense.prix.toStringAsFixed(
+                                          depense.prix.truncateToDouble() ==
+                                                  depense.prix
+                                              ? 0
+                                              : 2),
                                       style: const TextStyle(
                                         fontSize: 18,
                                       ),
@@ -321,7 +361,11 @@ class _DepensePageState extends State<DepensePage> {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => AjouterDepensePage()),
-          );
+          ).then((refresh) {
+            if (refresh != null && refresh) {
+              _refreshData();
+            }
+          });
         },
         label: const Text('Ajouter des dépenses',
             style: TextStyle(fontWeight: FontWeight.bold)),
@@ -330,7 +374,7 @@ class _DepensePageState extends State<DepensePage> {
     );
   }
 
-  double calculateTotalValue(List<ChartData> data) {
+  double calculTotalDepense(List<ChartData> data) {
     double total = 0;
     for (var item in data) {
       total += item.y;

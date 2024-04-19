@@ -206,6 +206,8 @@ class _AjouterDepensePageState extends State<AjouterDepensePage> {
             const SizedBox(height: 40),
             ElevatedButton(
               onPressed: () {
+                String prixSansVirgule =
+                    prixControlleur.text.replaceAll(",", ".");
                 if (nomDepenseControlleur.text.isEmpty ||
                     prixControlleur.text.isEmpty ||
                     chosenIcon == null) {
@@ -216,17 +218,20 @@ class _AjouterDepensePageState extends State<AjouterDepensePage> {
                           'Veuillez remplir tous les champs et choisir une icône.'),
                     ),
                   );
+                } else if (double.tryParse(prixSansVirgule) == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text("Le montant n'est pas valide."),
+                    ),
+                  );
                 } else {
-                  // Tous les champs sont remplis, procéder à l'ajout de la dépense
                   User? user = _auth.currentUser;
                   String userId = user!.uid;
                   String nomDepense = nomDepenseControlleur.text;
-                  double prix = double.parse(prixControlleur.text);
+                  double prix = double.parse(prixSansVirgule);
                   String iconName = iconNames[chosenIcon!] ?? 'icon_inconnu';
                   String iconUrl = iconName;
                   String couleur = selectedColor.value.toRadixString(16);
-                  print(
-                      'Ajout de la dépense: $nomDepense, $prix, $iconUrl, $couleur');
                   ajoutDepense(
                     userId,
                     nomDepense,
@@ -234,12 +239,7 @@ class _AjouterDepensePageState extends State<AjouterDepensePage> {
                     iconUrl,
                     couleur,
                   ).then((_) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const Page_budget_principal(),
-                      ),
-                    );
+                    Navigator.of(context).pop(true);
                   });
                 }
               },
