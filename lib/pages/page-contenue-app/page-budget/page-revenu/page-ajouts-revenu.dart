@@ -207,6 +207,8 @@ class _AjouterRevenuPage extends State<AjouterRevenuPage> {
             const SizedBox(height: 40),
             ElevatedButton(
               onPressed: () {
+                String prixSansVirgule =
+                    prixControlleur.text.replaceAll(",", ".");
                 if (nomRevenuControlleur.text.isEmpty ||
                     prixControlleur.text.isEmpty ||
                     chosenIcon == null) {
@@ -216,7 +218,7 @@ class _AjouterRevenuPage extends State<AjouterRevenuPage> {
                           'Veuillez remplir tous les champs et choisir une icône.'),
                     ),
                   );
-                } else if (double.tryParse(prixControlleur.text) == null) {
+                } else if (double.tryParse(prixSansVirgule) == null) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text("Le montant n'est pas valide."),
@@ -226,8 +228,6 @@ class _AjouterRevenuPage extends State<AjouterRevenuPage> {
                   User? user = _auth.currentUser;
                   String userId = user!.uid;
                   String nomRevenue = nomRevenuControlleur.text;
-                  String prixSansVirgule =
-                      prixControlleur.text.replaceAll(",", ".");
                   double prix = double.parse(prixSansVirgule);
                   String iconName =
                       iconNamesRevenu[chosenIcon!] ?? 'icon_inconnu';

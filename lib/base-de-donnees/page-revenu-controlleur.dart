@@ -72,6 +72,7 @@ class RechercheRevenu {
 //recuperer les revenus de la base de données
 Future<List<RechercheRevenu>> listRevenu() async {
   List<RechercheRevenu> listRevenu = [];
+  double totalRevenu = 0;
   try {
     User? user = FirebaseAuth.instance.currentUser;
     if (user != null) {
@@ -89,11 +90,13 @@ Future<List<RechercheRevenu>> listRevenu() async {
           docId: doc.id,
         );
         listRevenu.add(revenu);
+        totalRevenu += doc['prix'];
       });
     }
   } catch (e) {
     print('Erreur lors de la récupération des données depuis Firestore: $e');
   }
+  print('Total des revenus : $totalRevenu');
   return listRevenu;
 }
 
