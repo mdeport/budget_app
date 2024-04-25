@@ -4,6 +4,7 @@ import 'package:application_budget_app/pages/page-contenue-app/page-conseil/page
 import 'package:application_budget_app/pages/page-contenue-app/page-parametre/page-parametre-principal.dart';
 import 'package:application_budget_app/pages/page-contenue-app/page-budget/page-revenu/page-revenu.dart';
 import 'package:application_budget_app/pages/page-contenue-app/page-budget/page-depense/page-depense.dart';
+import 'package:application_budget_app/pages/page-contenue-app/page-budget/page-objectif/page-objectif.dart';
 import 'package:flutter/material.dart';
 
 // ignore: camel_case_types
@@ -153,17 +154,6 @@ class _Page_budget_principalState extends State<Page_budget_principal> {
           }
         },
       ),
-    );
-  }
-}
-
-class ObjectifPage extends StatelessWidget {
-  const ObjectifPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text('Page Objectifs'),
     );
   }
 }
