@@ -1,3 +1,6 @@
+import 'package:application_budget_app/base-de-donnees/page-depense-controlleur.dart';
+import 'package:application_budget_app/base-de-donnees/page-revenu-controlleur.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:flutter/material.dart';
 
 class ObjectifPage extends StatefulWidget {
@@ -8,10 +11,69 @@ class ObjectifPage extends StatefulWidget {
 }
 
 class _ObjectifPageState extends State<ObjectifPage> {
+  double totalRevenu = 0;
+  double totalDepense = 0;
+
+  void initState() {
+    super.initState();
+    ListDepense();
+    ListRevenus();
+  }
+
+  Future<void> ListDepense() async {
+    List<RechercheDepense> depenses = await listDepense();
+    double total = 0;
+    for (var depense in depenses) {
+      total += depense.prix;
+    }
+    setState(() {
+      totalDepense = total;
+    });
+  }
+
+  Future<void> ListRevenus() async {
+    List<RechercheRevenu> revenus = await listRevenu();
+    double total = 0;
+    for (var revenu in revenus) {
+      total += revenu.prix;
+    }
+    setState(() {
+      totalRevenu = total;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text('Page Objectifs'),
+    return Scaffold(
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            child: SfCartesianChart(
+              primaryXAxis: const CategoryAxis(),
+              series: <CartesianSeries>[
+                ColumnSeries<Map<String, dynamic>, String>(
+                  dataSource: <Map<String, dynamic>>[
+                    {'category': 'Revenu', 'amount': totalRevenu},
+                    {'category': 'Dépense', 'amount': totalDepense}
+                  ],
+                  xValueMapper: (Map<String, dynamic> data, _) =>
+                      data['category'] as String,
+                  yValueMapper: (Map<String, dynamic> data, _) =>
+                      data['amount'] as double,
+                  dataLabelSettings: const DataLabelSettings(isVisible: true),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: SizedBox(
+                height: 200,
+                child: Text(
+                    'Total Revenu: $totalRevenu\nTotal Dépense: $totalDepense')),
+          ),
+        ],
+      ),
     );
   }
 }
