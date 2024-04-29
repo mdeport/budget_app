@@ -1,5 +1,6 @@
 import 'package:application_budget_app/base-de-donnees/page-depense-controlleur.dart';
 import 'package:application_budget_app/base-de-donnees/page-revenu-controlleur.dart';
+import 'package:application_budget_app/pages/page-contenue-app/page-budget/page-objectif/page-ajouts-objectif.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:flutter/material.dart';
 
@@ -49,6 +50,7 @@ class _ObjectifPageState extends State<ObjectifPage> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Expanded(
+            flex: 4,
             child: SfCartesianChart(
               primaryXAxis: const CategoryAxis(),
               series: <CartesianSeries>[
@@ -67,12 +69,27 @@ class _ObjectifPageState extends State<ObjectifPage> {
             ),
           ),
           Expanded(
+            flex: 6,
             child: SizedBox(
                 height: 200,
                 child: Text(
                     'Total Revenu: $totalRevenu\nTotal Dépense: $totalDepense')),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const AjouterObjectifPage()),
+          ).then((refresh) {
+            if (refresh != null && refresh) {}
+          });
+        },
+        label: const Text('Ajouter des objectifs',
+            style: TextStyle(fontWeight: FontWeight.bold)),
+        backgroundColor: Colors.indigoAccent,
       ),
     );
   }

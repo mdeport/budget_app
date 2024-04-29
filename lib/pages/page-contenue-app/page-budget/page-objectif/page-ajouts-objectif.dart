@@ -1,38 +1,35 @@
-import 'package:application_budget_app/base-de-donnees/page-depense-controlleur.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
-import 'package:application_budget_app/base-de-donnees/Icons/list-icon-depense.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
+import 'package:application_budget_app/base-de-donnees/Icons/list-icon-objectif.dart';
 
-class AjouterDepensePage extends StatefulWidget {
+class AjouterObjectifPage extends StatefulWidget {
+  const AjouterObjectifPage({Key? key}) : super(key: key);
+
   @override
-  _AjouterDepensePageState createState() => _AjouterDepensePageState();
+  State<AjouterObjectifPage> createState() => _AjouterObjectifPageState();
 }
 
-class _AjouterDepensePageState extends State<AjouterDepensePage> {
+class _AjouterObjectifPageState extends State<AjouterObjectifPage> {
+  String selectedCategory = 'Épicerie';
   IconData selectedIcon = Icons.shopping_basket;
   Color selectedColor = Colors.blue;
   IconData? chosenIcon;
 
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-
-  TextEditingController prixControlleur = TextEditingController();
-  TextEditingController nomDepenseControlleur = TextEditingController();
+  TextEditingController montantController = TextEditingController();
 
   bool showAllIcons = false;
 
   @override
   Widget build(BuildContext context) {
     List<IconData> displayedIcons =
-        showAllIcons ? depenseIcons : depenseIcons.take(10).toList();
-
+        showAllIcons ? objectifIcons : objectifIcons.take(10).toList();
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Ajouter une dépense',
-            style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-                fontSize: 23)),
+        title: const Text(
+          'Ajouter un objectif',
+          style: TextStyle(
+              color: Colors.black, fontWeight: FontWeight.bold, fontSize: 23),
+        ),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -54,23 +51,59 @@ class _AjouterDepensePageState extends State<AjouterDepensePage> {
           children: [
             const SizedBox(height: 20),
             const Text(
-              'Montant',
+              'Choix de la catégorie',
+              style: TextStyle(fontSize: 20, color: Colors.indigo),
+            ),
+            const SizedBox(height: 10),
+            DropdownButton<String>(
+              value: selectedCategory,
+              onChanged: (String? newValue) {
+                setState(() {
+                  selectedCategory = newValue!;
+                });
+              },
+              items: <String>[
+                'Épicerie',
+                'Maison',
+                'Vêtements & Chaussures',
+                'Sorties au restaurant',
+                'Transport',
+                'Divertissement',
+                'Enfants',
+                'Voyage',
+                'Santé',
+                'Beauté',
+                'Communication',
+                'Voiture',
+                'Animaux de compagnie',
+                'Impôts',
+                'Education',
+                'Divers',
+              ].map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 30),
+            const Text(
+              'Montant de l\'objectif',
               style: TextStyle(fontSize: 20, color: Colors.indigo),
             ),
             const SizedBox(height: 10),
             SizedBox(
               width: 200,
               child: TextField(
-                controller: prixControlleur,
+                controller: montantController,
                 textAlign: TextAlign.center,
                 style: const TextStyle(fontSize: 18),
                 decoration: InputDecoration(
-                  hintText: 'Entrez le montant',
+                  hintText: 'Entrez le montant de l\'objectif',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20.0),
                   ),
                 ),
-                keyboardType: TextInputType.number,
               ),
             ),
             const SizedBox(height: 30),
@@ -182,65 +215,11 @@ class _AjouterDepensePageState extends State<AjouterDepensePage> {
               },
               child: const Text('Choisir'),
             ),
-            const SizedBox(height: 30),
-            const Text(
-              'Nom de la catégorie',
-              style: TextStyle(fontSize: 20, color: Colors.indigo),
-            ),
-            const SizedBox(height: 10),
-            SizedBox(
-              width: 300,
-              child: TextField(
-                controller: nomDepenseControlleur,
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 18),
-                decoration: InputDecoration(
-                  hintText: 'Entrez le nom de la catégorie',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20.0),
-                  ),
-                ),
-              ),
-            ),
             const SizedBox(height: 40),
             ElevatedButton(
               onPressed: () {
-                String prixSansVirgule =
-                    prixControlleur.text.replaceAll(",", ".");
-                if (nomDepenseControlleur.text.isEmpty ||
-                    prixControlleur.text.isEmpty ||
-                    chosenIcon == null) {
-                  // Afficher un message d'alerte si un champ est vide ou si aucune icône n'est choisie
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text(
-                          'Veuillez remplir tous les champs et choisir une icône.'),
-                    ),
-                  );
-                } else if (double.tryParse(prixSansVirgule) == null) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text("Le montant n'est pas valide."),
-                    ),
-                  );
-                } else {
-                  User? user = _auth.currentUser;
-                  String userId = user!.uid;
-                  String nomDepense = nomDepenseControlleur.text;
-                  double prix = double.parse(prixSansVirgule);
-                  String iconName = iconNames[chosenIcon!] ?? 'icon_inconnu';
-                  String iconUrl = iconName;
-                  String couleur = selectedColor.value.toRadixString(16);
-                  ajoutDepense(
-                    userId,
-                    nomDepense,
-                    prix,
-                    iconUrl,
-                    couleur,
-                  ).then((_) {
-                    Navigator.of(context).pop(true);
-                  });
-                }
+                // Implémentez votre logique d'ajout d'objectif ici
+                // Assurez-vous de vérifier que les champs sont remplis et que l'utilisateur est connecté
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.indigo,
