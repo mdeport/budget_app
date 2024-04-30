@@ -20,7 +20,7 @@ class _Page_accueil_principalState extends State<Page_accueil_principal> {
         title: const Text(
           'Accueil',
           style: TextStyle(
-            color: Color.fromARGB(255, 255, 255, 255),
+            color: Colors.white,
             fontWeight: FontWeight.bold,
             fontSize: 30.0,
           ),
@@ -29,7 +29,11 @@ class _Page_accueil_principalState extends State<Page_accueil_principal> {
         automaticallyImplyLeading: false,
         flexibleSpace: Container(
           decoration: const BoxDecoration(
-            color: Colors.blue,
+            color:  Color(0xFF2196F3), // Bleu pastel
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(20),
+              bottomRight: Radius.circular(20),
+            ),
           ),
         ),
       ),
@@ -88,39 +92,45 @@ class _Page_accueil_principalState extends State<Page_accueil_principal> {
           ),
         ],
       ),
-      bottomNavigationBar: BottomNavBar(
-        currentIndex: 0,
-        onTap: (index) {
-          if (index == 0) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const Page_accueil_principal(),
-              ),
-            );
-          } else if (index == 1) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const Page_budget_principal(),
-              ),
-            );
-          } else if (index == 2) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const Page_conseil_principal(),
-              ),
-            );
-          } else if (index == 3) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const Page_parametre_principal(),
-              ),
-            );
-          }
-        },
+      bottomNavigationBar: ClipRRect(
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(20.0),
+          topRight: Radius.circular(20.0),
+        ),
+        child: BottomNavBar(
+          currentIndex: 0,
+          onTap: (index) {
+            if (index == 0) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const Page_accueil_principal(),
+                ),
+              );
+            } else if (index == 1) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const Page_budget_principal(),
+                ),
+              );
+            } else if (index == 2) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const Page_conseil_principal(),
+                ),
+              );
+            } else if (index == 3) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const Page_parametre_principal(),
+                ),
+              );
+            }
+          },
+        ),
       ),
     );
   }
@@ -131,7 +141,7 @@ class _Page_accueil_principalState extends State<Page_accueil_principal> {
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(8.0),
+          borderRadius: BorderRadius.circular(20.0),
           boxShadow: [
             BoxShadow(
               color: Colors.grey.withOpacity(0.5),
@@ -162,7 +172,7 @@ class _Page_accueil_principalState extends State<Page_accueil_principal> {
                             TextSpan(
                               text: ' $clickableWord',
                               style: const TextStyle(
-                                color: Colors.blue,
+                                color: Color(0xFF2196F3),
                                 decoration: TextDecoration.underline,
                               ),
                               recognizer: TapGestureRecognizer()..onTap = onPressed,
