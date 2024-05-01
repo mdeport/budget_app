@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
 import 'package:application_budget_app/base-de-donnees/Icons/list-icon-objectif.dart';
+import 'package:application_budget_app/base-de-donnees/page-objectif-controlleur.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class AjouterObjectifPage extends StatefulWidget {
   const AjouterObjectifPage({Key? key}) : super(key: key);
@@ -15,7 +17,10 @@ class _AjouterObjectifPageState extends State<AjouterObjectifPage> {
   Color selectedColor = Colors.blue;
   IconData? chosenIcon;
 
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
   TextEditingController montantController = TextEditingController();
+  TextEditingController nomObjectifControlleur = TextEditingController();
 
   bool showAllIcons = false;
 
@@ -218,8 +223,41 @@ class _AjouterObjectifPageState extends State<AjouterObjectifPage> {
             const SizedBox(height: 40),
             ElevatedButton(
               onPressed: () {
-                // Implémentez votre logique d'ajout d'objectif ici
-                // Assurez-vous de vérifier que les champs sont remplis et que l'utilisateur est connecté
+                String prixSansVirgule =
+                    montantController.text.replaceAll(",", ".");
+                if (selectedCategory.isEmpty ||
+                    montantController.text.isEmpty ||
+                    chosenIcon == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                          'Veuillez remplir tous les champs et choisir une icône.'),
+                    ),
+                  );
+                } else if (double.tryParse(prixSansVirgule) == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text("Le montant n'est pas valide."),
+                    ),
+                  );
+                } else {
+                  User? user = _auth.currentUser;
+                  String userId = user!.uid;
+                  String nomObjectif = selectedCategory;
+                  double prix = double.parse(prixSansVirgule);
+                  String iconName = iconNames[chosenIcon!] ?? 'icon_inconnu';
+                  String iconUrl = iconName;
+                  String couleur = selectedColor.value.toRadixString(16);
+                  ajoutObjectif(
+                    userId,
+                    nomObjectif,
+                    prix,
+                    iconUrl,
+                    couleur,
+                  ).then((_) {
+                    Navigator.of(context).pop(true);
+                  });
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.indigo,
