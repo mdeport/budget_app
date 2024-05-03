@@ -58,6 +58,26 @@ List<IconData> objectifIcons = [
   FontAwesomeIcons.bed,
 ];
 
+final List<Map<String, dynamic>> categoriesWithIcons = [
+  {'category': ''},
+  {'category': 'Épicerie', 'icon': FontAwesomeIcons.utensils},
+  {'category': 'Maison', 'icon': FontAwesomeIcons.house},
+  {'category': 'Vêtements & Chaussures', 'icon': FontAwesomeIcons.tshirt},
+  {'category': 'Sorties au restaurant', 'icon': FontAwesomeIcons.utensils},
+  {'category': 'Transport', 'icon': FontAwesomeIcons.bus},
+  {'category': 'Divertissement', 'icon': FontAwesomeIcons.gamepad},
+  {'category': 'Enfants', 'icon': FontAwesomeIcons.child},
+  {'category': 'Voyage', 'icon': FontAwesomeIcons.plane},
+  {'category': 'Santé', 'icon': FontAwesomeIcons.heart},
+  {'category': 'Beauté', 'icon': FontAwesomeIcons.spa},
+  {'category': 'Communication', 'icon': FontAwesomeIcons.mobile},
+  {'category': 'Voiture', 'icon': FontAwesomeIcons.car},
+  {'category': 'Animaux de compagnie', 'icon': FontAwesomeIcons.paw},
+  {'category': 'Impôts', 'icon': FontAwesomeIcons.fileInvoice},
+  {'category': 'Education', 'icon': FontAwesomeIcons.graduationCap},
+  {'category': 'Divers', 'icon': FontAwesomeIcons.book},
+];
+
 Map<IconData, String> iconNames = {
   FontAwesomeIcons.utensils: 'utensils',
   FontAwesomeIcons.house: 'house',
