@@ -78,11 +78,10 @@ final List<Map<String, dynamic>> categoriesWithIcons = [
   {'category': 'Divers', 'icon': FontAwesomeIcons.book},
 ];
 
-Map<IconData, String> iconNames = {
+Map<IconData, String> iconNamesobjectif = {
   FontAwesomeIcons.utensils: 'utensils',
   FontAwesomeIcons.house: 'house',
   FontAwesomeIcons.tshirt: 'tshirt',
-  FontAwesomeIcons.utensils: 'utensils',
   FontAwesomeIcons.bus: 'bus',
   FontAwesomeIcons.gamepad: 'gamepad',
   FontAwesomeIcons.child: 'child',
@@ -107,7 +106,6 @@ final icons = {
   'utensils': FontAwesomeIcons.utensils,
   'house': FontAwesomeIcons.house,
   'tshirt': FontAwesomeIcons.tshirt,
-  'utensils': FontAwesomeIcons.utensils,
   'bus': FontAwesomeIcons.bus,
   'gamepad': FontAwesomeIcons.gamepad,
   'child': FontAwesomeIcons.child,

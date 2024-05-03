@@ -1,5 +1,6 @@
 import 'package:application_budget_app/base-de-donnees/page-depense-controlleur.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:application_budget_app/base-de-donnees/Icons/list-icon-objectif.dart';
 import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
 import 'package:application_budget_app/base-de-donnees/Icons/list-icon-depense.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +12,9 @@ class AjouterDepensePage extends StatefulWidget {
 
 class _AjouterDepensePageState extends State<AjouterDepensePage> {
   IconData selectedIcon = Icons.shopping_basket;
+  String selectedCategory = '';
   Color selectedColor = Colors.blue;
+  Color selectedIconColor = Colors.blue;
   IconData? chosenIcon;
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -20,6 +23,24 @@ class _AjouterDepensePageState extends State<AjouterDepensePage> {
   TextEditingController nomDepenseControlleur = TextEditingController();
 
   bool showAllIcons = false;
+
+  List<DropdownMenuItem<String>> buildDropdownMenuItems(
+      List categoriesWithIcons) {
+    List<DropdownMenuItem<String>> items = [];
+    for (var item in categoriesWithIcons) {
+      items.add(
+        DropdownMenuItem<String>(
+          value: item['category'],
+          child: Row(
+            children: [
+              Text(item['category']),
+            ],
+          ),
+        ),
+      );
+    }
+    return items;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +73,7 @@ class _AjouterDepensePageState extends State<AjouterDepensePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const SizedBox(height: 20),
+            const SizedBox(height: 10),
             const Text(
               'Montant',
               style: TextStyle(fontSize: 20, color: Colors.indigo),
@@ -134,7 +155,7 @@ class _AjouterDepensePageState extends State<AjouterDepensePage> {
                   style: TextStyle(color: Colors.indigo),
                 ),
               ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 10),
             const Text(
               'Choisissez une couleur',
               style: TextStyle(fontSize: 20, color: Colors.indigo),
@@ -182,9 +203,35 @@ class _AjouterDepensePageState extends State<AjouterDepensePage> {
               },
               child: const Text('Choisir'),
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 10),
             const Text(
-              'Nom de la catégorie',
+              'Choix de la catégorie',
+              style: TextStyle(fontSize: 20, color: Colors.indigo),
+            ),
+            const SizedBox(height: 10),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20.0),
+                border: Border.all(color: Colors.indigo),
+              ),
+              child: DropdownButton<String>(
+                value: selectedCategory,
+                onChanged: (String? newValue) {
+                  setState(() {
+                    selectedCategory = newValue!;
+                  });
+                },
+                items: buildDropdownMenuItems(categoriesWithIcons),
+                underline: Container(
+                  height: 0,
+                  color: Colors.transparent,
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            const Text(
+              'Nom de la dépense',
               style: TextStyle(fontSize: 20, color: Colors.indigo),
             ),
             const SizedBox(height: 10),
@@ -195,7 +242,7 @@ class _AjouterDepensePageState extends State<AjouterDepensePage> {
                 textAlign: TextAlign.center,
                 style: const TextStyle(fontSize: 18),
                 decoration: InputDecoration(
-                  hintText: 'Entrez le nom de la catégorie',
+                  hintText: 'Entrez le nom de la dépense',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20.0),
                   ),
@@ -209,7 +256,8 @@ class _AjouterDepensePageState extends State<AjouterDepensePage> {
                     prixControlleur.text.replaceAll(",", ".");
                 if (nomDepenseControlleur.text.isEmpty ||
                     prixControlleur.text.isEmpty ||
-                    chosenIcon == null) {
+                    chosenIcon == null ||
+                    selectedCategory == '') {
                   // Afficher un message d'alerte si un champ est vide ou si aucune icône n'est choisie
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
@@ -227,6 +275,7 @@ class _AjouterDepensePageState extends State<AjouterDepensePage> {
                   User? user = _auth.currentUser;
                   String userId = user!.uid;
                   String nomDepense = nomDepenseControlleur.text;
+                  String nomCategorie = selectedCategory;
                   double prix = double.parse(prixSansVirgule);
                   String iconName = iconNames[chosenIcon!] ?? 'icon_inconnu';
                   String iconUrl = iconName;
@@ -234,6 +283,7 @@ class _AjouterDepensePageState extends State<AjouterDepensePage> {
                   ajoutDepense(
                     userId,
                     nomDepense,
+                    nomCategorie,
                     prix,
                     iconUrl,
                     couleur,

@@ -197,7 +197,8 @@ class _AjouterObjectifPageState extends State<AjouterObjectifPage> {
                     String userId = user!.uid;
                     String nomObjectif = selectedCategory;
                     double prix = double.parse(prixSansVirgule);
-                    String iconName = iconNames[chosenIcon!] ?? 'icon_inconnu';
+                    String iconName =
+                        iconNamesobjectif[chosenIcon!] ?? 'icon_inconnu';
                     String iconUrl = iconName;
                     String couleur = selectedColor.value.toRadixString(16);
                     ajoutObjectif(

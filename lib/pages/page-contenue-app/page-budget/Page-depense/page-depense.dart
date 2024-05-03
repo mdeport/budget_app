@@ -245,6 +245,8 @@ class _DepensePageState extends State<DepensePage> {
                                             text: newNomDepense);
                                     final prixController =
                                         TextEditingController(text: newPrix);
+                                    String selectedCategory =
+                                        depense.nom_categorie;
 
                                     return StatefulBuilder(
                                       builder: (BuildContext context,
@@ -275,6 +277,71 @@ class _DepensePageState extends State<DepensePage> {
                                                         .numberWithOptions(
                                                         decimal: true),
                                               ),
+                                              const SizedBox(height: 6),
+                                              Align(
+                                                alignment: Alignment.centerLeft,
+                                                child: Text(
+                                                  'Catégorie',
+                                                  style: TextStyle(
+                                                    fontSize: 13,
+                                                    color: Colors.grey[800],
+                                                  ),
+                                                ),
+                                              ),
+                                              Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                  horizontal: 10,
+                                                ),
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          10.0),
+                                                  border: Border.all(
+                                                      color: Colors.black),
+                                                ),
+                                                child: DropdownButton<String>(
+                                                  value: selectedCategory,
+                                                  onChanged:
+                                                      (String? newValue) {
+                                                    setState(() {
+                                                      selectedCategory =
+                                                          newValue!;
+                                                    });
+                                                  },
+                                                  items: <String>[
+                                                    'Épicerie',
+                                                    'Maison',
+                                                    'Vêtements & Chaussures',
+                                                    'Sorties au restaurant',
+                                                    'Transport',
+                                                    'Divertissement',
+                                                    'Enfants',
+                                                    'Voyage',
+                                                    'Santé',
+                                                    'Beauté',
+                                                    'Communication',
+                                                    'Voiture',
+                                                    'Animaux de compagnie',
+                                                    'Impôts',
+                                                    'Education',
+                                                    'Divers',
+                                                  ].map<
+                                                          DropdownMenuItem<
+                                                              String>>(
+                                                      (String value) {
+                                                    return DropdownMenuItem<
+                                                        String>(
+                                                      value: value,
+                                                      child: Text(value),
+                                                    );
+                                                  }).toList(),
+                                                  underline: Container(
+                                                    height: 0,
+                                                    color: Colors.transparent,
+                                                  ),
+                                                ),
+                                              ),
                                             ],
                                           ),
                                           actions: <Widget>[
@@ -293,10 +360,13 @@ class _DepensePageState extends State<DepensePage> {
                                                 double newPrice =
                                                     double.tryParse(newPrix) ??
                                                         0.0;
+                                                String newCategorie =
+                                                    selectedCategory;
                                                 updateDepensePrix(
                                                     newPrice,
                                                     depense.docId,
-                                                    newNomDepense);
+                                                    newNomDepense,
+                                                    newCategorie);
                                                 Navigator.of(context).pop();
                                                 _refreshData();
                                               },
@@ -318,6 +388,12 @@ class _DepensePageState extends State<DepensePage> {
                                 depense.nom_depense,
                                 style: const TextStyle(
                                   fontSize: 18,
+                                ),
+                              ),
+                              subtitle: Text(
+                                depense.nom_categorie,
+                                style: const TextStyle(
+                                  fontSize: 16,
                                 ),
                               ),
                               trailing: SizedBox(
