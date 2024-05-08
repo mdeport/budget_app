@@ -35,7 +35,7 @@ class _AjouterObjectifPageState extends State<AjouterObjectifPage> {
           child: Row(
             children: [
               Icon(item['icon'], color: selectedIconColor),
-              SizedBox(width: 10), // Espacement entre l'icône et le texte
+              const SizedBox(width: 10),
               Text(item['category']),
             ],
           ),

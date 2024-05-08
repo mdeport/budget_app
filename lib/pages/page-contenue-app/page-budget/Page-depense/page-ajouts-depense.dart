@@ -33,6 +33,8 @@ class _AjouterDepensePageState extends State<AjouterDepensePage> {
           value: item['category'],
           child: Row(
             children: [
+              Icon(item['icon'], color: selectedIconColor),
+              const SizedBox(width: 10),
               Text(item['category']),
             ],
           ),

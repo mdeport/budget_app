@@ -141,3 +141,41 @@ Future<void> updateDepensePrix(double newPrix, String docId,
     print('Erreur lors de la mise à jour du prix de la dépense: $error');
   }
 }
+
+class RechercheCategorieDepense {
+  final String nom_categorie;
+  final double prix;
+  final String docId;
+
+  RechercheCategorieDepense({
+    required this.nom_categorie,
+    required this.prix,
+    required this.docId,
+  });
+}
+
+//recuperer les depenses de la base de données
+Future<List<RechercheCategorieDepense>> listCategorieDepense() async {
+  List<RechercheCategorieDepense> listCategorieDepense = [];
+  try {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('depense')
+          .doc(user.uid)
+          .collection('depenses')
+          .get();
+      querySnapshot.docs.forEach((doc) {
+        RechercheCategorieDepense depense = RechercheCategorieDepense(
+          nom_categorie: doc['nom_categorie'],
+          prix: doc['prix'],
+          docId: doc.id,
+        );
+        listCategorieDepense.add(depense);
+      });
+    }
+  } catch (e) {
+    print('Erreur lors de la récupération des données depuis Firestore: $e');
+  }
+  return listCategorieDepense;
+}

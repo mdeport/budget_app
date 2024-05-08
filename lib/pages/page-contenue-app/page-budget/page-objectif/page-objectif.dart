@@ -17,10 +17,17 @@ class _ObjectifPageState extends State<ObjectifPage> {
   double totalRevenu = 0;
   double totalDepense = 0;
 
+  Map<String, double> totalDepensesParCategorie = {};
+
   void initState() {
     super.initState();
     ListDepense();
     ListRevenus();
+    calculateTotalDepensesParCategorie().then((totals) {
+      setState(() {
+        totalDepensesParCategorie = totals;
+      });
+    });
   }
 
   Future<void> _refreshData() async {
@@ -176,39 +183,69 @@ class _ObjectifPageState extends State<ObjectifPage> {
                                           content: Column(
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
-                                              DropdownButton<String>(
-                                                value: selectedCategory,
-                                                onChanged: (String? newValue) {
-                                                  setState(() {
-                                                    selectedCategory =
-                                                        newValue!;
-                                                  });
-                                                },
-                                                items: <String>[
-                                                  'Épicerie',
-                                                  'Maison',
-                                                  'Vêtements & Chaussures',
-                                                  'Sorties au restaurant',
-                                                  'Transport',
-                                                  'Divertissement',
-                                                  'Enfants',
-                                                  'Voyage',
-                                                  'Santé',
-                                                  'Beauté',
-                                                  'Communication',
-                                                  'Voiture',
-                                                  'Animaux de compagnie',
-                                                  'Impôts',
-                                                  'Education',
-                                                  'Divers',
-                                                ].map<DropdownMenuItem<String>>(
-                                                    (String value) {
-                                                  return DropdownMenuItem<
-                                                      String>(
-                                                    value: value,
-                                                    child: Text(value),
-                                                  );
-                                                }).toList(),
+                                              Align(
+                                                alignment: Alignment.centerLeft,
+                                                child: Text(
+                                                  'Catégorie',
+                                                  style: TextStyle(
+                                                    fontSize: 13,
+                                                    color: Colors.grey[800],
+                                                  ),
+                                                ),
+                                              ),
+                                              Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                  horizontal: 10,
+                                                ),
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          10.0),
+                                                  border: Border.all(
+                                                      color: Colors.black),
+                                                ),
+                                                child: DropdownButton<String>(
+                                                  value: selectedCategory,
+                                                  onChanged:
+                                                      (String? newValue) {
+                                                    setState(() {
+                                                      selectedCategory =
+                                                          newValue!;
+                                                    });
+                                                  },
+                                                  items: <String>[
+                                                    'Épicerie',
+                                                    'Maison',
+                                                    'Vêtements & Chaussures',
+                                                    'Sorties au restaurant',
+                                                    'Transport',
+                                                    'Divertissement',
+                                                    'Enfants',
+                                                    'Voyage',
+                                                    'Santé',
+                                                    'Beauté',
+                                                    'Communication',
+                                                    'Voiture',
+                                                    'Animaux de compagnie',
+                                                    'Impôts',
+                                                    'Education',
+                                                    'Divers',
+                                                  ].map<
+                                                          DropdownMenuItem<
+                                                              String>>(
+                                                      (String value) {
+                                                    return DropdownMenuItem<
+                                                        String>(
+                                                      value: value,
+                                                      child: Text(value),
+                                                    );
+                                                  }).toList(),
+                                                  underline: Container(
+                                                    height: 0,
+                                                    color: Colors.transparent,
+                                                  ),
+                                                ),
                                               ),
                                               TextField(
                                                 decoration:
@@ -272,7 +309,7 @@ class _ObjectifPageState extends State<ObjectifPage> {
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
                                     Text(
-                                      '$totalRevenu /',
+                                      '${totalDepensesParCategorie[objectif.nom_objectif]?.toString() ?? '0'} / ',
                                       style: const TextStyle(
                                         fontSize: 14,
                                       ),
@@ -326,4 +363,22 @@ class _ObjectifPageState extends State<ObjectifPage> {
       ),
     );
   }
+}
+
+Future<Map<String, double>> calculateTotalDepensesParCategorie() async {
+  Map<String, double> totalDepensesParCategorie = {};
+
+  List<RechercheCategorieDepense> depenses = await listCategorieDepense();
+
+  for (var depense in depenses) {
+    if (totalDepensesParCategorie.containsKey(depense.nom_categorie)) {
+      totalDepensesParCategorie[depense.nom_categorie] =
+          (totalDepensesParCategorie[depense.nom_categorie] ?? 0) +
+              depense.prix;
+    } else {
+      totalDepensesParCategorie[depense.nom_categorie] = depense.prix;
+    }
+  }
+
+  return totalDepensesParCategorie;
 }
