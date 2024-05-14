@@ -163,12 +163,7 @@ class _ObjectifPageState extends State<ObjectifPage> {
                                 showDialog(
                                   context: context,
                                   builder: (BuildContext context) {
-                                    String newNomObjectif =
-                                        objectif.nom_objectif;
                                     String newPrix = objectif.prix.toString();
-                                    final nomObjectifController =
-                                        TextEditingController(
-                                            text: newNomObjectif);
                                     final prixController =
                                         TextEditingController(text: newPrix);
                                     String selectedCategory =
