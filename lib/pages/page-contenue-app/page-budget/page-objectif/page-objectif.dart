@@ -1,33 +1,53 @@
-import 'package:application_budget_app/pages/page-contenue-app/page-budget/Page-depense/page-ajouts-depense.dart';
-import 'package:application_budget_app/base-de-donnees/page-revenu-controlleur.dart';
-import 'package:application_budget_app/base-de-donnees/Icons/list-icon-depense.dart';
 import 'package:application_budget_app/base-de-donnees/page-depense-controlleur.dart';
+import 'package:application_budget_app/base-de-donnees/page-revenu-controlleur.dart';
+import 'package:application_budget_app/base-de-donnees/page-objectif-controlleur.dart';
+import 'package:application_budget_app/pages/page-contenue-app/page-budget/page-objectif/page-ajouts-objectif.dart';
+import 'package:application_budget_app/base-de-donnees/Icons/list-icon-objectif.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:flutter/material.dart';
 
-class DepensePage extends StatefulWidget {
-  const DepensePage({super.key});
+class ObjectifPage extends StatefulWidget {
+  const ObjectifPage({super.key});
 
   @override
-  State<DepensePage> createState() => _DepensePageState();
+  State<ObjectifPage> createState() => _ObjectifPageState();
 }
 
-class _DepensePageState extends State<DepensePage> {
+class _ObjectifPageState extends State<ObjectifPage> {
   double totalRevenu = 0;
-  bool dataEmpty = true;
-  @override
+  double totalDepense = 0;
+
+  Map<String, double> totalDepensesParCategorie = {};
+
   void initState() {
     super.initState();
-    fetchRevenus();
+    ListDepense();
+    ListRevenus();
+    calculateTotalDepensesParCategorie().then((totals) {
+      setState(() {
+        totalDepensesParCategorie = totals;
+      });
+    });
   }
 
   Future<void> _refreshData() async {
     setState(() {
-      listDepenseChartDataList();
+      listObjectif();
     });
   }
 
-  Future<void> fetchRevenus() async {
+  Future<void> ListDepense() async {
+    List<RechercheDepense> depenses = await listDepense();
+    double total = 0;
+    for (var depense in depenses) {
+      total += depense.prix;
+    }
+    setState(() {
+      totalDepense = total;
+    });
+  }
+
+  Future<void> ListRevenus() async {
     List<RechercheRevenu> revenus = await listRevenu();
     double total = 0;
     for (var revenu in revenus) {
@@ -45,124 +65,29 @@ class _DepensePageState extends State<DepensePage> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Expanded(
-            child: FutureBuilder<List<ChartData>>(
-              future: listDepenseChartDataList(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                } else if (snapshot.hasError) {
-                  return Center(
-                    child: Text('Erreur: ${snapshot.error}'),
-                  );
-                } else {
-                  List<ChartData>? chartDataList = snapshot.data;
-                  double totalValue = calculTotalDepense(chartDataList!);
-                  double Reste = totalRevenu - totalValue;
-                  Reste = double.parse(Reste.toStringAsFixed(2));
-                  dataEmpty = chartDataList.isEmpty;
-                  return Stack(
-                    children: [
-                      Center(
-                        child: chartDataList.isEmpty
-                            ? Container(
-                                padding: const EdgeInsets.all(20),
-                                margin: const EdgeInsets.all(20),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(10),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey.withOpacity(0.5),
-                                      spreadRadius: 2,
-                                      blurRadius: 5,
-                                      offset: const Offset(0, 3),
-                                    ),
-                                  ],
-                                ),
-                                child: const Text(
-                                  'Aucune dépense enregistré.\n\nAjoutez des dépenses pour voir votre graphique ainsi que votre liste de dépense.',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: Colors.red,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20,
-                                  ),
-                                ),
-                              )
-                            : Stack(
-                                children: [
-                                  Center(
-                                    child: SfCircularChart(
-                                      series: <CircularSeries>[
-                                        DoughnutSeries<ChartData, String>(
-                                          dataSource: chartDataList,
-                                          pointColorMapper:
-                                              (ChartData data, _) => Color(
-                                                  int.parse(
-                                                      '0xff' + data.color)),
-                                          xValueMapper: (ChartData data, _) =>
-                                              data.x,
-                                          yValueMapper: (ChartData data, _) =>
-                                              data.y,
-                                          dataLabelSettings:
-                                              const DataLabelSettings(
-                                                  isVisible: true),
-                                          innerRadius: '60%',
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Positioned(
-                                    child: Center(
-                                      child: Text(
-                                        '$totalValue €',
-                                        style: const TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 20.0),
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'Total des revenues : $totalRevenu €',
-                                          style: const TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        Text(
-                                          'Reste : $Reste €',
-                                          style: const TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                      ),
-                    ],
-                  );
-                }
-              },
+            flex: 4,
+            child: SfCartesianChart(
+              primaryXAxis: const CategoryAxis(),
+              series: <CartesianSeries>[
+                ColumnSeries<Map<String, dynamic>, String>(
+                  dataSource: <Map<String, dynamic>>[
+                    {'category': 'Revenu', 'amount': totalRevenu},
+                    {'category': 'Dépense', 'amount': totalDepense}
+                  ],
+                  xValueMapper: (Map<String, dynamic> data, _) =>
+                      data['category'] as String,
+                  yValueMapper: (Map<String, dynamic> data, _) =>
+                      data['amount'] as double,
+                  dataLabelSettings: const DataLabelSettings(isVisible: true),
+                ),
+              ],
             ),
           ),
           Expanded(
+            flex: 6,
             child: SizedBox(
-              child: FutureBuilder<List<RechercheDepense>>(
-                future: listDepense(),
+              child: FutureBuilder<List<RechercheObjectif>>(
+                future: listObjectif(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(
@@ -173,11 +98,11 @@ class _DepensePageState extends State<DepensePage> {
                       child: Text('Erreur: ${snapshot.error}'),
                     );
                   } else {
-                    List<RechercheDepense>? listDepense = snapshot.data;
+                    List<RechercheObjectif>? listObjectif = snapshot.data;
                     return ListView.builder(
-                      itemCount: listDepense!.length,
+                      itemCount: listObjectif!.length,
                       itemBuilder: (context, index) {
-                        RechercheDepense depense = listDepense[index];
+                        RechercheObjectif objectif = listObjectif[index];
                         return Container(
                           margin: const EdgeInsets.symmetric(
                               horizontal: 15, vertical: 5),
@@ -195,7 +120,7 @@ class _DepensePageState extends State<DepensePage> {
                             ],
                           ),
                           child: Dismissible(
-                            key: Key(depense.nom_depense),
+                            key: Key(objectif.nom_objectif),
                             direction: DismissDirection.endToStart,
                             background: Container(
                               color: Colors.red,
@@ -211,7 +136,7 @@ class _DepensePageState extends State<DepensePage> {
                                   return AlertDialog(
                                     title: const Text("Confirmation"),
                                     content: const Text(
-                                        "Voulez-vous vraiment supprimer la depense ?"),
+                                        "Voulez-vous vraiment supprimer l'objectif ?"),
                                     actions: <Widget>[
                                       TextButton(
                                         onPressed: () =>
@@ -229,8 +154,8 @@ class _DepensePageState extends State<DepensePage> {
                               );
                             },
                             onDismissed: (direction) {
-                              // Supprimer la dépense de la base de données
-                              supprimerDepense(depense.docId);
+                              // Supprimer l'objectif de la base de données
+                              supprimerObjectif(objectif.docId);
                               _refreshData();
                             },
                             child: ListTile(
@@ -238,46 +163,21 @@ class _DepensePageState extends State<DepensePage> {
                                 showDialog(
                                   context: context,
                                   builder: (BuildContext context) {
-                                    String newNomDepense = depense.nom_depense;
-                                    String newPrix = depense.prix.toString();
-                                    final nomDepenseController =
-                                        TextEditingController(
-                                            text: newNomDepense);
+                                    String newPrix = objectif.prix.toString();
                                     final prixController =
                                         TextEditingController(text: newPrix);
                                     String selectedCategory =
-                                        depense.nom_categorie;
+                                        objectif.nom_objectif;
 
                                     return StatefulBuilder(
                                       builder: (BuildContext context,
                                           StateSetter setState) {
                                         return AlertDialog(
                                           title:
-                                              const Text("Modifier la dépense"),
+                                              const Text("Modifier l'objectif"),
                                           content: Column(
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
-                                              TextField(
-                                                decoration:
-                                                    const InputDecoration(
-                                                  labelText:
-                                                      'Nom de la dépense',
-                                                ),
-                                                controller:
-                                                    nomDepenseController,
-                                              ),
-                                              TextField(
-                                                decoration:
-                                                    const InputDecoration(
-                                                  labelText: 'Montant',
-                                                ),
-                                                controller: prixController,
-                                                keyboardType:
-                                                    const TextInputType
-                                                        .numberWithOptions(
-                                                        decimal: true),
-                                              ),
-                                              const SizedBox(height: 6),
                                               Align(
                                                 alignment: Alignment.centerLeft,
                                                 child: Text(
@@ -342,6 +242,17 @@ class _DepensePageState extends State<DepensePage> {
                                                   ),
                                                 ),
                                               ),
+                                              TextField(
+                                                decoration:
+                                                    const InputDecoration(
+                                                  labelText: 'Montant',
+                                                ),
+                                                controller: prixController,
+                                                keyboardType:
+                                                    const TextInputType
+                                                        .numberWithOptions(
+                                                        decimal: true),
+                                              ),
                                             ],
                                           ),
                                           actions: <Widget>[
@@ -353,20 +264,17 @@ class _DepensePageState extends State<DepensePage> {
                                             ),
                                             TextButton(
                                               onPressed: () {
-                                                String newNomDepense =
-                                                    nomDepenseController.text;
+                                                String newNomObjectif =
+                                                    selectedCategory;
                                                 String newPrix =
                                                     prixController.text;
                                                 double newPrice =
                                                     double.tryParse(newPrix) ??
                                                         0.0;
-                                                String newCategorie =
-                                                    selectedCategory;
-                                                updateDepensePrix(
+                                                updateObjectifPrix(
                                                     newPrice,
-                                                    depense.docId,
-                                                    newNomDepense,
-                                                    newCategorie);
+                                                    objectif.docId,
+                                                    newNomObjectif);
                                                 Navigator.of(context).pop();
                                                 _refreshData();
                                               },
@@ -380,20 +288,14 @@ class _DepensePageState extends State<DepensePage> {
                                 );
                               },
                               leading: Icon(
-                                icons[depense.Icon],
+                                icons[objectif.Icon],
                                 color: Color(
-                                    int.parse('0xff' + depense.CouleurIcon)),
+                                    int.parse('0xff' + objectif.CouleurIcon)),
                               ),
                               title: Text(
-                                depense.nom_depense,
+                                objectif.nom_objectif,
                                 style: const TextStyle(
                                   fontSize: 18,
-                                ),
-                              ),
-                              subtitle: Text(
-                                depense.nom_categorie,
-                                style: const TextStyle(
-                                  fontSize: 16,
                                 ),
                               ),
                               trailing: SizedBox(
@@ -402,9 +304,15 @@ class _DepensePageState extends State<DepensePage> {
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
                                     Text(
-                                      depense.prix.toStringAsFixed(
-                                          depense.prix.truncateToDouble() ==
-                                                  depense.prix
+                                      '${totalDepensesParCategorie[objectif.nom_objectif]?.toString() ?? '0'} / ',
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                    Text(
+                                      objectif.prix.toStringAsFixed(
+                                          objectif.prix.truncateToDouble() ==
+                                                  objectif.prix
                                               ? 0
                                               : 2),
                                       style: const TextStyle(
@@ -436,25 +344,36 @@ class _DepensePageState extends State<DepensePage> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => AjouterDepensePage()),
+            MaterialPageRoute(
+                builder: (context) => const AjouterObjectifPage()),
           ).then((refresh) {
             if (refresh != null && refresh) {
               _refreshData();
             }
           });
         },
-        label: const Text('Ajouter des dépenses',
+        label: const Text('Ajouter des objectifs',
             style: TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: Colors.indigoAccent,
       ),
     );
   }
+}
 
-  double calculTotalDepense(List<ChartData> data) {
-    double total = 0;
-    for (var item in data) {
-      total += item.y;
+Future<Map<String, double>> calculateTotalDepensesParCategorie() async {
+  Map<String, double> totalDepensesParCategorie = {};
+
+  List<RechercheCategorieDepense> depenses = await listCategorieDepense();
+
+  for (var depense in depenses) {
+    if (totalDepensesParCategorie.containsKey(depense.nom_categorie)) {
+      totalDepensesParCategorie[depense.nom_categorie] =
+          (totalDepensesParCategorie[depense.nom_categorie] ?? 0) +
+              depense.prix;
+    } else {
+      totalDepensesParCategorie[depense.nom_categorie] = depense.prix;
     }
-    return double.parse(total.toStringAsFixed(2));
   }
+
+  return totalDepensesParCategorie;
 }

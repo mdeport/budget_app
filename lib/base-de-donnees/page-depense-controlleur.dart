@@ -2,8 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 // Ajoutez une dépense en Base de données
-Future<void> ajoutDepense(String userId, String nomDepense, double prix,
-    String IconUrl, String CouleurIcon) async {
+Future<void> ajoutDepense(String userId, String nomDepense, String nomCategorie,
+    double prix, String IconUrl, String CouleurIcon) async {
   try {
     await FirebaseFirestore.instance
         .collection('depense')
@@ -12,6 +12,7 @@ Future<void> ajoutDepense(String userId, String nomDepense, double prix,
         .add({
       'user_id': userId,
       'nom_depense': nomDepense,
+      'nom_categorie': nomCategorie,
       'prix': prix,
       'icon_url': IconUrl,
       'couleur_icon': CouleurIcon,
@@ -54,6 +55,7 @@ Future<List<ChartData>> listDepenseChartDataList() async {
 
 class RechercheDepense {
   final String nom_depense;
+  final String nom_categorie;
   final double prix;
   final String Icon;
   var CouleurIcon;
@@ -61,6 +63,7 @@ class RechercheDepense {
 
   RechercheDepense({
     required this.nom_depense,
+    required this.nom_categorie,
     required this.prix,
     required this.Icon,
     required this.CouleurIcon,
@@ -71,6 +74,7 @@ class RechercheDepense {
 //recuperer les depenses de la base de données
 Future<List<RechercheDepense>> listDepense() async {
   List<RechercheDepense> listDepense = [];
+  double totalDepense = 0;
   try {
     User? user = FirebaseAuth.instance.currentUser;
     if (user != null) {
@@ -82,17 +86,20 @@ Future<List<RechercheDepense>> listDepense() async {
       querySnapshot.docs.forEach((doc) {
         RechercheDepense depense = RechercheDepense(
           nom_depense: doc['nom_depense'],
+          nom_categorie: doc['nom_categorie'],
           prix: doc['prix'],
           Icon: doc['icon_url'],
           CouleurIcon: doc['couleur_icon'],
           docId: doc.id,
         );
         listDepense.add(depense);
+        totalDepense += doc['prix'];
       });
     }
   } catch (e) {
     print('Erreur lors de la récupération des données depuis Firestore: $e');
   }
+  print('Total des revenus : $totalDepense');
   return listDepense;
 }
 
@@ -114,8 +121,8 @@ Future<void> supprimerDepense(String docId) async {
 }
 
 // Mettre à jour le prix et le nom d'une dépense dans la base de données
-Future<void> updateDepensePrix(
-    double newPrix, String docId, String newNomDepense) async {
+Future<void> updateDepensePrix(double newPrix, String docId,
+    String newNomDepense, String NewNomCategorie) async {
   User? user = FirebaseAuth.instance.currentUser;
   try {
     final depenseRef = FirebaseFirestore.instance
@@ -124,9 +131,51 @@ Future<void> updateDepensePrix(
         .collection('depenses')
         .doc(docId);
 
-    await depenseRef.update({'prix': newPrix, 'nom_depense': newNomDepense});
+    await depenseRef.update({
+      'prix': newPrix,
+      'nom_depense': newNomDepense,
+      'nom_categorie': NewNomCategorie
+    });
     print('Le prix de la dépense a été mis à jour avec succès');
   } catch (error) {
     print('Erreur lors de la mise à jour du prix de la dépense: $error');
   }
+}
+
+class RechercheCategorieDepense {
+  final String nom_categorie;
+  final double prix;
+  final String docId;
+
+  RechercheCategorieDepense({
+    required this.nom_categorie,
+    required this.prix,
+    required this.docId,
+  });
+}
+
+//recuperer les depenses de la base de données
+Future<List<RechercheCategorieDepense>> listCategorieDepense() async {
+  List<RechercheCategorieDepense> listCategorieDepense = [];
+  try {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('depense')
+          .doc(user.uid)
+          .collection('depenses')
+          .get();
+      querySnapshot.docs.forEach((doc) {
+        RechercheCategorieDepense depense = RechercheCategorieDepense(
+          nom_categorie: doc['nom_categorie'],
+          prix: doc['prix'],
+          docId: doc.id,
+        );
+        listCategorieDepense.add(depense);
+      });
+    }
+  } catch (e) {
+    print('Erreur lors de la récupération des données depuis Firestore: $e');
+  }
+  return listCategorieDepense;
 }
