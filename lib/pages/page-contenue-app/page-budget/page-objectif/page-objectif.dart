@@ -270,7 +270,7 @@ class _ObjectifPageState extends State<ObjectifPage> {
                                             TextButton(
                                               onPressed: () {
                                                 String newNomObjectif =
-                                                    nomObjectifController.text;
+                                                    selectedCategory;
                                                 String newPrix =
                                                     prixController.text;
                                                 double newPrice =

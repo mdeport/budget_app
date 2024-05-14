@@ -101,7 +101,7 @@ final icons = {
   'train': FontAwesomeIcons.train,
   'tree': FontAwesomeIcons.tree,
   'tv': FontAwesomeIcons.tv,
-  'wineBottle': FontAwesomeIcons.wineBottle,
+  'wine_bottle': FontAwesomeIcons.wineBottle,
   'wallet': FontAwesomeIcons.wallet,
   'video': FontAwesomeIcons.video,
 };
