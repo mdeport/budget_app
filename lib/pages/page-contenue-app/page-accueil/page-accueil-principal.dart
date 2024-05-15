@@ -88,44 +88,11 @@ class _Page_accueil_principalState extends State<Page_accueil_principal> {
           ),
         ],
       ),
-      bottomNavigationBar: BottomNavBar(
-        currentIndex: 0,
-        onTap: (index) {
-          if (index == 0) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const Page_accueil_principal(),
-              ),
-            );
-          } else if (index == 1) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const Page_budget_principal(),
-              ),
-            );
-          } else if (index == 2) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const Page_conseil_principal(),
-              ),
-            );
-          } else if (index == 3) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const Page_parametre_principal(),
-              ),
-            );
-          }
-        },
-      ),
     );
   }
 
-  Widget buildShadowedBox(String title, String description, String clickableWord, Function()? onPressed) {
+  Widget buildShadowedBox(String title, String description,
+      String clickableWord, Function()? onPressed) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
@@ -165,7 +132,8 @@ class _Page_accueil_principalState extends State<Page_accueil_principal> {
                                 color: Colors.blue,
                                 decoration: TextDecoration.underline,
                               ),
-                              recognizer: TapGestureRecognizer()..onTap = onPressed,
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = onPressed,
                             ),
                         ],
                       ),

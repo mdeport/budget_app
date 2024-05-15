@@ -1,7 +1,3 @@
-import 'package:application_budget_app/pages/navbottombar/navbottombar.dart';
-import 'package:application_budget_app/pages/page-contenue-app/page-accueil/page-accueil-principal.dart';
-import 'package:application_budget_app/pages/page-contenue-app/page-conseil/page-conseil-principal.dart';
-import 'package:application_budget_app/pages/page-contenue-app/page-parametre/page-parametre-principal.dart';
 import 'package:application_budget_app/pages/page-contenue-app/page-budget/page-revenu/page-revenu.dart';
 import 'package:application_budget_app/pages/page-contenue-app/page-budget/page-depense/page-depense.dart';
 import 'package:application_budget_app/pages/page-contenue-app/page-budget/page-objectif/page-objectif.dart';
@@ -120,40 +116,6 @@ class _Page_budget_principalState extends State<Page_budget_principal> {
         ),
       ),
       body: _pages[_selectedIndex],
-      bottomNavigationBar: BottomNavBar(
-        currentIndex: 1,
-        onTap: (index) {
-          if (index == 0) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const Page_accueil_principal(),
-              ),
-            );
-          } else if (index == 1) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const Page_budget_principal(),
-              ),
-            );
-          } else if (index == 2) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const Page_conseil_principal(),
-              ),
-            );
-          } else if (index == 3) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const Page_parametre_principal(),
-              ),
-            );
-          }
-        },
-      ),
     );
   }
 }
