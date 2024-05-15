@@ -14,17 +14,24 @@ class pageGeneral extends StatefulWidget {
 class _pageGeneralState extends State<pageGeneral> {
   int _selectedIndex = 0;
 
-  final List<Widget> _pages = [
-    const Page_accueil_principal(),
-    const Page_budget_principal(),
-    const Page_conseil_principal(),
-    const Page_parametre_principal(),
-  ];
   @override
   Widget build(BuildContext context) {
+    final List<Widget> _pages = [
+      const Page_accueil_principal(),
+      const Page_budget_principal(),
+      const Page_conseil_principal(),
+      const Page_parametre_principal(),
+    ];
+
     return Scaffold(
       body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
@@ -47,12 +54,6 @@ class _pageGeneralState extends State<pageGeneral> {
             backgroundColor: Color.fromARGB(255, 33, 120, 241),
           ),
         ],
-        currentIndex: _selectedIndex,
-        onTap: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
       ),
     );
   }

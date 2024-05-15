@@ -3,7 +3,6 @@ import 'package:flutter/gestures.dart';
 import 'package:application_budget_app/pages/page-contenue-app/page-budget/page-budget-principal.dart';
 import 'package:application_budget_app/pages/page-contenue-app/page-conseil/page-conseil-principal.dart';
 import 'package:application_budget_app/pages/page-contenue-app/page-parametre/page-parametre-principal.dart';
-import 'package:application_budget_app/pages/navbottombar/navbottombar.dart';
 
 class Page_accueil_principal extends StatefulWidget {
   const Page_accueil_principal({Key? key});

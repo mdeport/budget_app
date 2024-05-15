@@ -1,5 +1,4 @@
 import 'package:application_budget_app/pages/page-authentification/page-bienvenue.dart';
-import 'package:application_budget_app/pages/page-contenue-app/page-accueil/page-accueil-principal.dart';
 import 'package:application_budget_app/pages/page-contenue-app/page-general.dart';
 import 'package:application_budget_app/pages/services/UserService.dart';
 import 'package:firebase_core/firebase_core.dart';
