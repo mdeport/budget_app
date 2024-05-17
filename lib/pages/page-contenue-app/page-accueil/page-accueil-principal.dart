@@ -1,8 +1,6 @@
+import 'package:application_budget_app/pages/page-contenue-app/page-general.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
-import 'package:application_budget_app/pages/page-contenue-app/page-budget/page-budget-principal.dart';
-import 'package:application_budget_app/pages/page-contenue-app/page-conseil/page-conseil-principal.dart';
-import 'package:application_budget_app/pages/page-contenue-app/page-parametre/page-parametre-principal.dart';
 
 class Page_accueil_principal extends StatefulWidget {
   const Page_accueil_principal({Key? key});
@@ -42,7 +40,9 @@ class _Page_accueil_principalState extends State<Page_accueil_principal> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const Page_budget_principal(),
+                  builder: (context) => const pageGeneral(
+                    initialIndex: 1,
+                  ),
                 ),
               );
             },
@@ -55,7 +55,9 @@ class _Page_accueil_principalState extends State<Page_accueil_principal> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const Page_conseil_principal(),
+                  builder: (context) => const pageGeneral(
+                    initialIndex: 2,
+                  ),
                 ),
               );
             },
@@ -80,7 +82,9 @@ class _Page_accueil_principalState extends State<Page_accueil_principal> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const Page_parametre_principal(),
+                  builder: (context) => const pageGeneral(
+                    initialIndex: 3,
+                  ),
                 ),
               );
             },

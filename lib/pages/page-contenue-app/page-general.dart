@@ -5,7 +5,8 @@ import 'package:application_budget_app/pages/page-contenue-app/page-conseil/page
 import 'package:application_budget_app/pages/page-contenue-app/page-parametre/page-parametre-principal.dart';
 
 class pageGeneral extends StatefulWidget {
-  const pageGeneral({super.key});
+  final int initialIndex;
+  const pageGeneral({this.initialIndex = 0});
 
   @override
   State<pageGeneral> createState() => _pageGeneralState();
@@ -15,6 +16,11 @@ class _pageGeneralState extends State<pageGeneral> {
   int _selectedIndex = 0;
 
   @override
+  void initState() {
+    super.initState();
+    _selectedIndex = widget.initialIndex;
+  }
+
   Widget build(BuildContext context) {
     final List<Widget> _pages = [
       const Page_accueil_principal(),
@@ -27,6 +33,7 @@ class _pageGeneralState extends State<pageGeneral> {
       body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
+        selectedItemColor: Colors.black,
         onTap: (index) {
           setState(() {
             _selectedIndex = index;
