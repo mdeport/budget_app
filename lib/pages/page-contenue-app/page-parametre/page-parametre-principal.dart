@@ -1,8 +1,11 @@
+import 'package:application_budget_app/pages/page-contenue-app/page-parametre/page-profil.dart';
 import 'package:flutter/material.dart';
 import 'package:application_budget_app/pages/page-authentification/page-social.dart';
 import 'package:application_budget_app/pages/services/UserService.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:settings_ui/settings_ui.dart';
+import 'package:application_budget_app/pages/page-contenue-app/page-parametre/page-notifications.dart';
+import 'package:application_budget_app/pages/page-contenue-app/page-parametre/page-profil.dart';
 
 class Page_parametre_principal extends StatefulWidget {
   const Page_parametre_principal({super.key});
@@ -15,32 +18,74 @@ class Page_parametre_principal extends StatefulWidget {
 class _Page_parametre_principalState extends State<Page_parametre_principal> {
   final UserService _userService = UserService();
   bool _isDark = false;
+
   @override
   Widget build(BuildContext context) {
+    final double appBarHeight = MediaQuery.of(context).size.height * 0.35;
+
     return Theme(
       data: _isDark ? ThemeData.dark() : ThemeData.light(),
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            'Paramètres',
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: 30.0,
-            ),
-          ),
-          centerTitle: true,
-          automaticallyImplyLeading: false,
-          flexibleSpace: Container(
-            decoration: const BoxDecoration(
-              color: Color(0xFF2196F3), // Bleu pastel
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(20),
-                bottomRight: Radius.circular(20),
+        appBar: PreferredSize(
+          preferredSize: Size.fromHeight(appBarHeight),
+          child: ClipPath(
+            clipper: AppBarClipper(),
+            child: AppBar(
+              automaticallyImplyLeading: false,
+              flexibleSpace: Container(
+                decoration: const BoxDecoration(
+                  color: Color(0xFF2196F3),
+                ),
+                child: const Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Paramètres',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 30.0,
+                      ),
+                    ),
+                    Spacer(),
+                    Padding(
+                      padding: EdgeInsets.only(bottom: 90.0),
+                      child: Text(
+                        'nom, prénom',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 24.0,
+                        ),
+                      ),
+                      /*FutureBuilder(
+                        future: _userService.getUserName(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const CircularProgressIndicator();
+                          } else if (snapshot.hasError) {
+                            return const Text(
+                              'Error loading user name',
+                              style: TextStyle(color: Colors.white),
+                            );
+                          } else {
+                            return const Text(
+                              'nom, prénom',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 24.0,
+                              ),
+                            );
+                          }
+                        },
+                      ),*/
+                    ),
+                  ],
+                ),
               ),
+              backgroundColor: const Color(0xFF2196F3),
             ),
           ),
-          backgroundColor: const Color(0xFF2196F3),
         ),
         body: Center(
           child: Container(
@@ -48,10 +93,10 @@ class _Page_parametre_principalState extends State<Page_parametre_principal> {
             child: ListView(
               children: [
                 _SingleSection(
-                  title: "General",
+                  title: "Général",
                   children: [
                     _CustomListTile(
-                        title: "Dark Mode",
+                        title: "Mode sombre",
                         icon: Icons.dark_mode_outlined,
                         trailing: Switch(
                             value: _isDark,
@@ -60,40 +105,43 @@ class _Page_parametre_principalState extends State<Page_parametre_principal> {
                                 _isDark = value;
                               });
                             })),
-                    const _CustomListTile(
+                    _CustomListTile(
                         title: "Notifications",
-                        icon: Icons.notifications_none_rounded),
-                    const _CustomListTile(
-                        title: "Security Status",
-                        icon: CupertinoIcons.lock_shield),
+                        icon: Icons.notifications_none_rounded,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    const pageNotifications()),
+                          );
+                        }),
+                  ],
+                ),
+                const Divider(),
+                _SingleSection(
+                  title: "Organisation",
+                  children: [
+                    _CustomListTile(
+                        title: "Profil",
+                        icon: Icons.person_outline_rounded,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const pageProfil()),
+                          );
+                        }),
                   ],
                 ),
                 const Divider(),
                 const _SingleSection(
-                  title: "Organization",
                   children: [
                     _CustomListTile(
-                        title: "Profile", icon: Icons.person_outline_rounded),
-                    _CustomListTile(
-                        title: "Messaging", icon: Icons.message_outlined),
-                    _CustomListTile(
-                        title: "Calling", icon: Icons.phone_outlined),
-                    _CustomListTile(
-                        title: "People", icon: Icons.contacts_outlined),
-                    _CustomListTile(
-                        title: "Calendar", icon: Icons.calendar_today_rounded)
-                  ],
-                ),
-                const Divider(),
-                const _SingleSection(
-                  children: [
-                    _CustomListTile(
-                        title: "Help & Feedback",
+                        title: "Aide & commentaires",
                         icon: Icons.help_outline_rounded),
                     _CustomListTile(
-                        title: "About", icon: Icons.info_outline_rounded),
-                    _CustomListTile(
-                        title: "Sign out", icon: Icons.exit_to_app_rounded),
+                        title: "À propos", icon: Icons.info_outline_rounded),
                   ],
                 ),
                 ElevatedButton(
@@ -107,7 +155,8 @@ class _Page_parametre_principalState extends State<Page_parametre_principal> {
                         ),
                         (route) => false);
                   },
-                  child: const Text('Se déconnecter'),
+                  child: const Text('Déconnexion',
+                      style: TextStyle(color: Colors.black, fontSize: 20.0)),
                 ),
               ],
             ),
@@ -122,9 +171,15 @@ class _CustomListTile extends StatelessWidget {
   final String title;
   final IconData icon;
   final Widget? trailing;
-  const _CustomListTile(
-      {Key? key, required this.title, required this.icon, this.trailing})
-      : super(key: key);
+  final VoidCallback? onTap;
+
+  const _CustomListTile({
+    Key? key,
+    required this.title,
+    required this.icon,
+    this.trailing,
+    this.onTap,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -132,7 +187,7 @@ class _CustomListTile extends StatelessWidget {
       title: Text(title),
       leading: Icon(icon),
       trailing: trailing,
-      onTap: () {},
+      onTap: onTap,
     );
   }
 }
@@ -168,51 +223,20 @@ class _SingleSection extends StatelessWidget {
   }
 }
 
-/*class Page_parametre_principal extends StatefulWidget {
-  const Page_parametre_principal({super.key});
-
+class AppBarClipper extends CustomClipper<Path> {
   @override
-  State<Page_parametre_principal> createState() =>
-      _Page_parametre_principalState();
-}
-
-class _Page_parametre_principalState extends State<Page_parametre_principal> {
-  final UserService _userService = UserService();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Paramètres',
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-            fontSize: 30.0,
-          ),
-        ),
-        centerTitle: true,
-        automaticallyImplyLeading: false,
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(color: Colors.blue),
-        ),
-        backgroundColor: Colors.blue,
-      ),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () async {
-            await _userService.signOut();
-
-            Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const PageSocial(),
-                ),
-                (route) => false);
-          },
-          child: const Text('Se déconnecter'),
-        ),
-      ),
-    );
+  Path getClip(Size size) {
+    final Path path = Path();
+    path.lineTo(0, size.height - 80);
+    path.quadraticBezierTo(
+        size.width / 2, size.height, size.width, size.height - 80);
+    path.lineTo(size.width, 0);
+    path.close();
+    return path;
   }
-}*/
+
+  @override
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) {
+    return false;
+  }
+}
