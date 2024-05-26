@@ -3,9 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:application_budget_app/pages/page-authentification/page-social.dart';
 import 'package:application_budget_app/pages/services/UserService.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:settings_ui/settings_ui.dart';
 import 'package:application_budget_app/pages/page-contenue-app/page-parametre/page-notifications.dart';
-import 'package:application_budget_app/pages/page-contenue-app/page-parametre/page-profil.dart';
 
 class Page_parametre_principal extends StatefulWidget {
   const Page_parametre_principal({super.key});
@@ -129,7 +127,7 @@ class _Page_parametre_principalState extends State<Page_parametre_principal> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const pageProfil()),
+                                builder: (context) => const PageProfil()),
                           );
                         }),
                   ],
@@ -149,6 +147,7 @@ class _Page_parametre_principalState extends State<Page_parametre_principal> {
                     await _userService.signOut();
 
                     Navigator.pushAndRemoveUntil(
+                        // ignore: use_build_context_synchronously
                         context,
                         MaterialPageRoute(
                           builder: (context) => const PageSocial(),
