@@ -1,13 +1,60 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class UpdateEmailPage extends StatelessWidget {
+class UpdateEmailPage extends StatefulWidget {
   final String currentEmail;
+
+  UpdateEmailPage({required this.currentEmail});
+
+  @override
+  _UpdateEmailPageState createState() => _UpdateEmailPageState();
+}
+
+class _UpdateEmailPageState extends State<UpdateEmailPage> {
   final _formKey = GlobalKey<FormState>();
   final _newEmailController = TextEditingController();
   final _confirmEmailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  UpdateEmailPage({required this.currentEmail});
+  Future<void> _updateEmail() async {
+    if (_formKey.currentState!.validate()) {
+      try {
+        User? user = _auth.currentUser;
+
+        if (user != null) {
+          AuthCredential credential = EmailAuthProvider.credential(
+              email: user.email!, password: _passwordController.text);
+          await user.reauthenticateWithCredential(credential);
+
+          await user.verifyBeforeUpdateEmail(_newEmailController.text);
+          await user.sendEmailVerification();
+
+          // Notify user to check email for verification
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                  'Email mis à jour. Veuillez vérifier votre boîte de réception pour confirmer le nouvel email.'),
+            ),
+          );
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erreur: ${e.toString()}'),
+          ),
+        );
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _newEmailController.dispose();
+    _confirmEmailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,11 +102,7 @@ class UpdateEmailPage extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    // Handle email update
-                  }
-                },
+                onPressed: _updateEmail,
                 child: const Text('Mettre à jour l\'email'),
               ),
             ],

@@ -37,12 +37,15 @@ class _Page_parametre_principalState extends State<Page_parametre_principal> {
                 child: const Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      'Paramètres',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 30.0,
+                    Padding(
+                      padding: EdgeInsets.only(top: 50.0),
+                      child: Text(
+                        'Paramètres',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 30.0,
+                        ),
                       ),
                     ),
                     Spacer(),

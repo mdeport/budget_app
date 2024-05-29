@@ -1,6 +1,8 @@
+import 'package:flutter/material.dart';
 import 'package:application_budget_app/pages/page-contenue-app/page-parametre/page-email.dart';
 import 'package:application_budget_app/pages/page-contenue-app/page-parametre/page-mots-de-passe.dart';
-import 'package:flutter/material.dart';
+import 'package:application_budget_app/base-de-donnees/page-profil-controlleur.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class PageProfil extends StatefulWidget {
   const PageProfil({super.key});
@@ -11,17 +13,35 @@ class PageProfil extends StatefulWidget {
 
 class _PageProfilState extends State<PageProfil> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
   final _firstNameController = TextEditingController();
-  final _lastNameController = TextEditingController();
   final _phoneController = TextEditingController();
-  final _addressController = TextEditingController();
-  final _cityController = TextEditingController();
   final _postalCodeController = TextEditingController();
   final _countryController = TextEditingController();
   final _birthDateController = TextEditingController();
   String _selectedGender = '';
+  final PageProfilController _controller = PageProfilController();
+  final _emailController = TextEditingController()
+    ..text = FirebaseAuth.instance.currentUser!.email!;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfileData();
+  }
+
+  Future<void> _loadProfileData() async {
+    UserProfile? profileData = await _controller.getProfile();
+    if (profileData != null) {
+      setState(() {
+        _firstNameController.text = profileData.prenom;
+        _phoneController.text = profileData.telephone;
+        _postalCodeController.text = profileData.codePostal;
+        _countryController.text = profileData.pays;
+        _birthDateController.text = profileData.aniverssaire;
+        _selectedGender = profileData.genre;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,9 +58,7 @@ class _PageProfilState extends State<PageProfil> {
             children: [
               ListTile(
                 title: const Text('Email'),
-                subtitle: Text(_emailController.text.isEmpty
-                    ? 'user@example.com'
-                    : _emailController.text),
+                subtitle: Text(_emailController.text),
                 trailing: IconButton(
                   icon: const Icon(Icons.edit),
                   onPressed: () {
@@ -48,9 +66,7 @@ class _PageProfilState extends State<PageProfil> {
                       context,
                       MaterialPageRoute(
                         builder: (context) => UpdateEmailPage(
-                            currentEmail: _emailController.text.isEmpty
-                                ? 'user@example.com'
-                                : _emailController.text),
+                            currentEmail: _emailController.text),
                       ),
                     );
                   },
@@ -71,8 +87,11 @@ class _PageProfilState extends State<PageProfil> {
                   },
                 ),
               ),
-              buildProfileRow('Numéro de téléphone', _phoneController,
-                  keyboardType: TextInputType.phone),
+              buildProfileRow(
+                'Numéro de téléphone',
+                _phoneController,
+                keyboardType: TextInputType.phone,
+              ),
               buildProfileRow('Prénom', _firstNameController),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -148,7 +167,24 @@ class _PageProfilState extends State<PageProfil> {
               ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
-                    // Handle profile update
+                    _controller
+                        .updateProfile(
+                      prenom: _firstNameController.text,
+                      telephone: _phoneController.text,
+                      codePostal: _postalCodeController.text,
+                      pays: _countryController.text,
+                      aniverssaire: _birthDateController.text,
+                      genre: _selectedGender,
+                    )
+                        .then((_) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Profil mis à jour')),
+                      );
+                    }).catchError((error) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Erreur: $error')),
+                      );
+                    });
                   }
                 },
                 child: const Text('Mettre à jour le profil'),
@@ -188,13 +224,8 @@ class _PageProfilState extends State<PageProfil> {
 
   @override
   void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
     _firstNameController.dispose();
-    _lastNameController.dispose();
     _phoneController.dispose();
-    _addressController.dispose();
-    _cityController.dispose();
     _postalCodeController.dispose();
     _countryController.dispose();
     _birthDateController.dispose();
