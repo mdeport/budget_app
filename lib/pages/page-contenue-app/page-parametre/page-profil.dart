@@ -90,9 +90,10 @@ class _PageProfilState extends State<PageProfil> {
               buildProfileRow(
                 'Numéro de téléphone',
                 _phoneController,
+                10,
                 keyboardType: TextInputType.phone,
               ),
-              buildProfileRow('Prénom', _firstNameController),
+              buildProfileRow('Prénom', _firstNameController, 150),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
                 child: Row(
@@ -160,8 +161,8 @@ class _PageProfilState extends State<PageProfil> {
                   ],
                 ),
               ),
-              buildProfileRow('Pays', _countryController),
-              buildProfileRow('Code postal', _postalCodeController,
+              buildProfileRow('Pays', _countryController, 150),
+              buildProfileRow('Code postal', _postalCodeController, 5,
                   keyboardType: TextInputType.number),
               const SizedBox(height: 20),
               ElevatedButton(
@@ -196,7 +197,8 @@ class _PageProfilState extends State<PageProfil> {
     );
   }
 
-  Widget buildProfileRow(String label, TextEditingController controller,
+  Widget buildProfileRow(
+      String label, TextEditingController controller, int maxLength,
       {TextInputType keyboardType = TextInputType.text}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -209,6 +211,7 @@ class _PageProfilState extends State<PageProfil> {
               decoration: InputDecoration(hintText: 'Entrez $label'),
               textAlign: TextAlign.right,
               keyboardType: keyboardType,
+              maxLength: maxLength,
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Veuillez entrer votre $label';
