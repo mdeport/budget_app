@@ -49,213 +49,216 @@ class _AjouterRevenuPage extends State<AjouterRevenuPage> {
           ),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const SizedBox(height: 20),
-            const Text(
-              'Montant',
-              style: TextStyle(fontSize: 20, color: Colors.indigo),
-            ),
-            const SizedBox(height: 10),
-            SizedBox(
-              width: 200,
-              child: TextField(
-                controller: prixControlleur,
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 18),
-                decoration: InputDecoration(
-                  hintText: 'Entrez le montant',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20.0),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const SizedBox(height: 20),
+              const Text(
+                'Montant',
+                style: TextStyle(fontSize: 20, color: Colors.indigo),
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                width: 200,
+                child: TextField(
+                  controller: prixControlleur,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 18),
+                  decoration: InputDecoration(
+                    hintText: 'Entrez le montant',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
                   ),
+                  keyboardType: TextInputType.number,
                 ),
-                keyboardType: TextInputType.number,
               ),
-            ),
-            const SizedBox(height: 30),
-            const Text(
-              'Choisissez une icône',
-              style: TextStyle(fontSize: 20, color: Colors.indigo),
-            ),
-            const SizedBox(height: 10),
-            GridView.builder(
-              shrinkWrap: true,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 6,
-                mainAxisSpacing: 10.0,
-                crossAxisSpacing: 10.0,
-                childAspectRatio: 1.0,
+              const SizedBox(height: 30),
+              const Text(
+                'Choisissez une icône',
+                style: TextStyle(fontSize: 20, color: Colors.indigo),
               ),
-              itemCount: displayedIcons.length,
-              itemBuilder: (context, index) {
-                final icon = displayedIcons[index];
-                return GestureDetector(
-                  onTap: () {
+              const SizedBox(height: 10),
+              GridView.builder(
+                shrinkWrap: true,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 6,
+                  mainAxisSpacing: 10.0,
+                  crossAxisSpacing: 10.0,
+                  childAspectRatio: 1.0,
+                ),
+                itemCount: displayedIcons.length,
+                itemBuilder: (context, index) {
+                  final icon = displayedIcons[index];
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        selectedIcon = icon;
+                        chosenIcon = icon;
+                      });
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(25)),
+                        color: selectedIcon == icon
+                            ? Colors.indigo.withOpacity(0.2)
+                            : null,
+                      ),
+                      child: Icon(icon, color: selectedColor),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 10),
+              if (!showAllIcons)
+                TextButton(
+                  onPressed: () {
                     setState(() {
-                      selectedIcon = icon;
-                      chosenIcon = icon;
+                      showAllIcons = true;
                     });
                   },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.all(Radius.circular(25)),
-                      color: selectedIcon == icon
-                          ? Colors.indigo.withOpacity(0.2)
-                          : null,
-                    ),
-                    child: Icon(icon, color: selectedColor),
+                  child: const Text(
+                    'Voir plus',
+                    style: TextStyle(color: Colors.indigo),
                   ),
-                );
-              },
-            ),
-            const SizedBox(height: 10),
-            if (!showAllIcons)
-              TextButton(
-                onPressed: () {
-                  setState(() {
-                    showAllIcons = true;
-                  });
-                },
-                child: const Text(
-                  'Voir plus',
-                  style: TextStyle(color: Colors.indigo),
                 ),
-              ),
-            if (showAllIcons)
-              TextButton(
-                onPressed: () {
-                  setState(() {
-                    showAllIcons = false;
-                  });
-                },
-                child: const Text(
-                  'Voir moins',
-                  style: TextStyle(color: Colors.indigo),
-                ),
-              ),
-            const SizedBox(height: 30),
-            const Text(
-              'Choisissez une couleur',
-              style: TextStyle(fontSize: 20, color: Colors.indigo),
-            ),
-            const SizedBox(height: 10),
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: selectedColor,
-                shape: BoxShape.circle,
-              ),
-            ),
-            const SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: const Text('Choisir une couleur'),
-                      content: SingleChildScrollView(
-                        child: MaterialColorPicker(
-                          selectedColor: selectedColor,
-                          onColorChange: (Color color) {
-                            setState(() {
-                              selectedColor = color;
-                            });
-                          },
-                          circleSize: 40.0,
-                          spacing: 10.0,
-                        ),
-                      ),
-                      actions: <Widget>[
-                        TextButton(
-                          child: const Text('OK'),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                      ],
-                    );
+              if (showAllIcons)
+                TextButton(
+                  onPressed: () {
+                    setState(() {
+                      showAllIcons = false;
+                    });
                   },
-                );
-              },
-              child: const Text('Choisir'),
-            ),
-            const SizedBox(height: 30),
-            const Text(
-              'Nom de la catégorie',
-              style: TextStyle(fontSize: 20, color: Colors.indigo),
-            ),
-            const SizedBox(height: 10),
-            SizedBox(
-              width: 300,
-              child: TextField(
-                controller: nomRevenuControlleur,
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 18),
-                decoration: InputDecoration(
-                  hintText: 'Entrez le nom de la catégorie',
-                  border: OutlineInputBorder(
+                  child: const Text(
+                    'Voir moins',
+                    style: TextStyle(color: Colors.indigo),
+                  ),
+                ),
+              const SizedBox(height: 30),
+              const Text(
+                'Choisissez une couleur',
+                style: TextStyle(fontSize: 20, color: Colors.indigo),
+              ),
+              const SizedBox(height: 10),
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: selectedColor,
+                  shape: BoxShape.circle,
+                ),
+              ),
+              const SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text('Choisir une couleur'),
+                        content: SingleChildScrollView(
+                          child: MaterialColorPicker(
+                            selectedColor: selectedColor,
+                            onColorChange: (Color color) {
+                              setState(() {
+                                selectedColor = color;
+                              });
+                            },
+                            circleSize: 40.0,
+                            spacing: 10.0,
+                          ),
+                        ),
+                        actions: <Widget>[
+                          TextButton(
+                            child: const Text('OK'),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+                child: const Text('Choisir'),
+              ),
+              const SizedBox(height: 30),
+              const Text(
+                'Nom de la catégorie',
+                style: TextStyle(fontSize: 20, color: Colors.indigo),
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                width: 300,
+                child: TextField(
+                  controller: nomRevenuControlleur,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 18),
+                  decoration: InputDecoration(
+                    hintText: 'Entrez le nom de la catégorie',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 40),
+              ElevatedButton(
+                onPressed: () {
+                  String prixSansVirgule =
+                      prixControlleur.text.replaceAll(",", ".");
+                  if (nomRevenuControlleur.text.isEmpty ||
+                      prixControlleur.text.isEmpty ||
+                      chosenIcon == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                            'Veuillez remplir tous les champs et choisir une icône.'),
+                      ),
+                    );
+                  } else if (double.tryParse(prixSansVirgule) == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Le montant n'est pas valide."),
+                      ),
+                    );
+                  } else {
+                    User? user = _auth.currentUser;
+                    String userId = user!.uid;
+                    String nomRevenue = nomRevenuControlleur.text;
+                    double prix = double.parse(prixSansVirgule);
+                    String iconName =
+                        iconNamesRevenu[chosenIcon!] ?? 'icon_inconnu';
+                    String iconUrl = iconName;
+                    String couleur = selectedColor.value.toRadixString(16);
+                    ajoutRevenu(
+                      userId,
+                      nomRevenue,
+                      prix,
+                      iconUrl,
+                      couleur,
+                    ).then((_) {
+                      Navigator.of(context).pop(true);
+                    });
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.indigo,
+                  shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20.0),
                   ),
                 ),
-              ),
-            ),
-            const SizedBox(height: 40),
-            ElevatedButton(
-              onPressed: () {
-                String prixSansVirgule =
-                    prixControlleur.text.replaceAll(",", ".");
-                if (nomRevenuControlleur.text.isEmpty ||
-                    prixControlleur.text.isEmpty ||
-                    chosenIcon == null) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text(
-                          'Veuillez remplir tous les champs et choisir une icône.'),
-                    ),
-                  );
-                } else if (double.tryParse(prixSansVirgule) == null) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text("Le montant n'est pas valide."),
-                    ),
-                  );
-                } else {
-                  User? user = _auth.currentUser;
-                  String userId = user!.uid;
-                  String nomRevenue = nomRevenuControlleur.text;
-                  double prix = double.parse(prixSansVirgule);
-                  String iconName =
-                      iconNamesRevenu[chosenIcon!] ?? 'icon_inconnu';
-                  String iconUrl = iconName;
-                  String couleur = selectedColor.value.toRadixString(16);
-                  ajoutRevenu(
-                    userId,
-                    nomRevenue,
-                    prix,
-                    iconUrl,
-                    couleur,
-                  ).then((_) {
-                    Navigator.of(context).pop(true);
-                  });
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.indigo,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20.0),
+                child: const Text(
+                  'Valider',
+                  style: TextStyle(color: Colors.white, fontSize: 18),
                 ),
               ),
-              child: const Text(
-                'Valider',
-                style: TextStyle(color: Colors.white, fontSize: 18),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
