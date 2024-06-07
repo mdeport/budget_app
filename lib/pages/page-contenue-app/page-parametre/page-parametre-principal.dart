@@ -1,9 +1,12 @@
+import 'package:application_budget_app/pages/page-contenue-app/page-parametre/page-Apropos.dart';
 import 'package:application_budget_app/pages/page-contenue-app/page-parametre/page-profil.dart';
 import 'package:flutter/material.dart';
 import 'package:application_budget_app/pages/page-authentification/page-social.dart';
 import 'package:application_budget_app/pages/services/UserService.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:application_budget_app/pages/page-contenue-app/page-parametre/page-notifications.dart';
+import 'package:application_budget_app/base-de-donnees/page-profil-controlleur.dart';
+import 'package:application_budget_app/pages/page-contenue-app/page-parametre/page-aide.dart';
 
 class Page_parametre_principal extends StatefulWidget {
   const Page_parametre_principal({super.key});
@@ -17,9 +20,26 @@ class _Page_parametre_principalState extends State<Page_parametre_principal> {
   final UserService _userService = UserService();
   bool _isDark = false;
 
+  final _firstNameController = TextEditingController();
+  final PageProfilController _controller = PageProfilController();
+
   @override
+  void initState() {
+    super.initState();
+    _loadProfileData();
+  }
+
+  Future<void> _loadProfileData() async {
+    UserProfile? profileData = await _controller.getProfile();
+    if (profileData != null) {
+      setState(() {
+        _firstNameController.text = profileData.prenom;
+      });
+    }
+  }
+
   Widget build(BuildContext context) {
-    final double appBarHeight = MediaQuery.of(context).size.height * 0.35;
+    final double appBarHeight = MediaQuery.of(context).size.height * 0.30;
 
     return Theme(
       data: _isDark ? ThemeData.dark() : ThemeData.light(),
@@ -34,10 +54,10 @@ class _Page_parametre_principalState extends State<Page_parametre_principal> {
                 decoration: const BoxDecoration(
                   color: Color(0xFF2196F3),
                 ),
-                child: const Column(
+                child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Padding(
+                    const Padding(
                       padding: EdgeInsets.only(top: 50.0),
                       child: Text(
                         'Paramètres',
@@ -48,38 +68,18 @@ class _Page_parametre_principalState extends State<Page_parametre_principal> {
                         ),
                       ),
                     ),
-                    Spacer(),
+                    const Spacer(),
                     Padding(
-                      padding: EdgeInsets.only(bottom: 90.0),
+                      padding: const EdgeInsets.only(bottom: 90.0),
                       child: Text(
-                        'nom, prénom',
-                        style: TextStyle(
+                        _firstNameController.text.isNotEmpty
+                            ? 'Veuillez configurer votre compte' //${_firstNameController.text}
+                            : 'Veuillez configurer votre compte',
+                        style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 24.0,
+                          fontSize: 20.0,
                         ),
                       ),
-                      /*FutureBuilder(
-                        future: _userService.getUserName(),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const CircularProgressIndicator();
-                          } else if (snapshot.hasError) {
-                            return const Text(
-                              'Error loading user name',
-                              style: TextStyle(color: Colors.white),
-                            );
-                          } else {
-                            return const Text(
-                              'nom, prénom',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 24.0,
-                              ),
-                            );
-                          }
-                        },
-                      ),*/
                     ),
                   ],
                 ),
@@ -96,7 +96,7 @@ class _Page_parametre_principalState extends State<Page_parametre_principal> {
                 _SingleSection(
                   title: "Général",
                   children: [
-                    _CustomListTile(
+                    /*_CustomListTile(
                         title: "Mode sombre",
                         icon: Icons.dark_mode_outlined,
                         trailing: Switch(
@@ -105,7 +105,7 @@ class _Page_parametre_principalState extends State<Page_parametre_principal> {
                               setState(() {
                                 _isDark = value;
                               });
-                            })),
+                            })),*/
                     _CustomListTile(
                         title: "Notifications",
                         icon: Icons.notifications_none_rounded,
@@ -136,13 +136,30 @@ class _Page_parametre_principalState extends State<Page_parametre_principal> {
                   ],
                 ),
                 const Divider(),
-                const _SingleSection(
+                _SingleSection(
                   children: [
                     _CustomListTile(
-                        title: "Aide & commentaires",
-                        icon: Icons.help_outline_rounded),
+                      title: "Aide & commentaires",
+                      icon: Icons.help_outline_rounded,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const PageAide()),
+                        );
+                      },
+                    ),
                     _CustomListTile(
-                        title: "À propos", icon: Icons.info_outline_rounded),
+                      title: "À propos",
+                      icon: Icons.info_outline_rounded,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const PageAPropos()),
+                        );
+                      },
+                    ),
                   ],
                 ),
                 ElevatedButton(

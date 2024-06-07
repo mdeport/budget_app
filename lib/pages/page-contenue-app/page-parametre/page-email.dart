@@ -34,7 +34,7 @@ class _UpdateEmailPageState extends State<UpdateEmailPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text(
-                  'Email mis à jour. Veuillez vérifier votre boîte de réception pour confirmer le nouvel email.'),
+                  'Email mis à jour. Veuillez vérifier votre boîte de réception pour confirmer le nouvel email. Il sera actif après vérification.'),
             ),
           );
         }

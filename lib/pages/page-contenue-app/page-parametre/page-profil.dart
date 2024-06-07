@@ -114,12 +114,12 @@ class _PageProfilState extends State<PageProfil> {
                             _selectedGender = newValue!;
                           });
                         },
-                        validator: (value) {
+                        /*validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Veuillez sélectionner votre genre';
                           }
                           return null;
-                        },
+                        },*/
                       ),
                     ),
                   ],
@@ -150,12 +150,12 @@ class _PageProfilState extends State<PageProfil> {
                             });
                           }
                         },
-                        validator: (value) {
+                        /*validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Veuillez entrer votre date de naissance';
                           }
                           return null;
-                        },
+                        },*/
                       ),
                     ),
                   ],
@@ -212,12 +212,12 @@ class _PageProfilState extends State<PageProfil> {
               textAlign: TextAlign.right,
               keyboardType: keyboardType,
               maxLength: maxLength,
-              validator: (value) {
+              /*validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Veuillez entrer votre $label';
                 }
                 return null;
-              },
+              },*/
             ),
           ),
         ],
