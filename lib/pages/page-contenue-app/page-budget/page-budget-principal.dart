@@ -27,20 +27,17 @@ class _Page_budget_principalState extends State<Page_budget_principal> {
       appBar: AppBar(
         title: const Text('Budget',
             style: TextStyle(
-                color: Colors.black,
+                color: Colors.white,
                 fontWeight: FontWeight.bold,
                 fontSize: 30.0)),
+        centerTitle: true,
         automaticallyImplyLeading: false,
         flexibleSpace: Container(
           decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Color.fromARGB(255, 21, 41, 255),
-                Color.fromARGB(234, 91, 230, 255),
-                Color.fromARGB(197, 91, 230, 255),
-              ],
+            color: Colors.blue,
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(20),
+              bottomRight: Radius.circular(20),
             ),
           ),
         ),

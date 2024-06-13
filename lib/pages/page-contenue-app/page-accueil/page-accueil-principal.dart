@@ -12,9 +12,31 @@ class Page_accueil_principal extends StatefulWidget {
 class _Page_accueil_principalState extends State<Page_accueil_principal> {
   @override
   Widget build(BuildContext context) {
-    final double appBarHeight = MediaQuery.of(context).size.height * 0.15;
+    //final double appBarHeight = MediaQuery.of(context).size.height * 0.15;
     return Scaffold(
-      appBar: PreferredSize(
+      appBar: AppBar(
+        title: const Text(
+          'Accueil',
+          style: TextStyle(
+            color: Color.fromARGB(255, 255, 255, 255),
+            fontWeight: FontWeight.bold,
+            fontSize: 30.0,
+          ),
+        ),
+        centerTitle: true,
+        automaticallyImplyLeading: false,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            color: Color(0xFF2196F3), // Bleu pastel
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(40),
+              bottomRight: Radius.circular(40),
+            ),
+          ),
+        ),
+        
+      ),
+      /*appBar: PreferredSize(
         preferredSize: Size.fromHeight(appBarHeight),
         child: ClipPath(
           clipper: AppBarClipper(),
@@ -44,7 +66,7 @@ class _Page_accueil_principalState extends State<Page_accueil_principal> {
             backgroundColor: const Color(0xFF2196F3),
           ),
         ),
-      ),
+      ),*/
       body: ListView(
         children: <Widget>[
           buildShadowedBox(
