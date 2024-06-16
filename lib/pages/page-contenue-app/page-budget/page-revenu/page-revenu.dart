@@ -3,6 +3,9 @@ import 'package:application_budget_app/pages/page-contenue-app/page-budget/Page-
 import 'package:application_budget_app/base-de-donnees/page-revenu-controlleur.dart';
 import 'package:application_budget_app/base-de-donnees/Icons/list-icon-revenu.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:intl/intl.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class RevenuePage extends StatefulWidget {
   const RevenuePage({super.key});
@@ -13,6 +16,8 @@ class RevenuePage extends StatefulWidget {
 
 class _RevenuePageState extends State<RevenuePage> {
   bool dataEmpty = true;
+  DateTime selectedMonth = DateTime.now();
+
   @override
   void initState() {
     super.initState();
@@ -25,12 +30,90 @@ class _RevenuePageState extends State<RevenuePage> {
     });
   }
 
+  void _previousMonth() {
+    setState(() {
+      selectedMonth = DateTime(selectedMonth.year, selectedMonth.month - 1);
+    });
+  }
+
+  void _nextMonth() {
+    setState(() {
+      selectedMonth = DateTime(selectedMonth.year, selectedMonth.month + 1);
+    });
+  }
+
+  Future<List<ChartDatarevenu>> listRevenuChartDataList() async {
+    List<ChartDatarevenu> chartDataList = [];
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+            .collection('revenu')
+            .doc(user.uid)
+            .collection('revenus')
+            .get();
+        querySnapshot.docs.forEach((doc) {
+          DateTime date = DateTime.parse(doc['date']);
+          if (date.year == selectedMonth.year &&
+              date.month == selectedMonth.month) {
+            double prix = doc['prix'] ?? 0.0;
+            String CouleurIcon = doc['couleur_icon'];
+            chartDataList
+                .add(ChartDatarevenu(doc['nom_revenu'], prix, CouleurIcon));
+          }
+        });
+      }
+    } catch (e) {
+      print('Erreur lors de la récupération des données depuis Firestore: $e');
+    }
+    return chartDataList;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 10, left: 20, right: 20),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 2,
+                    blurRadius: 5,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_left),
+                      onPressed: _previousMonth,
+                    ),
+                    Text(
+                      DateFormat.yMMM().format(selectedMonth),
+                      style: const TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.arrow_right),
+                      onPressed: _nextMonth,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
           Expanded(
             child: FutureBuilder<List<ChartDatarevenu>>(
               future: listRevenuChartDataList(),
@@ -137,10 +220,17 @@ class _RevenuePageState extends State<RevenuePage> {
                     );
                   } else {
                     List<RechercheRevenu>? listRevenu = snapshot.data;
+                    List<RechercheRevenu> filteredRevenus =
+                        listRevenu!.where((revenu) {
+                      DateTime date = DateTime.parse(revenu.date);
+                      return date.year == selectedMonth.year &&
+                          date.month == selectedMonth.month;
+                    }).toList();
+
                     return ListView.builder(
-                      itemCount: listRevenu!.length,
+                      itemCount: filteredRevenus.length,
                       itemBuilder: (context, index) {
-                        RechercheRevenu revenu = listRevenu[index];
+                        RechercheRevenu revenu = filteredRevenus[index];
                         return Container(
                           margin: const EdgeInsets.symmetric(
                               horizontal: 15, vertical: 5),

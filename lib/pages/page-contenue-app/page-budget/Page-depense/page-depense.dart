@@ -5,6 +5,8 @@ import 'package:application_budget_app/pages/page-contenue-app/page-budget/Page-
 import 'package:application_budget_app/base-de-donnees/page-revenu-controlleur.dart';
 import 'package:application_budget_app/base-de-donnees/Icons/list-icon-depense.dart';
 import 'package:application_budget_app/base-de-donnees/page-depense-controlleur.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class DepensePage extends StatefulWidget {
   const DepensePage({Key? key}) : super(key: key);
@@ -15,7 +17,6 @@ class DepensePage extends StatefulWidget {
 
 class _DepensePageState extends State<DepensePage> {
   double totalRevenu = 0;
-  bool dataEmpty = true;
   DateTime selectedMonth = DateTime.now();
 
   @override
@@ -61,6 +62,32 @@ class _DepensePageState extends State<DepensePage> {
     }).toList();
   }
 
+  Future<List<ChartData>> listDepenseChartDataList() async {
+    List<ChartData> chartDataList = [];
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+            .collection('depense')
+            .doc(user.uid)
+            .collection('depenses')
+            .get();
+        querySnapshot.docs.forEach((doc) {
+          DateTime date = DateTime.parse(doc['date']);
+          if (date.year == selectedMonth.year &&
+              date.month == selectedMonth.month) {
+            double prix = doc['prix'] ?? 0.0;
+            String CouleurIcon = doc['couleur_icon'];
+            chartDataList.add(ChartData(doc['nom_depense'], prix, CouleurIcon));
+          }
+        });
+      }
+    } catch (e) {
+      print('Erreur lors de la récupération des données depuis Firestore: $e');
+    }
+    return chartDataList;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -68,24 +95,42 @@ class _DepensePageState extends State<DepensePage> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
-            padding: const EdgeInsets.only(left: 20, right: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.arrow_left),
-                  onPressed: _previousMonth,
+            padding: const EdgeInsets.only(top: 10, left: 20, right: 20),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(15),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 2,
+                    blurRadius: 5,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_left),
+                      onPressed: _previousMonth,
+                    ),
+                    Text(
+                      DateFormat.yMMM().format(selectedMonth),
+                      style: const TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.arrow_right),
+                      onPressed: _nextMonth,
+                    ),
+                  ],
                 ),
-                Text(
-                  DateFormat.yMMM().format(selectedMonth),
-                  style: const TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.arrow_right),
-                  onPressed: _nextMonth,
-                ),
-              ],
+              ),
             ),
           ),
           Expanded(
@@ -106,7 +151,6 @@ class _DepensePageState extends State<DepensePage> {
                   double totalValue = calculTotalDepense(chartDataList!);
                   double rest = totalRevenu - totalValue;
                   rest = double.parse(rest.toStringAsFixed(2));
-                  dataEmpty = chartDataList.isEmpty;
 
                   return Stack(
                     children: [
@@ -157,7 +201,7 @@ class _DepensePageState extends State<DepensePage> {
                                 ),
                               ),
                       ),
-                      if (!chartDataList.isEmpty)
+                      if (chartDataList.isNotEmpty)
                         Positioned(
                           child: Center(
                             child: Text(
@@ -170,29 +214,30 @@ class _DepensePageState extends State<DepensePage> {
                             ),
                           ),
                         ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 20.0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Total des revenus : $totalRevenu €',
-                              style: const TextStyle(
-                                fontSize: 14.5,
-                                fontWeight: FontWeight.bold,
+                      if (chartDataList.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(left: 20.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Total des revenus : $totalRevenu €',
+                                style: const TextStyle(
+                                  fontSize: 14.5,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            ),
-                            Text(
-                              'Reste : $rest €',
-                              style: const TextStyle(
-                                fontSize: 14.5,
-                                fontWeight: FontWeight.bold,
+                              Text(
+                                'Reste : $rest €',
+                                style: const TextStyle(
+                                  fontSize: 14.5,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
                     ],
                   );
                 }
