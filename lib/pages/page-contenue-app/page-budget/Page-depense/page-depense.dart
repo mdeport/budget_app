@@ -1,12 +1,13 @@
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:application_budget_app/pages/page-contenue-app/page-budget/Page-depense/page-ajouts-depense.dart';
 import 'package:application_budget_app/base-de-donnees/page-revenu-controlleur.dart';
 import 'package:application_budget_app/base-de-donnees/Icons/list-icon-depense.dart';
 import 'package:application_budget_app/base-de-donnees/page-depense-controlleur.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
-import 'package:flutter/material.dart';
 
 class DepensePage extends StatefulWidget {
-  const DepensePage({super.key});
+  const DepensePage({Key? key}) : super(key: key);
 
   @override
   State<DepensePage> createState() => _DepensePageState();
@@ -15,6 +16,8 @@ class DepensePage extends StatefulWidget {
 class _DepensePageState extends State<DepensePage> {
   double totalRevenu = 0;
   bool dataEmpty = true;
+  DateTime selectedMonth = DateTime.now();
+
   @override
   void initState() {
     super.initState();
@@ -22,9 +25,7 @@ class _DepensePageState extends State<DepensePage> {
   }
 
   Future<void> _refreshData() async {
-    setState(() {
-      listDepenseChartDataList();
-    });
+    setState(() {});
   }
 
   Future<void> fetchRevenus() async {
@@ -38,13 +39,57 @@ class _DepensePageState extends State<DepensePage> {
     });
   }
 
+  void _previousMonth() {
+    setState(() {
+      selectedMonth = DateTime(selectedMonth.year, selectedMonth.month - 1);
+    });
+  }
+
+  void _nextMonth() {
+    setState(() {
+      selectedMonth = DateTime(selectedMonth.year, selectedMonth.month + 1);
+    });
+  }
+
+  List<RechercheDepense> _filterDepensesByMonth(
+      List<RechercheDepense> depenses) {
+    return depenses.where((depense) {
+      DateTime date =
+          DateTime.parse(depense.date); // Assuming date is stored as string
+      return date.year == selectedMonth.year &&
+          date.month == selectedMonth.month;
+    }).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 20, right: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.arrow_left),
+                  onPressed: _previousMonth,
+                ),
+                Text(
+                  DateFormat.yMMM().format(selectedMonth),
+                  style: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.arrow_right),
+                  onPressed: _nextMonth,
+                ),
+              ],
+            ),
+          ),
           Expanded(
+            flex: 5,
             child: FutureBuilder<List<ChartData>>(
               future: listDepenseChartDataList(),
               builder: (context, snapshot) {
@@ -59,9 +104,10 @@ class _DepensePageState extends State<DepensePage> {
                 } else {
                   List<ChartData>? chartDataList = snapshot.data;
                   double totalValue = calculTotalDepense(chartDataList!);
-                  double Reste = totalRevenu - totalValue;
-                  Reste = double.parse(Reste.toStringAsFixed(2));
+                  double rest = totalRevenu - totalValue;
+                  rest = double.parse(rest.toStringAsFixed(2));
                   dataEmpty = chartDataList.isEmpty;
+
                   return Stack(
                     children: [
                       Center(
@@ -82,7 +128,7 @@ class _DepensePageState extends State<DepensePage> {
                                   ],
                                 ),
                                 child: const Text(
-                                  'Aucune dépense enregistré.\n\nAjoutez des dépenses pour voir votre graphique ainsi que votre liste de dépense.',
+                                  'Aucune dépense enregistrée.\n\nAjoutez des dépenses pour voir votre graphique ainsi que votre liste de dépenses.',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     color: Colors.red,
@@ -91,67 +137,61 @@ class _DepensePageState extends State<DepensePage> {
                                   ),
                                 ),
                               )
-                            : Stack(
-                                children: [
-                                  Center(
-                                    child: SfCircularChart(
-                                      series: <CircularSeries>[
-                                        DoughnutSeries<ChartData, String>(
-                                          dataSource: chartDataList,
-                                          pointColorMapper:
-                                              (ChartData data, _) => Color(
-                                                  int.parse(
-                                                      '0xff' + data.color)),
-                                          xValueMapper: (ChartData data, _) =>
-                                              data.x,
-                                          yValueMapper: (ChartData data, _) =>
-                                              data.y,
-                                          dataLabelSettings:
-                                              const DataLabelSettings(
-                                                  isVisible: true),
-                                          innerRadius: '60%',
-                                        ),
-                                      ],
+                            : Center(
+                                child: SfCircularChart(
+                                  series: <CircularSeries>[
+                                    DoughnutSeries<ChartData, String>(
+                                      dataSource: chartDataList,
+                                      pointColorMapper: (ChartData data, _) =>
+                                          Color(int.parse('0xff' + data.color)),
+                                      xValueMapper: (ChartData data, _) =>
+                                          data.x,
+                                      yValueMapper: (ChartData data, _) =>
+                                          data.y,
+                                      dataLabelSettings:
+                                          const DataLabelSettings(
+                                              isVisible: true),
+                                      innerRadius: '60%',
                                     ),
-                                  ),
-                                  Positioned(
-                                    child: Center(
-                                      child: Text(
-                                        '$totalValue €',
-                                        style: const TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 20.0),
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'Total des revenues : $totalRevenu €',
-                                          style: const TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        Text(
-                                          'Reste : $Reste €',
-                                          style: const TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
+                      ),
+                      if (!chartDataList.isEmpty)
+                        Positioned(
+                          child: Center(
+                            child: Text(
+                              '$totalValue €',
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                        ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 20.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Total des revenus : $totalRevenu €',
+                              style: const TextStyle(
+                                fontSize: 14.5,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              'Reste : $rest €',
+                              style: const TextStyle(
+                                fontSize: 14.5,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   );
@@ -160,274 +200,244 @@ class _DepensePageState extends State<DepensePage> {
             ),
           ),
           Expanded(
-            child: SizedBox(
-              child: FutureBuilder<List<RechercheDepense>>(
-                future: listDepense(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  } else if (snapshot.hasError) {
-                    return Center(
-                      child: Text('Erreur: ${snapshot.error}'),
-                    );
-                  } else {
-                    List<RechercheDepense>? listDepense = snapshot.data;
-                    return ListView.builder(
-                      itemCount: listDepense!.length,
-                      itemBuilder: (context, index) {
-                        RechercheDepense depense = listDepense[index];
-                        return Container(
-                          margin: const EdgeInsets.symmetric(
-                              horizontal: 15, vertical: 5),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            border: Border.all(color: Colors.grey, width: 1.0),
-                            borderRadius: BorderRadius.circular(10.0),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.4),
-                                spreadRadius: 2,
-                                blurRadius: 7,
-                                offset: const Offset(0, 3),
-                              ),
-                            ],
-                          ),
-                          child: Dismissible(
-                            key: Key(depense.nom_depense),
-                            direction: DismissDirection.endToStart,
-                            background: Container(
-                              color: Colors.red,
-                              alignment: Alignment.centerRight,
-                              padding: const EdgeInsets.only(right: 20.0),
-                              child:
-                                  const Icon(Icons.delete, color: Colors.white),
+            flex: 5,
+            child: FutureBuilder<List<RechercheDepense>>(
+              future: listDepense(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else if (snapshot.hasError) {
+                  return Center(
+                    child: Text('Erreur: ${snapshot.error}'),
+                  );
+                } else {
+                  List<RechercheDepense>? listDepense = snapshot.data;
+                  List<RechercheDepense> filteredDepenses =
+                      _filterDepensesByMonth(listDepense!);
+
+                  return ListView.builder(
+                    itemCount: filteredDepenses.length +
+                        1, // Add one more item for the bottom padding
+                    itemBuilder: (context, index) {
+                      if (index == filteredDepenses.length) {
+                        return SizedBox(height: 30); // Padding at the bottom
+                      }
+                      RechercheDepense depense = filteredDepenses[index];
+                      return Container(
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 15, vertical: 5),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border.all(color: Colors.grey, width: 1.0),
+                          borderRadius: BorderRadius.circular(10.0),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.4),
+                              spreadRadius: 2,
+                              blurRadius: 7,
+                              offset: const Offset(0, 3),
                             ),
-                            confirmDismiss: (direction) async {
-                              return await showDialog(
+                          ],
+                        ),
+                        child: Dismissible(
+                          key: Key(depense.nom_depense),
+                          direction: DismissDirection.endToStart,
+                          background: Container(
+                            color: Colors.red,
+                            alignment: Alignment.centerRight,
+                            padding: const EdgeInsets.only(right: 20.0),
+                            child:
+                                const Icon(Icons.delete, color: Colors.white),
+                          ),
+                          confirmDismiss: (direction) async {
+                            return await showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text("Confirmation"),
+                                  content: const Text(
+                                      "Voulez-vous vraiment supprimer la dépense ?"),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(false),
+                                      child: const Text("Annuler"),
+                                    ),
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(true),
+                                      child: const Text("Supprimer"),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                          onDismissed: (direction) {
+                            // Supprimer la dépense de la base de données
+                            supprimerDepense(depense.docId);
+                            _refreshData();
+                          },
+                          child: ListTile(
+                            onTap: () {
+                              TextEditingController nomDepenseController =
+                                  TextEditingController(
+                                      text: depense.nom_depense);
+                              TextEditingController prixController =
+                                  TextEditingController(
+                                      text: depense.prix.toString());
+                              String selectedCategory = depense.nom_categorie;
+                              showDialog(
                                 context: context,
                                 builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    title: const Text("Confirmation"),
-                                    content: const Text(
-                                        "Voulez-vous vraiment supprimer la depense ?"),
-                                    actions: <Widget>[
-                                      TextButton(
-                                        onPressed: () =>
-                                            Navigator.of(context).pop(false),
-                                        child: const Text("Annuler"),
-                                      ),
-                                      TextButton(
-                                        onPressed: () =>
-                                            Navigator.of(context).pop(true),
-                                        child: const Text("Supprimer"),
-                                      ),
-                                    ],
+                                  return StatefulBuilder(
+                                    builder: (context, setState) {
+                                      return AlertDialog(
+                                        title: const Text("Modifier dépense"),
+                                        content: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            TextField(
+                                              controller: nomDepenseController,
+                                              decoration: const InputDecoration(
+                                                labelText: "Nom de la dépense",
+                                              ),
+                                            ),
+                                            TextField(
+                                              controller: prixController,
+                                              decoration: const InputDecoration(
+                                                labelText: "Prix",
+                                              ),
+                                              keyboardType:
+                                                  TextInputType.number,
+                                            ),
+                                            DropdownButtonHideUnderline(
+                                              child: DropdownButton<String>(
+                                                value: selectedCategory,
+                                                onChanged: (newValue) {
+                                                  setState(() {
+                                                    selectedCategory =
+                                                        newValue!;
+                                                  });
+                                                },
+                                                items: <String>[
+                                                  'Épicerie',
+                                                  'Maison',
+                                                  'Vêtements & Chaussures',
+                                                  'Sorties au restaurant',
+                                                  'Transport',
+                                                  'Divertissement',
+                                                  'Enfants',
+                                                  'Voyage',
+                                                  'Santé',
+                                                  'Beauté',
+                                                  'Communication',
+                                                  'Voiture',
+                                                  'Animaux de compagnie',
+                                                  'Impôts',
+                                                  'Education',
+                                                  'Divers',
+                                                ].map<DropdownMenuItem<String>>(
+                                                    (String value) {
+                                                  return DropdownMenuItem<
+                                                      String>(
+                                                    value: value,
+                                                    child: Text(value),
+                                                  );
+                                                }).toList(),
+                                                underline: Container(
+                                                  height: 0,
+                                                  color: Colors.transparent,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                            child: const Text("Annuler"),
+                                          ),
+                                          TextButton(
+                                            onPressed: () {
+                                              String newNomDepense =
+                                                  nomDepenseController.text;
+                                              String newPrix =
+                                                  prixController.text;
+                                              double newPrice =
+                                                  double.tryParse(newPrix) ??
+                                                      0.0;
+                                              String newCategorie =
+                                                  selectedCategory;
+                                              updateDepensePrix(
+                                                  newPrice,
+                                                  depense.docId,
+                                                  newNomDepense,
+                                                  newCategorie);
+                                              Navigator.of(context).pop();
+                                              _refreshData();
+                                            },
+                                            child: const Text("Confirmer"),
+                                          ),
+                                        ],
+                                      );
+                                    },
                                   );
                                 },
                               );
                             },
-                            onDismissed: (direction) {
-                              // Supprimer la dépense de la base de données
-                              supprimerDepense(depense.docId);
-                              _refreshData();
-                            },
-                            child: ListTile(
-                              onTap: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    String newNomDepense = depense.nom_depense;
-                                    String newPrix = depense.prix.toString();
-                                    final nomDepenseController =
-                                        TextEditingController(
-                                            text: newNomDepense);
-                                    final prixController =
-                                        TextEditingController(text: newPrix);
-                                    String selectedCategory =
-                                        depense.nom_categorie;
-
-                                    return StatefulBuilder(
-                                      builder: (BuildContext context,
-                                          StateSetter setState) {
-                                        return AlertDialog(
-                                          title:
-                                              const Text("Modifier la dépense"),
-                                          content: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              TextField(
-                                                decoration:
-                                                    const InputDecoration(
-                                                  labelText:
-                                                      'Nom de la dépense',
-                                                ),
-                                                controller:
-                                                    nomDepenseController,
-                                              ),
-                                              TextField(
-                                                decoration:
-                                                    const InputDecoration(
-                                                  labelText: 'Montant',
-                                                ),
-                                                controller: prixController,
-                                                keyboardType:
-                                                    const TextInputType
-                                                        .numberWithOptions(
-                                                        decimal: true),
-                                              ),
-                                              const SizedBox(height: 6),
-                                              Align(
-                                                alignment: Alignment.centerLeft,
-                                                child: Text(
-                                                  'Catégorie',
-                                                  style: TextStyle(
-                                                    fontSize: 13,
-                                                    color: Colors.grey[800],
-                                                  ),
-                                                ),
-                                              ),
-                                              Container(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                  horizontal: 10,
-                                                ),
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          10.0),
-                                                  border: Border.all(
-                                                      color: Colors.black),
-                                                ),
-                                                child: DropdownButton<String>(
-                                                  value: selectedCategory,
-                                                  onChanged:
-                                                      (String? newValue) {
-                                                    setState(() {
-                                                      selectedCategory =
-                                                          newValue!;
-                                                    });
-                                                  },
-                                                  items: <String>[
-                                                    'Épicerie',
-                                                    'Maison',
-                                                    'Vêtements & Chaussures',
-                                                    'Sorties au restaurant',
-                                                    'Transport',
-                                                    'Divertissement',
-                                                    'Enfants',
-                                                    'Voyage',
-                                                    'Santé',
-                                                    'Beauté',
-                                                    'Communication',
-                                                    'Voiture',
-                                                    'Animaux de compagnie',
-                                                    'Impôts',
-                                                    'Education',
-                                                    'Divers',
-                                                  ].map<
-                                                          DropdownMenuItem<
-                                                              String>>(
-                                                      (String value) {
-                                                    return DropdownMenuItem<
-                                                        String>(
-                                                      value: value,
-                                                      child: Text(value),
-                                                    );
-                                                  }).toList(),
-                                                  underline: Container(
-                                                    height: 0,
-                                                    color: Colors.transparent,
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          actions: <Widget>[
-                                            TextButton(
-                                              onPressed: () {
-                                                Navigator.of(context).pop();
-                                              },
-                                              child: const Text("Annuler"),
-                                            ),
-                                            TextButton(
-                                              onPressed: () {
-                                                String newNomDepense =
-                                                    nomDepenseController.text;
-                                                String newPrix =
-                                                    prixController.text;
-                                                double newPrice =
-                                                    double.tryParse(newPrix) ??
-                                                        0.0;
-                                                String newCategorie =
-                                                    selectedCategory;
-                                                updateDepensePrix(
-                                                    newPrice,
-                                                    depense.docId,
-                                                    newNomDepense,
-                                                    newCategorie);
-                                                Navigator.of(context).pop();
-                                                _refreshData();
-                                              },
-                                              child: const Text("Confirmer"),
-                                            ),
-                                          ],
-                                        );
-                                      },
-                                    );
-                                  },
-                                );
-                              },
-                              leading: Icon(
-                                icons[depense.Icon],
-                                color: Color(
-                                    int.parse('0xff' + depense.CouleurIcon)),
+                            leading: Icon(
+                              icons[depense.Icon],
+                              color: Color(
+                                  int.parse('0xff' + depense.CouleurIcon)),
+                            ),
+                            title: Text(
+                              depense.nom_depense,
+                              style: const TextStyle(
+                                fontSize: 18,
                               ),
-                              title: Text(
-                                depense.nom_depense,
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                ),
+                            ),
+                            subtitle: Text(
+                              depense.nom_categorie,
+                              style: const TextStyle(
+                                fontSize: 16,
                               ),
-                              subtitle: Text(
-                                depense.nom_categorie,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                ),
-                              ),
-                              trailing: SizedBox(
-                                width: 120,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    Text(
-                                      depense.prix.toStringAsFixed(
-                                          depense.prix.truncateToDouble() ==
-                                                  depense.prix
-                                              ? 0
-                                              : 2),
-                                      style: const TextStyle(
-                                        fontSize: 18,
-                                      ),
+                            ),
+                            trailing: SizedBox(
+                              width: 120,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    depense.prix.toStringAsFixed(
+                                        depense.prix.truncateToDouble() ==
+                                                depense.prix
+                                            ? 0
+                                            : 2),
+                                    style: const TextStyle(
+                                      fontSize: 18,
                                     ),
-                                    const Text(
-                                      '€',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                      ),
+                                  ),
+                                  const Text(
+                                    '€',
+                                    style: TextStyle(
+                                      fontSize: 18,
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
-                        );
-                      },
-                    );
-                  }
-                },
-              ),
+                        ),
+                      );
+                    },
+                  );
+                }
+              },
             ),
           ),
         ],

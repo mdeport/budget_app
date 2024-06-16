@@ -21,6 +21,7 @@ class _AjouterDepensePageState extends State<AjouterDepensePage> {
 
   TextEditingController prixControlleur = TextEditingController();
   TextEditingController nomDepenseControlleur = TextEditingController();
+  TextEditingController dateControlleur = TextEditingController();
 
   bool showAllIcons = false;
 
@@ -42,6 +43,21 @@ class _AjouterDepensePageState extends State<AjouterDepensePage> {
       );
     }
     return items;
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+
+    if (pickedDate != null) {
+      setState(() {
+        dateControlleur.text = "${pickedDate.toLocal()}".split(' ')[0];
+      });
+    }
   }
 
   @override
@@ -76,6 +92,26 @@ class _AjouterDepensePageState extends State<AjouterDepensePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              const SizedBox(height: 10),
+              SizedBox(
+                width: 200,
+                child: TextField(
+                  controller: dateControlleur,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 18),
+                  decoration: InputDecoration(
+                    hintText: 'Date de la dépense',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                    suffixIcon: IconButton(
+                      icon: Icon(Icons.calendar_today),
+                      onPressed: () => _selectDate(context),
+                    ),
+                  ),
+                  readOnly: true,
+                ),
+              ),
               const SizedBox(height: 10),
               const Text(
                 'Montant',
@@ -261,8 +297,8 @@ class _AjouterDepensePageState extends State<AjouterDepensePage> {
                   if (nomDepenseControlleur.text.isEmpty ||
                       prixControlleur.text.isEmpty ||
                       chosenIcon == null ||
-                      selectedCategory == '') {
-                    // Afficher un message d'alerte si un champ est vide ou si aucune icône n'est choisie
+                      selectedCategory == '' ||
+                      dateControlleur.text.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text(
@@ -284,6 +320,8 @@ class _AjouterDepensePageState extends State<AjouterDepensePage> {
                     String iconName = iconNames[chosenIcon!] ?? 'icon_inconnu';
                     String iconUrl = iconName;
                     String couleur = selectedColor.value.toRadixString(16);
+                    String date = dateControlleur.text;
+
                     ajoutDepense(
                       userId,
                       nomDepense,
@@ -291,6 +329,7 @@ class _AjouterDepensePageState extends State<AjouterDepensePage> {
                       prix,
                       iconUrl,
                       couleur,
+                      date,
                     ).then((_) {
                       Navigator.of(context).pop(true);
                     });

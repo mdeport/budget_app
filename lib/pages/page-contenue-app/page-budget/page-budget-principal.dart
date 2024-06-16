@@ -36,14 +36,14 @@ class _Page_budget_principalState extends State<Page_budget_principal> {
           decoration: const BoxDecoration(
             color: Colors.blue,
             borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(20),
-              bottomRight: Radius.circular(20),
+              bottomLeft: Radius.circular(40),
+              bottomRight: Radius.circular(40),
             ),
           ),
         ),
-        backgroundColor: Colors.blue,
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(50.0),
+          preferredSize: const Size.fromHeight(40.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -51,7 +51,7 @@ class _Page_budget_principalState extends State<Page_budget_principal> {
                 height: 2,
                 color: Colors.grey,
               ),
-              const SizedBox(height: 10.0),
+              const SizedBox(height: 5.0),
               Center(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -66,7 +66,7 @@ class _Page_budget_principalState extends State<Page_budget_principal> {
                         'Dépenses',
                         style: TextStyle(
                           color:
-                              _selectedIndex == 0 ? Colors.black : Colors.grey,
+                              _selectedIndex == 0 ? Colors.black : Colors.white,
                           fontWeight: FontWeight.bold,
                           fontSize: 17,
                         ),
@@ -82,7 +82,7 @@ class _Page_budget_principalState extends State<Page_budget_principal> {
                         'Revenus',
                         style: TextStyle(
                           color:
-                              _selectedIndex == 1 ? Colors.black : Colors.grey,
+                              _selectedIndex == 1 ? Colors.black : Colors.white,
                           fontWeight: FontWeight.bold,
                           fontSize: 17,
                         ),
@@ -98,7 +98,7 @@ class _Page_budget_principalState extends State<Page_budget_principal> {
                         'Objectifs',
                         style: TextStyle(
                           color:
-                              _selectedIndex == 2 ? Colors.black : Colors.grey,
+                              _selectedIndex == 2 ? Colors.black : Colors.white,
                           fontWeight: FontWeight.bold,
                           fontSize: 17,
                         ),
