@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:application_budget_app/models/UserModel.dart';
 import 'package:application_budget_app/pages/services/UserService.dart';
 import 'package:flutter/services.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class page_connexion_compte extends StatefulWidget {
   const page_connexion_compte({super.key});
@@ -16,12 +17,12 @@ class page_connexion_compte extends StatefulWidget {
 class _page_connexion_compteState extends State<page_connexion_compte> {
   UserService _userService = UserService();
 
-  final _obsuretext1 = true;
-  //var _obsuretext2 = true;
-  var _email;
-  var _password;
+  bool _obsuretext1 = true;
+  String? _email;
+  String? _password;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final RegExp emailRegex = RegExp(r"[a-z0-9\._-]+@[a-z0-9\._-]+\.[a-z]+");
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   Future<void> _showError(String errorMessage, BuildContext context) async {
     return showDialog<void>(
@@ -48,6 +49,31 @@ class _page_connexion_compteState extends State<page_connexion_compte> {
         );
       },
     );
+  }
+
+  Future<void> _resetPassword() async {
+    if (_email == null || !emailRegex.hasMatch(_email!)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Veuillez entrer une adresse e-mail valide.'),
+        ),
+      );
+      return;
+    }
+    try {
+      await _auth.sendPasswordResetEmail(email: _email!);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Email de réinitialisation du mot de passe envoyé.'),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erreur: ${e.toString()}'),
+        ),
+      );
+    }
   }
 
   @override
@@ -138,20 +164,21 @@ class _page_connexion_compteState extends State<page_connexion_compte> {
                               fontWeight: FontWeight.w500,
                               color: Colors.grey,
                             ),
-                            /*
-                        suffixIcon: IconButton(
-                          icon: const Icon(
-                            Icons.visibility,
-                            color: Colors.black,
-                          ),
-                          onPressed: () {
-                            setState(
-                              () {
-                                _obsuretext1 = !_obsuretext1;
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _obsuretext1
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                                color: Colors.black,
+                              ),
+                              onPressed: () {
+                                setState(
+                                  () {
+                                    _obsuretext1 = !_obsuretext1;
+                                  },
+                                );
                               },
-                            );
-                          },
-                        ),*/
+                            ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
@@ -181,8 +208,8 @@ class _page_connexion_compteState extends State<page_connexion_compte> {
                               if (_formKey.currentState!.validate()) {
                                 _userService
                                     .signIn(UserModel(
-                                  email: _email,
-                                  password: _password,
+                                  email: _email!,
+                                  password: _password!,
                                 ))
                                     .then(
                                   (value) {
@@ -201,6 +228,17 @@ class _page_connexion_compteState extends State<page_connexion_compte> {
                                 );
                               }
                             },
+                          ),
+                        ),
+                        const SizedBox(height: 45),
+                        GestureDetector(
+                          onTap: _resetPassword,
+                          child: const Text(
+                            'Mot de passe oublié?',
+                            style: TextStyle(
+                              color: Colors.blue,
+                              fontSize: 15,
+                            ),
                           ),
                         ),
                       ],
