@@ -298,6 +298,8 @@ class _RevenuePageState extends State<RevenuePage> {
                                     final prixController =
                                         TextEditingController(text: newPrix);
 
+                                    DateTime selectedDate =
+                                        DateTime.parse(revenu.date);
                                     return StatefulBuilder(
                                       builder: (BuildContext context,
                                           StateSetter setState) {
@@ -325,6 +327,67 @@ class _RevenuePageState extends State<RevenuePage> {
                                                         .numberWithOptions(
                                                         decimal: true),
                                               ),
+                                              const SizedBox(height: 5),
+                                              Align(
+                                                alignment: Alignment.centerLeft,
+                                                child: Text(
+                                                  'Date',
+                                                  style: TextStyle(
+                                                    fontSize: 13,
+                                                    color: Colors.grey[800],
+                                                  ),
+                                                ),
+                                              ),
+                                              const SizedBox(height: 10),
+                                              GestureDetector(
+                                                onTap: () {
+                                                  showDatePicker(
+                                                    context: context,
+                                                    initialDate: selectedDate,
+                                                    firstDate: DateTime(
+                                                        DateTime.now().year -
+                                                            5),
+                                                    lastDate: DateTime(
+                                                        DateTime.now().year +
+                                                            5),
+                                                    builder:
+                                                        (BuildContext context,
+                                                            Widget? child) {
+                                                      return Theme(
+                                                        data: ThemeData.light()
+                                                            .copyWith(
+                                                          colorScheme:
+                                                              const ColorScheme
+                                                                  .light(
+                                                            primary: Colors
+                                                                .indigoAccent,
+                                                          ),
+                                                        ),
+                                                        child: child!,
+                                                      );
+                                                    },
+                                                  ).then((newDate) {
+                                                    if (newDate != null) {
+                                                      setState(() {
+                                                        selectedDate = newDate;
+                                                      });
+                                                    }
+                                                  });
+                                                },
+                                                child: Row(
+                                                  children: [
+                                                    const Icon(
+                                                        Icons.calendar_today),
+                                                    const SizedBox(width: 10),
+                                                    Text(
+                                                      DateFormat.yMMMd()
+                                                          .format(selectedDate),
+                                                      style: const TextStyle(
+                                                          fontSize: 16),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
                                             ],
                                           ),
                                           actions: <Widget>[
@@ -338,13 +401,19 @@ class _RevenuePageState extends State<RevenuePage> {
                                               onPressed: () {
                                                 String newNomRevenu =
                                                     nomRevenuController.text;
-                                                String newPrix =
-                                                    prixController.text;
+                                                String newPrix = prixController
+                                                    .text
+                                                    .replaceAll(",", ".");
                                                 double newPrice =
                                                     double.tryParse(newPrix) ??
                                                         0.0;
-                                                updateRevenuPrix(newPrice,
-                                                    revenu.docId, newNomRevenu);
+                                                updateRevenuPrix(
+                                                  newPrice,
+                                                  revenu.docId,
+                                                  newNomRevenu,
+                                                  selectedDate
+                                                      .toIso8601String(),
+                                                );
                                                 Navigator.of(context).pop();
                                                 refreshData();
                                               },
@@ -416,7 +485,7 @@ class _RevenuePageState extends State<RevenuePage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => AjouterRevenuPage(),
+              builder: (context) => const AjouterRevenuPage(),
             ),
           ).then((refresh) {
             if (refresh != null && refresh) {

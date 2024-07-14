@@ -328,7 +328,18 @@ class _ObjectifPageState extends State<ObjectifPage> {
                                                   decimal: true,
                                                 ),
                                               ),
-                                              SizedBox(height: 10),
+                                              const SizedBox(height: 5),
+                                              Align(
+                                                alignment: Alignment.centerLeft,
+                                                child: Text(
+                                                  'Date',
+                                                  style: TextStyle(
+                                                    fontSize: 13,
+                                                    color: Colors.grey[800],
+                                                  ),
+                                                ),
+                                              ),
+                                              const SizedBox(height: 10),
                                               GestureDetector(
                                                 onTap: () {
                                                   showDatePicker(
@@ -391,8 +402,9 @@ class _ObjectifPageState extends State<ObjectifPage> {
                                               onPressed: () {
                                                 String newNomObjectif =
                                                     selectedCategory;
-                                                String newPrix =
-                                                    prixController.text;
+                                                String newPrix = prixController
+                                                    .text
+                                                    .replaceAll(",", ".");
                                                 double newPrice =
                                                     double.tryParse(newPrix) ??
                                                         0.0;

@@ -66,21 +66,25 @@ class _AjouterObjectifPageState extends State<AjouterObjectifPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         title: const Text(
           'Ajouter un objectif',
           style: TextStyle(
-              color: Colors.black, fontWeight: FontWeight.bold, fontSize: 23),
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 23.0,
+          ),
         ),
+        centerTitle: true,
         flexibleSpace: Container(
           decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Color.fromARGB(255, 21, 41, 255),
-                Color.fromARGB(234, 91, 230, 255),
-                Color.fromARGB(197, 91, 230, 255),
-              ],
+            color: Color(0xFF2196F3), // Bleu pastel
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(20),
+              bottomRight: Radius.circular(20),
             ),
           ),
         ),

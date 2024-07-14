@@ -265,7 +265,7 @@ class _DepensePageState extends State<DepensePage> {
                     itemCount: filteredDepenses.length + 1,
                     itemBuilder: (context, index) {
                       if (index == filteredDepenses.length) {
-                        return SizedBox(height: 30);
+                        return const SizedBox(height: 30);
                       }
                       RechercheDepense depense = filteredDepenses[index];
                       return Container(
@@ -480,8 +480,9 @@ class _DepensePageState extends State<DepensePage> {
                                             onPressed: () {
                                               String newNomDepense =
                                                   nomDepenseController.text;
-                                              String newPrix =
-                                                  prixController.text;
+                                              String newPrix = prixController
+                                                  .text
+                                                  .replaceAll(",", ".");
                                               double newPrice =
                                                   double.tryParse(newPrix) ??
                                                       0.0;

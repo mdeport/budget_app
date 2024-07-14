@@ -67,21 +67,25 @@ class _AjouterDepensePageState extends State<AjouterDepensePage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Ajouter une dépense',
-            style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-                fontSize: 23)),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: const Text(
+          'Ajouter une dépense',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 23.0,
+          ),
+        ),
+        centerTitle: true,
         flexibleSpace: Container(
           decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Color.fromARGB(255, 21, 41, 255),
-                Color.fromARGB(234, 91, 230, 255),
-                Color.fromARGB(197, 91, 230, 255),
-              ],
+            color: Color(0xFF2196F3), // Bleu pastel
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(20),
+              bottomRight: Radius.circular(20),
             ),
           ),
         ),
@@ -110,6 +114,26 @@ class _AjouterDepensePageState extends State<AjouterDepensePage> {
                     ),
                   ),
                   readOnly: true,
+                ),
+              ),
+              const SizedBox(height: 10),
+              const Text(
+                'Nom de la dépense',
+                style: TextStyle(fontSize: 20, color: Colors.indigo),
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                width: 300,
+                child: TextField(
+                  controller: nomDepenseControlleur,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 18),
+                  decoration: InputDecoration(
+                    hintText: 'Entrez le nom de la dépense',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(height: 10),
@@ -266,26 +290,6 @@ class _AjouterDepensePageState extends State<AjouterDepensePage> {
                   underline: Container(
                     height: 0,
                     color: Colors.transparent,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 10),
-              const Text(
-                'Nom de la dépense',
-                style: TextStyle(fontSize: 20, color: Colors.indigo),
-              ),
-              const SizedBox(height: 10),
-              SizedBox(
-                width: 300,
-                child: TextField(
-                  controller: nomDepenseControlleur,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 18),
-                  decoration: InputDecoration(
-                    hintText: 'Entrez le nom de la dépense',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
                   ),
                 ),
               ),

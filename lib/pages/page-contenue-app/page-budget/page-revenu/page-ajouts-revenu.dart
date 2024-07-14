@@ -46,21 +46,25 @@ class _AjouterRevenuPage extends State<AjouterRevenuPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Ajouter un revenu',
-            style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-                fontSize: 23)),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: const Text(
+          'Ajouter un revenu',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 23.0,
+          ),
+        ),
+        centerTitle: true,
         flexibleSpace: Container(
           decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Color.fromARGB(255, 21, 41, 255),
-                Color.fromARGB(234, 91, 230, 255),
-                Color.fromARGB(197, 91, 230, 255),
-              ],
+            color: Color(0xFF2196F3), // Bleu pastel
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(20),
+              bottomRight: Radius.circular(20),
             ),
           ),
         ),
@@ -93,6 +97,26 @@ class _AjouterRevenuPage extends State<AjouterRevenuPage> {
               ),
               const SizedBox(height: 20),
               const Text(
+                'Nom de la catégorie',
+                style: TextStyle(fontSize: 20, color: Colors.indigo),
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                width: 300,
+                child: TextField(
+                  controller: nomRevenuControlleur,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 18),
+                  decoration: InputDecoration(
+                    hintText: 'Entrez le nom de la catégorie',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              const Text(
                 'Montant',
                 style: TextStyle(fontSize: 20, color: Colors.indigo),
               ),
@@ -105,6 +129,7 @@ class _AjouterRevenuPage extends State<AjouterRevenuPage> {
                   style: const TextStyle(fontSize: 18),
                   decoration: InputDecoration(
                     hintText: 'Entrez le montant',
+                    suffixText: '€',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20.0),
                     ),
@@ -221,26 +246,6 @@ class _AjouterRevenuPage extends State<AjouterRevenuPage> {
                   );
                 },
                 child: const Text('Choisir'),
-              ),
-              const SizedBox(height: 30),
-              const Text(
-                'Nom de la catégorie',
-                style: TextStyle(fontSize: 20, color: Colors.indigo),
-              ),
-              const SizedBox(height: 10),
-              SizedBox(
-                width: 300,
-                child: TextField(
-                  controller: nomRevenuControlleur,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 18),
-                  decoration: InputDecoration(
-                    hintText: 'Entrez le nom de la catégorie',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                  ),
-                ),
               ),
               const SizedBox(height: 40),
               ElevatedButton(
