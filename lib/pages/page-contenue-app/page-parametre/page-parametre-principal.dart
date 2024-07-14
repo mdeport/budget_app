@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:application_budget_app/pages/page-authentification/page-social.dart';
 import 'package:application_budget_app/pages/services/UserService.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:application_budget_app/pages/page-contenue-app/page-parametre/page-notifications.dart';
+//import 'package:application_budget_app/pages/page-contenue-app/page-parametre/page-notifications.dart';
 import 'package:application_budget_app/base-de-donnees/page-profil-controlleur.dart';
 import 'package:application_budget_app/pages/page-contenue-app/page-parametre/page-aide.dart';
 
@@ -93,7 +93,7 @@ class _Page_parametre_principalState extends State<Page_parametre_principal> {
             constraints: const BoxConstraints(maxWidth: 400),
             child: ListView(
               children: [
-                _SingleSection(
+                /*_SingleSection(
                   title: "Général",
                   children: [
                     /*_CustomListTile(
@@ -119,7 +119,7 @@ class _Page_parametre_principalState extends State<Page_parametre_principal> {
                         }),
                   ],
                 ),
-                const Divider(),
+                const Divider(),*/
                 _SingleSection(
                   title: "Organisation",
                   children: [

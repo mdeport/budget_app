@@ -125,3 +125,41 @@ final icons = {
   'globe': FontAwesomeIcons.globe,
   'bed': FontAwesomeIcons.bed,
 };
+
+String newUrlIconParNomCategorie(String nomCategorie) {
+  if (nomCategorie == 'Épicerie') {
+    return 'utensils';
+  } else if (nomCategorie == 'Maison') {
+    return 'house';
+  } else if (nomCategorie == 'Vêtements & Chaussures') {
+    return 'tshirt';
+  } else if (nomCategorie == 'Sorties au restaurant') {
+    return 'utensils';
+  } else if (nomCategorie == 'Transport') {
+    return 'bus';
+  } else if (nomCategorie == 'Divertissement') {
+    return 'gamepad';
+  } else if (nomCategorie == 'Enfants') {
+    return 'child';
+  } else if (nomCategorie == 'Voyage') {
+    return 'plane';
+  } else if (nomCategorie == 'Santé') {
+    return 'heart';
+  } else if (nomCategorie == 'Beauté') {
+    return 'spa';
+  } else if (nomCategorie == 'Communication') {
+    return 'mobile';
+  } else if (nomCategorie == 'Voiture') {
+    return 'car';
+  } else if (nomCategorie == 'Animaux de compagnie') {
+    return 'paw';
+  } else if (nomCategorie == 'Impôts') {
+    return 'fileInvoice';
+  } else if (nomCategorie == 'Education') {
+    return 'graduationCap';
+  } else if (nomCategorie == 'Divers') {
+    return 'book';
+  } else {
+    return '';
+  }
+}

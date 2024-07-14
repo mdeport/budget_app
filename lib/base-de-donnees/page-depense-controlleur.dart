@@ -126,7 +126,7 @@ Future<void> supprimerDepense(String docId) async {
 
 // Mettre à jour le prix et le nom d'une dépense dans la base de données
 Future<void> updateDepensePrix(double newPrix, String docId,
-    String newNomDepense, String NewNomCategorie) async {
+    String newNomDepense, String NewNomCategorie, String newDate) async {
   User? user = FirebaseAuth.instance.currentUser;
   try {
     final depenseRef = FirebaseFirestore.instance
@@ -138,7 +138,8 @@ Future<void> updateDepensePrix(double newPrix, String docId,
     await depenseRef.update({
       'prix': newPrix,
       'nom_depense': newNomDepense,
-      'nom_categorie': NewNomCategorie
+      'nom_categorie': NewNomCategorie,
+      'date': newDate,
     });
     print('Le prix de la dépense a été mis à jour avec succès');
   } catch (error) {

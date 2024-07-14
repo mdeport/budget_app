@@ -55,8 +55,7 @@ class _DepensePageState extends State<DepensePage> {
   List<RechercheDepense> _filterDepensesByMonth(
       List<RechercheDepense> depenses) {
     return depenses.where((depense) {
-      DateTime date =
-          DateTime.parse(depense.date); // Assuming date is stored as string
+      DateTime date = DateTime.parse(depense.date);
       return date.year == selectedMonth.year &&
           date.month == selectedMonth.month;
     }).toList();
@@ -263,11 +262,10 @@ class _DepensePageState extends State<DepensePage> {
                       _filterDepensesByMonth(listDepense!);
 
                   return ListView.builder(
-                    itemCount: filteredDepenses.length +
-                        1, // Add one more item for the bottom padding
+                    itemCount: filteredDepenses.length + 1,
                     itemBuilder: (context, index) {
                       if (index == filteredDepenses.length) {
-                        return SizedBox(height: 30); // Padding at the bottom
+                        return SizedBox(height: 30);
                       }
                       RechercheDepense depense = filteredDepenses[index];
                       return Container(
@@ -334,6 +332,8 @@ class _DepensePageState extends State<DepensePage> {
                                   TextEditingController(
                                       text: depense.prix.toString());
                               String selectedCategory = depense.nom_categorie;
+                              DateTime selectedDate =
+                                  DateTime.parse(depense.date);
                               showDialog(
                                 context: context,
                                 builder: (BuildContext context) {
@@ -357,6 +357,17 @@ class _DepensePageState extends State<DepensePage> {
                                               ),
                                               keyboardType:
                                                   TextInputType.number,
+                                            ),
+                                            const SizedBox(height: 5),
+                                            Align(
+                                              alignment: Alignment.centerLeft,
+                                              child: Text(
+                                                'Catégorie',
+                                                style: TextStyle(
+                                                  fontSize: 13,
+                                                  color: Colors.grey[800],
+                                                ),
+                                              ),
                                             ),
                                             DropdownButtonHideUnderline(
                                               child: DropdownButton<String>(
@@ -398,6 +409,64 @@ class _DepensePageState extends State<DepensePage> {
                                                 ),
                                               ),
                                             ),
+                                            Align(
+                                              alignment: Alignment.centerLeft,
+                                              child: Text(
+                                                'Date',
+                                                style: TextStyle(
+                                                  fontSize: 13,
+                                                  color: Colors.grey[800],
+                                                ),
+                                              ),
+                                            ),
+                                            const SizedBox(height: 10),
+                                            GestureDetector(
+                                              onTap: () {
+                                                showDatePicker(
+                                                  context: context,
+                                                  initialDate: selectedDate,
+                                                  firstDate: DateTime(
+                                                      DateTime.now().year - 5),
+                                                  lastDate: DateTime(
+                                                      DateTime.now().year + 5),
+                                                  builder:
+                                                      (BuildContext context,
+                                                          Widget? child) {
+                                                    return Theme(
+                                                      data: ThemeData.light()
+                                                          .copyWith(
+                                                        colorScheme:
+                                                            const ColorScheme
+                                                                .light(
+                                                          primary: Colors
+                                                              .indigoAccent,
+                                                        ),
+                                                      ),
+                                                      child: child!,
+                                                    );
+                                                  },
+                                                ).then((newDate) {
+                                                  if (newDate != null) {
+                                                    setState(() {
+                                                      selectedDate = newDate;
+                                                    });
+                                                  }
+                                                });
+                                              },
+                                              child: Row(
+                                                children: [
+                                                  const Icon(
+                                                      Icons.calendar_today),
+                                                  const SizedBox(width: 10),
+                                                  Text(
+                                                    DateFormat.yMMMd()
+                                                        .format(selectedDate),
+                                                    style: const TextStyle(
+                                                        fontSize: 16),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
                                           ],
                                         ),
                                         actions: <Widget>[
@@ -419,10 +488,12 @@ class _DepensePageState extends State<DepensePage> {
                                               String newCategorie =
                                                   selectedCategory;
                                               updateDepensePrix(
-                                                  newPrice,
-                                                  depense.docId,
-                                                  newNomDepense,
-                                                  newCategorie);
+                                                newPrice,
+                                                depense.docId,
+                                                newNomDepense,
+                                                newCategorie,
+                                                selectedDate.toIso8601String(),
+                                              );
                                               Navigator.of(context).pop();
                                               _refreshData();
                                             },
@@ -446,11 +517,25 @@ class _DepensePageState extends State<DepensePage> {
                                 fontSize: 18,
                               ),
                             ),
-                            subtitle: Text(
-                              depense.nom_categorie,
-                              style: const TextStyle(
-                                fontSize: 16,
-                              ),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  depense.nom_categorie,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                Text(
+                                  DateFormat.yMMMd().format(
+                                    DateTime.parse(depense.date),
+                                  ),
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ],
                             ),
                             trailing: SizedBox(
                               width: 120,

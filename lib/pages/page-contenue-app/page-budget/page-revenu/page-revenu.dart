@@ -368,6 +368,13 @@ class _RevenuePageState extends State<RevenuePage> {
                                   fontSize: 18,
                                 ),
                               ),
+                              subtitle: Text(
+                                DateFormat.yMMMd().format(
+                                    DateTime.parse(revenu.date).toLocal()),
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                ),
+                              ),
                               trailing: SizedBox(
                                 width: 120,
                                 child: Row(

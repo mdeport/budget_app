@@ -3,6 +3,7 @@ import 'package:application_budget_app/base-de-donnees/page-revenu-controlleur.d
 import 'package:application_budget_app/base-de-donnees/page-objectif-controlleur.dart';
 import 'package:application_budget_app/pages/page-contenue-app/page-budget/page-objectif/page-ajouts-objectif.dart';
 import 'package:application_budget_app/base-de-donnees/Icons/list-icon-objectif.dart';
+import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:flutter/material.dart';
 
@@ -16,6 +17,7 @@ class ObjectifPage extends StatefulWidget {
 class _ObjectifPageState extends State<ObjectifPage> {
   double totalRevenu = 0;
   double totalDepense = 0;
+  DateTime selectedMonth = DateTime.now();
 
   Map<String, double> totalDepensesParCategorie = {};
 
@@ -33,6 +35,8 @@ class _ObjectifPageState extends State<ObjectifPage> {
   Future<void> _refreshData() async {
     setState(() {
       listObjectif();
+      ListRevenus();
+      ListDepense();
     });
   }
 
@@ -40,7 +44,11 @@ class _ObjectifPageState extends State<ObjectifPage> {
     List<RechercheDepense> depenses = await listDepense();
     double total = 0;
     for (var depense in depenses) {
-      total += depense.prix;
+      DateTime dateDepense = DateTime.parse(depense.date);
+      if (dateDepense.year == selectedMonth.year &&
+          dateDepense.month == selectedMonth.month) {
+        total += depense.prix;
+      }
     }
     setState(() {
       totalDepense = total;
@@ -51,10 +59,28 @@ class _ObjectifPageState extends State<ObjectifPage> {
     List<RechercheRevenu> revenus = await listRevenu();
     double total = 0;
     for (var revenu in revenus) {
-      total += revenu.prix;
+      DateTime dateRevenu = DateTime.parse(revenu.date);
+      if (dateRevenu.year == selectedMonth.year &&
+          dateRevenu.month == selectedMonth.month) {
+        total += revenu.prix;
+      }
     }
     setState(() {
       totalRevenu = total;
+    });
+  }
+
+  void _previousMonth() {
+    setState(() {
+      selectedMonth = DateTime(selectedMonth.year, selectedMonth.month - 1);
+      _refreshData();
+    });
+  }
+
+  void _nextMonth() {
+    setState(() {
+      selectedMonth = DateTime(selectedMonth.year, selectedMonth.month + 1);
+      _refreshData();
     });
   }
 
@@ -64,6 +90,45 @@ class _ObjectifPageState extends State<ObjectifPage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 10, left: 20, right: 20),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 2,
+                    blurRadius: 5,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_left),
+                      onPressed: _previousMonth,
+                    ),
+                    Text(
+                      DateFormat.yMMM().format(selectedMonth),
+                      style: const TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.arrow_right),
+                      onPressed: _nextMonth,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
           Expanded(
             flex: 4,
             child: SfCartesianChart(
@@ -99,10 +164,17 @@ class _ObjectifPageState extends State<ObjectifPage> {
                     );
                   } else {
                     List<RechercheObjectif>? listObjectif = snapshot.data;
+                    List<RechercheObjectif> filteredObjectif =
+                        listObjectif!.where((objectif) {
+                      DateTime date = DateTime.parse(objectif.date);
+                      return date.year == selectedMonth.year &&
+                          date.month == selectedMonth.month;
+                    }).toList();
+
                     return ListView.builder(
-                      itemCount: listObjectif!.length,
+                      itemCount: filteredObjectif.length,
                       itemBuilder: (context, index) {
-                        RechercheObjectif objectif = listObjectif[index];
+                        RechercheObjectif objectif = filteredObjectif[index];
                         return Container(
                           margin: const EdgeInsets.symmetric(
                               horizontal: 15, vertical: 5),
@@ -168,6 +240,8 @@ class _ObjectifPageState extends State<ObjectifPage> {
                                         TextEditingController(text: newPrix);
                                     String selectedCategory =
                                         objectif.nom_objectif;
+                                    DateTime selectedDate =
+                                        DateTime.parse(objectif.date);
 
                                     return StatefulBuilder(
                                       builder: (BuildContext context,
@@ -227,15 +301,15 @@ class _ObjectifPageState extends State<ObjectifPage> {
                                                     'Education',
                                                     'Divers',
                                                   ].map<
-                                                          DropdownMenuItem<
-                                                              String>>(
-                                                      (String value) {
-                                                    return DropdownMenuItem<
-                                                        String>(
-                                                      value: value,
-                                                      child: Text(value),
-                                                    );
-                                                  }).toList(),
+                                                      DropdownMenuItem<String>>(
+                                                    (String value) {
+                                                      return DropdownMenuItem<
+                                                          String>(
+                                                        value: value,
+                                                        child: Text(value),
+                                                      );
+                                                    },
+                                                  ).toList(),
                                                   underline: Container(
                                                     height: 0,
                                                     color: Colors.transparent,
@@ -251,7 +325,58 @@ class _ObjectifPageState extends State<ObjectifPage> {
                                                 keyboardType:
                                                     const TextInputType
                                                         .numberWithOptions(
-                                                        decimal: true),
+                                                  decimal: true,
+                                                ),
+                                              ),
+                                              SizedBox(height: 10),
+                                              GestureDetector(
+                                                onTap: () {
+                                                  showDatePicker(
+                                                    context: context,
+                                                    initialDate: selectedDate,
+                                                    firstDate: DateTime(
+                                                        DateTime.now().year -
+                                                            5),
+                                                    lastDate: DateTime(
+                                                        DateTime.now().year +
+                                                            5),
+                                                    builder:
+                                                        (BuildContext context,
+                                                            Widget? child) {
+                                                      return Theme(
+                                                        data: ThemeData.light()
+                                                            .copyWith(
+                                                          colorScheme:
+                                                              const ColorScheme
+                                                                  .light(
+                                                            primary: Colors
+                                                                .indigoAccent, // Head color
+                                                          ),
+                                                        ),
+                                                        child: child!,
+                                                      );
+                                                    },
+                                                  ).then((newDate) {
+                                                    if (newDate != null) {
+                                                      setState(() {
+                                                        selectedDate = newDate;
+                                                      });
+                                                    }
+                                                  });
+                                                },
+                                                child: Row(
+                                                  children: [
+                                                    const Icon(
+                                                        Icons.calendar_today),
+                                                    const SizedBox(width: 10),
+                                                    Text(
+                                                      DateFormat.yMMMd()
+                                                          .format(selectedDate),
+                                                      style: const TextStyle(
+                                                          fontSize: 16),
+                                                    ),
+                                                  ],
+                                                ),
                                               ),
                                             ],
                                           ),
@@ -271,10 +396,17 @@ class _ObjectifPageState extends State<ObjectifPage> {
                                                 double newPrice =
                                                     double.tryParse(newPrix) ??
                                                         0.0;
+                                                String newIconUrl =
+                                                    newUrlIconParNomCategorie(
+                                                        newNomObjectif);
                                                 updateObjectifPrix(
-                                                    newPrice,
-                                                    objectif.docId,
-                                                    newNomObjectif);
+                                                  newPrice,
+                                                  objectif.docId,
+                                                  newNomObjectif,
+                                                  newIconUrl,
+                                                  selectedDate
+                                                      .toIso8601String(),
+                                                );
                                                 Navigator.of(context).pop();
                                                 _refreshData();
                                               },
@@ -296,6 +428,15 @@ class _ObjectifPageState extends State<ObjectifPage> {
                                 objectif.nom_objectif,
                                 style: const TextStyle(
                                   fontSize: 18,
+                                ),
+                              ),
+                              subtitle: Text(
+                                DateFormat.yMMMd().format(
+                                  DateTime.parse(objectif.date),
+                                ),
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey,
                                 ),
                               ),
                               trailing: SizedBox(

@@ -79,7 +79,7 @@ class _AjouterRevenuPage extends State<AjouterRevenuPage> {
                   textAlign: TextAlign.center,
                   style: const TextStyle(fontSize: 18),
                   decoration: InputDecoration(
-                    hintText: 'Date de la dépense',
+                    hintText: 'Date du revenu',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20.0),
                     ),
@@ -249,7 +249,8 @@ class _AjouterRevenuPage extends State<AjouterRevenuPage> {
                       prixControlleur.text.replaceAll(",", ".");
                   if (nomRevenuControlleur.text.isEmpty ||
                       prixControlleur.text.isEmpty ||
-                      chosenIcon == null) {
+                      chosenIcon == null ||
+                      dateControlleur.text.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text(

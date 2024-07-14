@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 // Ajoutez un objectif en Base de données
 Future<void> ajoutObjectif(String userId, String nomObjectif, double prix,
-    String IconUrl, String CouleurIcon) async {
+    String IconUrl, String CouleurIcon, String date) async {
   try {
     await FirebaseFirestore.instance
         .collection('objectif')
@@ -15,6 +15,7 @@ Future<void> ajoutObjectif(String userId, String nomObjectif, double prix,
       'prix': prix,
       'icon_url': IconUrl,
       'couleur_icon': CouleurIcon,
+      'date': date,
     });
     print('Expense added for user: $userId');
   } catch (e) {
@@ -22,16 +23,16 @@ Future<void> ajoutObjectif(String userId, String nomObjectif, double prix,
   }
 }
 
-class ChartData {
-  ChartData(this.x, this.y, this.color);
+class ChartDataObjectif {
+  ChartDataObjectif(this.x, this.y, this.color);
   final String x;
   final double y;
   final String color;
 }
 
 // Récupérez les données d'objectif depuis Firestore pour un utilisateur connecté
-Future<List<ChartData>> listObjectifChartDataList() async {
-  List<ChartData> chartDataList = [];
+Future<List<ChartDataObjectif>> listObjectifChartDataList() async {
+  List<ChartDataObjectif> chartDataList = [];
   try {
     User? user = FirebaseAuth.instance.currentUser;
     if (user != null) {
@@ -43,7 +44,8 @@ Future<List<ChartData>> listObjectifChartDataList() async {
       querySnapshot.docs.forEach((doc) {
         double prix = doc['prix'] ?? 0.0;
         String CouleurIcon = doc['couleur_icon'];
-        chartDataList.add(ChartData(doc['nom_objectif'], prix, CouleurIcon));
+        chartDataList
+            .add(ChartDataObjectif(doc['nom_objectif'], prix, CouleurIcon));
       });
     }
   } catch (e) {
@@ -58,6 +60,7 @@ class RechercheObjectif {
   final String Icon;
   var CouleurIcon;
   final String docId;
+  final String date;
 
   RechercheObjectif({
     required this.nom_objectif,
@@ -65,6 +68,7 @@ class RechercheObjectif {
     required this.Icon,
     required this.CouleurIcon,
     required this.docId,
+    required this.date,
   });
 }
 
@@ -87,6 +91,7 @@ Future<List<RechercheObjectif>> listObjectif() async {
           Icon: doc['icon_url'],
           CouleurIcon: doc['couleur_icon'],
           docId: doc.id,
+          date: doc['date'],
         );
         listObjectif.add(objectif);
         totalObjectif += doc['prix'];
@@ -117,8 +122,8 @@ Future<void> supprimerObjectif(String docId) async {
 }
 
 // Mettre à jour le prix et le nom d'un objectif dans la base de données
-Future<void> updateObjectifPrix(
-    double newPrix, String docId, String newNomObjectif) async {
+Future<void> updateObjectifPrix(double newPrix, String docId,
+    String newNomObjectif, String newIconUrl, String newDate) async {
   User? user = FirebaseAuth.instance.currentUser;
   try {
     final objectifRef = FirebaseFirestore.instance
@@ -127,7 +132,12 @@ Future<void> updateObjectifPrix(
         .collection('objectifs')
         .doc(docId);
 
-    await objectifRef.update({'prix': newPrix, 'nom_objectif': newNomObjectif});
+    await objectifRef.update({
+      'prix': newPrix,
+      'nom_objectif': newNomObjectif,
+      'icon_url': newIconUrl,
+      'date': newDate,
+    });
     print('Le prix de la objectif a été mis à jour avec succès');
   } catch (error) {
     print('Erreur lors de la mise à jour du prix de la objectif: $error');
