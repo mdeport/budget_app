@@ -31,36 +31,42 @@ class _pageGeneralState extends State<pageGeneral> {
 
     return Scaffold(
       body: _pages[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.black,
-        onTap: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Accueil',
-            backgroundColor: Color.fromARGB(255, 33, 148, 241),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.attach_money),
-            label: 'Budget',
-            backgroundColor: Color.fromARGB(255, 33, 140, 241),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.lightbulb),
-            label: 'Conseils',
-            backgroundColor: Color.fromARGB(255, 33, 130, 241),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Paramètres',
-            backgroundColor: Color.fromARGB(255, 33, 120, 241),
-          ),
-        ],
+      bottomNavigationBar: ClipRRect(
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(20.0),
+          topRight: Radius.circular(20.0),
+        ),
+        child: BottomNavigationBar(
+          currentIndex: _selectedIndex,
+          selectedItemColor: Colors.black,
+          onTap: (index) {
+            setState(() {
+              _selectedIndex = index;
+            });
+          },
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Accueil',
+              backgroundColor: Color.fromARGB(255, 33, 148, 241),
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.attach_money),
+              label: 'Budget',
+              backgroundColor: Color.fromARGB(255, 33, 140, 241),
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.lightbulb),
+              label: 'Conseils',
+              backgroundColor: Color.fromARGB(255, 33, 130, 241),
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.settings),
+              label: 'Paramètres',
+              backgroundColor: Color.fromARGB(255, 33, 120, 241),
+            ),
+          ],
+        ),
       ),
     );
   }

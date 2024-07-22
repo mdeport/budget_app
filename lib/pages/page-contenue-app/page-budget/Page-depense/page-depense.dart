@@ -1,12 +1,15 @@
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:application_budget_app/pages/page-contenue-app/page-budget/Page-depense/page-ajouts-depense.dart';
 import 'package:application_budget_app/base-de-donnees/page-revenu-controlleur.dart';
 import 'package:application_budget_app/base-de-donnees/Icons/list-icon-depense.dart';
 import 'package:application_budget_app/base-de-donnees/page-depense-controlleur.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
-import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class DepensePage extends StatefulWidget {
-  const DepensePage({super.key});
+  const DepensePage({Key? key}) : super(key: key);
 
   @override
   State<DepensePage> createState() => _DepensePageState();
@@ -14,7 +17,8 @@ class DepensePage extends StatefulWidget {
 
 class _DepensePageState extends State<DepensePage> {
   double totalRevenu = 0;
-  bool dataEmpty = true;
+  DateTime selectedMonth = DateTime.now();
+
   @override
   void initState() {
     super.initState();
@@ -22,20 +26,69 @@ class _DepensePageState extends State<DepensePage> {
   }
 
   Future<void> _refreshData() async {
-    setState(() {
-      listDepenseChartDataList();
-    });
+    setState(() {});
   }
 
   Future<void> fetchRevenus() async {
     List<RechercheRevenu> revenus = await listRevenu();
     double total = 0;
     for (var revenu in revenus) {
-      total += revenu.prix;
+      DateTime dateRevenu = DateTime.parse(revenu.date);
+      if (dateRevenu.year == selectedMonth.year &&
+          dateRevenu.month == selectedMonth.month) {
+        total += revenu.prix;
+      }
     }
     setState(() {
       totalRevenu = total;
     });
+  }
+
+  void _previousMonth() {
+    setState(() {
+      selectedMonth = DateTime(selectedMonth.year, selectedMonth.month - 1);
+    });
+  }
+
+  void _nextMonth() {
+    setState(() {
+      selectedMonth = DateTime(selectedMonth.year, selectedMonth.month + 1);
+    });
+  }
+
+  List<RechercheDepense> _filterDepensesByMonth(
+      List<RechercheDepense> depenses) {
+    return depenses.where((depense) {
+      DateTime date = DateTime.parse(depense.date);
+      return date.year == selectedMonth.year &&
+          date.month == selectedMonth.month;
+    }).toList();
+  }
+
+  Future<List<ChartData>> listDepenseChartDataList() async {
+    List<ChartData> chartDataList = [];
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+            .collection('depense')
+            .doc(user.uid)
+            .collection('depenses')
+            .get();
+        querySnapshot.docs.forEach((doc) {
+          DateTime date = DateTime.parse(doc['date']);
+          if (date.year == selectedMonth.year &&
+              date.month == selectedMonth.month) {
+            double prix = doc['prix'] ?? 0.0;
+            String CouleurIcon = doc['couleur_icon'];
+            chartDataList.add(ChartData(doc['nom_depense'], prix, CouleurIcon));
+          }
+        });
+      }
+    } catch (e) {
+      print('Erreur lors de la récupération des données depuis Firestore: $e');
+    }
+    return chartDataList;
   }
 
   @override
@@ -44,7 +97,47 @@ class _DepensePageState extends State<DepensePage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 10, left: 20, right: 20),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(15),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 2,
+                    blurRadius: 5,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_left),
+                      onPressed: _previousMonth,
+                    ),
+                    Text(
+                      DateFormat.yMMM().format(selectedMonth),
+                      style: const TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.arrow_right),
+                      onPressed: _nextMonth,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
           Expanded(
+            flex: 5,
             child: FutureBuilder<List<ChartData>>(
               future: listDepenseChartDataList(),
               builder: (context, snapshot) {
@@ -59,9 +152,9 @@ class _DepensePageState extends State<DepensePage> {
                 } else {
                   List<ChartData>? chartDataList = snapshot.data;
                   double totalValue = calculTotalDepense(chartDataList!);
-                  double Reste = totalRevenu - totalValue;
-                  Reste = double.parse(Reste.toStringAsFixed(2));
-                  dataEmpty = chartDataList.isEmpty;
+                  double rest = totalRevenu - totalValue;
+                  rest = double.parse(rest.toStringAsFixed(2));
+
                   return Stack(
                     children: [
                       Center(
@@ -82,7 +175,7 @@ class _DepensePageState extends State<DepensePage> {
                                   ],
                                 ),
                                 child: const Text(
-                                  'Aucune dépense enregistré.\n\nAjoutez des dépenses pour voir votre graphique ainsi que votre liste de dépense.',
+                                  'Aucune dépense enregistrée.\n\nAjoutez des dépenses pour voir votre graphique ainsi que votre liste de dépenses.',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     color: Colors.red,
@@ -91,68 +184,63 @@ class _DepensePageState extends State<DepensePage> {
                                   ),
                                 ),
                               )
-                            : Stack(
-                                children: [
-                                  Center(
-                                    child: SfCircularChart(
-                                      series: <CircularSeries>[
-                                        DoughnutSeries<ChartData, String>(
-                                          dataSource: chartDataList,
-                                          pointColorMapper:
-                                              (ChartData data, _) => Color(
-                                                  int.parse(
-                                                      '0xff' + data.color)),
-                                          xValueMapper: (ChartData data, _) =>
-                                              data.x,
-                                          yValueMapper: (ChartData data, _) =>
-                                              data.y,
-                                          dataLabelSettings:
-                                              const DataLabelSettings(
-                                                  isVisible: true),
-                                          innerRadius: '60%',
-                                        ),
-                                      ],
+                            : Center(
+                                child: SfCircularChart(
+                                  series: <CircularSeries>[
+                                    DoughnutSeries<ChartData, String>(
+                                      dataSource: chartDataList,
+                                      pointColorMapper: (ChartData data, _) =>
+                                          Color(int.parse('0xff' + data.color)),
+                                      xValueMapper: (ChartData data, _) =>
+                                          data.x,
+                                      yValueMapper: (ChartData data, _) =>
+                                          data.y,
+                                      dataLabelSettings:
+                                          const DataLabelSettings(
+                                              isVisible: true),
+                                      innerRadius: '60%',
                                     ),
-                                  ),
-                                  Positioned(
-                                    child: Center(
-                                      child: Text(
-                                        '$totalValue €',
-                                        style: const TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 20.0),
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'Total des revenues : $totalRevenu €',
-                                          style: const TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        Text(
-                                          'Reste : $Reste €',
-                                          style: const TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                       ),
+                      if (chartDataList.isNotEmpty)
+                        Positioned(
+                          child: Center(
+                            child: Text(
+                              '$totalValue €',
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                        ),
+                      if (chartDataList.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(left: 20.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Total des revenus : $totalRevenu €',
+                                style: const TextStyle(
+                                  fontSize: 14.5,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                'Reste : $rest €',
+                                style: const TextStyle(
+                                  fontSize: 14.5,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                     ],
                   );
                 }
@@ -160,150 +248,148 @@ class _DepensePageState extends State<DepensePage> {
             ),
           ),
           Expanded(
-            child: SizedBox(
-              child: FutureBuilder<List<RechercheDepense>>(
-                future: listDepense(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  } else if (snapshot.hasError) {
-                    return Center(
-                      child: Text('Erreur: ${snapshot.error}'),
-                    );
-                  } else {
-                    List<RechercheDepense>? listDepense = snapshot.data;
-                    return ListView.builder(
-                      itemCount: listDepense!.length,
-                      itemBuilder: (context, index) {
-                        RechercheDepense depense = listDepense[index];
-                        return Container(
-                          margin: const EdgeInsets.symmetric(
-                              horizontal: 15, vertical: 5),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            border: Border.all(color: Colors.grey, width: 1.0),
-                            borderRadius: BorderRadius.circular(10.0),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.4),
-                                spreadRadius: 2,
-                                blurRadius: 7,
-                                offset: const Offset(0, 3),
-                              ),
-                            ],
-                          ),
-                          child: Dismissible(
-                            key: Key(depense.nom_depense),
-                            direction: DismissDirection.endToStart,
-                            background: Container(
-                              color: Colors.red,
-                              alignment: Alignment.centerRight,
-                              padding: const EdgeInsets.only(right: 20.0),
-                              child:
-                                  const Icon(Icons.delete, color: Colors.white),
+            flex: 5,
+            child: FutureBuilder<List<RechercheDepense>>(
+              future: listDepense(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else if (snapshot.hasError) {
+                  return Center(
+                    child: Text('Erreur: ${snapshot.error}'),
+                  );
+                } else {
+                  List<RechercheDepense>? listDepense = snapshot.data;
+                  List<RechercheDepense> filteredDepenses =
+                      _filterDepensesByMonth(listDepense!);
+
+                  return ListView.builder(
+                    itemCount: filteredDepenses.length + 1,
+                    itemBuilder: (context, index) {
+                      if (index == filteredDepenses.length) {
+                        return const SizedBox(height: 30);
+                      }
+                      RechercheDepense depense = filteredDepenses[index];
+                      return Container(
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 15, vertical: 5),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border.all(color: Colors.grey, width: 1.0),
+                          borderRadius: BorderRadius.circular(10.0),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.4),
+                              spreadRadius: 2,
+                              blurRadius: 7,
+                              offset: const Offset(0, 3),
                             ),
-                            confirmDismiss: (direction) async {
-                              return await showDialog(
+                          ],
+                        ),
+                        child: Dismissible(
+                          key: Key(depense.nom_depense),
+                          direction: DismissDirection.endToStart,
+                          background: Container(
+                            color: Colors.red,
+                            alignment: Alignment.centerRight,
+                            padding: const EdgeInsets.only(right: 20.0),
+                            child:
+                                const Icon(Icons.delete, color: Colors.white),
+                          ),
+                          confirmDismiss: (direction) async {
+                            return await showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text("Confirmation"),
+                                  content: const Text(
+                                      "Voulez-vous vraiment supprimer la dépense ?"),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(false),
+                                      child: const Text("Annuler"),
+                                    ),
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(true),
+                                      child: const Text("Supprimer"),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                          onDismissed: (direction) {
+                            // Supprimer la dépense de la base de données
+                            supprimerDepense(depense.docId);
+                            _refreshData();
+                          },
+                          child: ListTile(
+                            onTap: () {
+                              TextEditingController nomDepenseController =
+                                  TextEditingController(
+                                      text: depense.nom_depense);
+                              TextEditingController prixController =
+                                  TextEditingController(
+                                      text: depense.prix.toString());
+                              String selectedCategory = depense.nom_categorie;
+                              DateTime selectedDate =
+                                  DateTime.parse(depense.date);
+                              showDialog(
                                 context: context,
                                 builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    title: const Text("Confirmation"),
-                                    content: const Text(
-                                        "Voulez-vous vraiment supprimer la depense ?"),
-                                    actions: <Widget>[
-                                      TextButton(
-                                        onPressed: () =>
-                                            Navigator.of(context).pop(false),
-                                        child: const Text("Annuler"),
-                                      ),
-                                      TextButton(
-                                        onPressed: () =>
-                                            Navigator.of(context).pop(true),
-                                        child: const Text("Supprimer"),
-                                      ),
-                                    ],
-                                  );
-                                },
-                              );
-                            },
-                            onDismissed: (direction) {
-                              // Supprimer la dépense de la base de données
-                              supprimerDepense(depense.docId);
-                              _refreshData();
-                            },
-                            child: ListTile(
-                              onTap: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    String newNomDepense = depense.nom_depense;
-                                    String newPrix = depense.prix.toString();
-                                    final nomDepenseController =
-                                        TextEditingController(
-                                            text: newNomDepense);
-                                    final prixController =
-                                        TextEditingController(text: newPrix);
-                                    String selectedCategory =
-                                        depense.nom_categorie;
-
-                                    return StatefulBuilder(
-                                      builder: (BuildContext context,
-                                          StateSetter setState) {
-                                        return AlertDialog(
-                                          title:
-                                              const Text("Modifier la dépense"),
-                                          content: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              TextField(
-                                                decoration:
-                                                    const InputDecoration(
-                                                  labelText:
-                                                      'Nom de la dépense',
-                                                ),
-                                                controller:
-                                                    nomDepenseController,
+                                  return StatefulBuilder(
+                                    builder: (context, setState) {
+                                      return AlertDialog(
+                                        title: const Text("Modifier dépense"),
+                                        content: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            TextField(
+                                              controller: nomDepenseController,
+                                              decoration: const InputDecoration(
+                                                labelText: "Nom de la dépense",
                                               ),
-                                              TextField(
-                                                decoration:
-                                                    const InputDecoration(
-                                                  labelText: 'Montant',
-                                                ),
-                                                controller: prixController,
-                                                keyboardType:
-                                                    const TextInputType
-                                                        .numberWithOptions(
-                                                        decimal: true),
+                                            ),
+                                            TextField(
+                                              controller: prixController,
+                                              decoration: const InputDecoration(
+                                                labelText: "Prix",
                                               ),
-                                              const SizedBox(height: 6),
-                                              Align(
-                                                alignment: Alignment.centerLeft,
-                                                child: Text(
-                                                  'Catégorie',
-                                                  style: TextStyle(
-                                                    fontSize: 13,
-                                                    color: Colors.grey[800],
-                                                  ),
+                                              keyboardType:
+                                                  TextInputType.number,
+                                            ),
+                                            const SizedBox(height: 5),
+                                            Align(
+                                              alignment: Alignment.centerLeft,
+                                              child: Text(
+                                                'Catégorie',
+                                                style: TextStyle(
+                                                  fontSize: 13,
+                                                  color: Colors.grey[800],
                                                 ),
                                               ),
-                                              Container(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                  horizontal: 10,
+                                            ),
+                                            const SizedBox(height: 5),
+                                            Container(
+                                              padding: const EdgeInsets.only(
+                                                  left: 10, right: 10),
+                                              decoration: BoxDecoration(
+                                                border: Border.all(
+                                                  color: Colors.black,
+                                                  width: 1.0,
                                                 ),
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          10.0),
-                                                  border: Border.all(
-                                                      color: Colors.black),
-                                                ),
+                                                borderRadius:
+                                                    BorderRadius.circular(15.0),
+                                              ),
+                                              child:
+                                                  DropdownButtonHideUnderline(
                                                 child: DropdownButton<String>(
                                                   value: selectedCategory,
-                                                  onChanged:
-                                                      (String? newValue) {
+                                                  onChanged: (newValue) {
                                                     setState(() {
                                                       selectedCategory =
                                                           newValue!;
@@ -342,92 +428,168 @@ class _DepensePageState extends State<DepensePage> {
                                                   ),
                                                 ),
                                               ),
-                                            ],
-                                          ),
-                                          actions: <Widget>[
-                                            TextButton(
-                                              onPressed: () {
-                                                Navigator.of(context).pop();
-                                              },
-                                              child: const Text("Annuler"),
                                             ),
-                                            TextButton(
-                                              onPressed: () {
-                                                String newNomDepense =
-                                                    nomDepenseController.text;
-                                                String newPrix =
-                                                    prixController.text;
-                                                double newPrice =
-                                                    double.tryParse(newPrix) ??
-                                                        0.0;
-                                                String newCategorie =
-                                                    selectedCategory;
-                                                updateDepensePrix(
-                                                    newPrice,
-                                                    depense.docId,
-                                                    newNomDepense,
-                                                    newCategorie);
-                                                Navigator.of(context).pop();
-                                                _refreshData();
+                                            const SizedBox(height: 5),
+                                            Align(
+                                              alignment: Alignment.centerLeft,
+                                              child: Text(
+                                                'Date',
+                                                style: TextStyle(
+                                                  fontSize: 13,
+                                                  color: Colors.grey[800],
+                                                ),
+                                              ),
+                                            ),
+                                            const SizedBox(height: 10),
+                                            GestureDetector(
+                                              onTap: () {
+                                                showDatePicker(
+                                                  context: context,
+                                                  initialDate: selectedDate,
+                                                  firstDate: DateTime(
+                                                      DateTime.now().year - 5),
+                                                  lastDate: DateTime(
+                                                      DateTime.now().year + 5),
+                                                  builder:
+                                                      (BuildContext context,
+                                                          Widget? child) {
+                                                    return Theme(
+                                                      data: ThemeData.light()
+                                                          .copyWith(
+                                                        colorScheme:
+                                                            const ColorScheme
+                                                                .light(
+                                                          primary: Colors
+                                                              .indigoAccent,
+                                                        ),
+                                                      ),
+                                                      child: child!,
+                                                    );
+                                                  },
+                                                ).then((newDate) {
+                                                  if (newDate != null) {
+                                                    setState(() {
+                                                      selectedDate = newDate;
+                                                    });
+                                                  }
+                                                });
                                               },
-                                              child: const Text("Confirmer"),
+                                              child: Row(
+                                                children: [
+                                                  const Icon(
+                                                      Icons.calendar_today),
+                                                  const SizedBox(width: 10),
+                                                  Text(
+                                                    DateFormat.yMMMd()
+                                                        .format(selectedDate),
+                                                    style: const TextStyle(
+                                                        fontSize: 16),
+                                                  ),
+                                                ],
+                                              ),
                                             ),
                                           ],
-                                        );
-                                      },
-                                    );
-                                  },
-                                );
-                              },
-                              leading: Icon(
-                                icons[depense.Icon],
-                                color: Color(
-                                    int.parse('0xff' + depense.CouleurIcon)),
+                                        ),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                            child: const Text("Annuler"),
+                                          ),
+                                          TextButton(
+                                            onPressed: () {
+                                              String newNomDepense =
+                                                  nomDepenseController.text;
+                                              String newPrix = prixController
+                                                  .text
+                                                  .replaceAll(",", ".");
+                                              double newPrice =
+                                                  double.tryParse(newPrix) ??
+                                                      0.0;
+                                              String newCategorie =
+                                                  selectedCategory;
+                                              updateDepensePrix(
+                                                newPrice,
+                                                depense.docId,
+                                                newNomDepense,
+                                                newCategorie,
+                                                selectedDate.toIso8601String(),
+                                              );
+                                              Navigator.of(context).pop();
+                                              _refreshData();
+                                            },
+                                            child: const Text("Confirmer"),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                },
+                              );
+                            },
+                            leading: Icon(
+                              icons[depense.Icon],
+                              color: Color(
+                                  int.parse('0xff' + depense.CouleurIcon)),
+                            ),
+                            title: Text(
+                              depense.nom_depense,
+                              style: const TextStyle(
+                                fontSize: 18,
                               ),
-                              title: Text(
-                                depense.nom_depense,
-                                style: const TextStyle(
-                                  fontSize: 18,
+                            ),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  depense.nom_categorie,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                  ),
                                 ),
-                              ),
-                              subtitle: Text(
-                                depense.nom_categorie,
-                                style: const TextStyle(
-                                  fontSize: 16,
+                                Text(
+                                  DateFormat.yMMMd().format(
+                                    DateTime.parse(depense.date),
+                                  ),
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.grey,
+                                  ),
                                 ),
-                              ),
-                              trailing: SizedBox(
-                                width: 120,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    Text(
-                                      depense.prix.toStringAsFixed(
-                                          depense.prix.truncateToDouble() ==
-                                                  depense.prix
-                                              ? 0
-                                              : 2),
-                                      style: const TextStyle(
-                                        fontSize: 18,
-                                      ),
+                              ],
+                            ),
+                            trailing: SizedBox(
+                              width: 120,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    depense.prix.toStringAsFixed(
+                                        depense.prix.truncateToDouble() ==
+                                                depense.prix
+                                            ? 0
+                                            : 2),
+                                    style: const TextStyle(
+                                      fontSize: 18,
                                     ),
-                                    const Text(
-                                      '€',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                      ),
+                                  ),
+                                  const Text(
+                                    '€',
+                                    style: TextStyle(
+                                      fontSize: 18,
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
-                        );
-                      },
-                    );
-                  }
-                },
-              ),
+                        ),
+                      );
+                    },
+                  );
+                }
+              },
             ),
           ),
         ],

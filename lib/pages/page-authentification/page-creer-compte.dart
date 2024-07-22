@@ -16,19 +16,19 @@ class page_creation_compte extends StatefulWidget {
 class _page_creation_compteState extends State<page_creation_compte> {
   UserService _userService = UserService();
 
-  final _obsuretext1 = true;
-  final _obsuretext2 = true;
-  var _email;
-  var _password;
+  bool _obsuretext1 = true;
+  bool _obsuretext2 = true;
+  String? _email;
+  String? _password;
   // ignore: unused_field
-  var _passwordconfirmation;
+  String? _passwordconfirmation;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final RegExp emailRegex = RegExp(r"[a-z0-9\._-]+@[a-z0-9\._-]+\.[a-z]+");
 
   Future<void> _showError(String errorMessage, BuildContext context) async {
     return showDialog<void>(
       context: context,
-      barrierDismissible: false, // User must tap button!
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Erreur'),
@@ -50,6 +50,47 @@ class _page_creation_compteState extends State<page_creation_compte> {
         );
       },
     );
+  }
+
+  Future<void> _showInfo(String message, BuildContext context) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Info'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(message),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _checkEmailVerified() async {
+    bool isVerified = await _userService.isEmailVerified();
+    if (isVerified) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const pageGeneral(),
+        ),
+      );
+    } else {
+      _showError('Veuillez vérifier votre e-mail pour continuer.', context);
+    }
   }
 
   @override
@@ -134,20 +175,6 @@ class _page_creation_compteState extends State<page_creation_compte> {
                           fontWeight: FontWeight.w500,
                           color: Colors.grey,
                         ),
-                        /*
-                        suffixIcon: IconButton(
-                          icon: const Icon(
-                            Icons.visibility,
-                            color: Colors.black,
-                          ),
-                          onPressed: () {
-                            setState(
-                              () {
-                                _obsuretext1 = !_obsuretext1;
-                              },
-                            );
-                          },
-                        ),*/
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
@@ -168,20 +195,6 @@ class _page_creation_compteState extends State<page_creation_compte> {
                           fontWeight: FontWeight.w500,
                           color: Colors.grey,
                         ),
-                        /*
-                        suffixIcon: IconButton(
-                          icon: const Icon(
-                            Icons.visibility,
-                            color: Colors.black,
-                          ),
-                          onPressed: () {
-                            setState(
-                              () {
-                                _obsuretext2 = !_obsuretext2;
-                              },
-                            );
-                          },
-                        ),*/
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
@@ -211,25 +224,32 @@ class _page_creation_compteState extends State<page_creation_compte> {
                           if (_formKey.currentState!.validate()) {
                             _userService
                                 .signUp(UserModel(
-                              email: _email,
-                              password: _password,
+                              email: _email!,
+                              password: _password!,
                             ))
-                                .then(
-                              (value) {
-                                if (value.errorMessage != null) {
-                                  _showError(value.errorMessage!, context);
-                                } else {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => const pageGeneral(),
-                                    ),
-                                  );
-                                }
-                              },
-                            );
+                                .then((userModel) {
+                              if (userModel.errorMessage != null) {
+                                _showError(userModel.errorMessage!, context);
+                              } else {
+                                _showInfo(
+                                    "Un e-mail de vérification a été envoyé à $_email. Veuillez vérifier votre e-mail pour continuer.",
+                                    context);
+                              }
+                            });
                           }
                         },
+                      ),
+                    ),
+                    const SizedBox(height: 40),
+                    ElevatedButton(
+                      onPressed: _checkEmailVerified,
+                      child: Text(
+                        "J'ai vérifié mon e-mail",
+                        style: GoogleFonts.poppins(
+                          fontSize: 15,
+                          color: Colors.blueAccent,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
                   ],

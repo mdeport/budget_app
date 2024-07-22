@@ -20,8 +20,24 @@ class _AjouterRevenuPage extends State<AjouterRevenuPage> {
 
   TextEditingController prixControlleur = TextEditingController();
   TextEditingController nomRevenuControlleur = TextEditingController();
+  TextEditingController dateControlleur = TextEditingController();
 
   bool showAllIcons = false;
+
+  Future<void> _selectDate(BuildContext context) async {
+    DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+
+    if (pickedDate != null) {
+      setState(() {
+        dateControlleur.text = "${pickedDate.toLocal()}".split(' ')[0];
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,21 +46,25 @@ class _AjouterRevenuPage extends State<AjouterRevenuPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Ajouter un revenu',
-            style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-                fontSize: 23)),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: const Text(
+          'Ajouter un revenu',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 23.0,
+          ),
+        ),
+        centerTitle: true,
         flexibleSpace: Container(
           decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Color.fromARGB(255, 21, 41, 255),
-                Color.fromARGB(234, 91, 230, 255),
-                Color.fromARGB(197, 91, 230, 255),
-              ],
+            color: Color(0xFF2196F3), // Bleu pastel
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(20),
+              bottomRight: Radius.circular(20),
             ),
           ),
         ),
@@ -55,6 +75,46 @@ class _AjouterRevenuPage extends State<AjouterRevenuPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              const SizedBox(height: 10),
+              SizedBox(
+                width: 200,
+                child: TextField(
+                  controller: dateControlleur,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 18),
+                  decoration: InputDecoration(
+                    hintText: 'Date du revenu',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                    suffixIcon: IconButton(
+                      icon: Icon(Icons.calendar_today),
+                      onPressed: () => _selectDate(context),
+                    ),
+                  ),
+                  readOnly: true,
+                ),
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                'Nom de la catégorie',
+                style: TextStyle(fontSize: 20, color: Colors.indigo),
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                width: 300,
+                child: TextField(
+                  controller: nomRevenuControlleur,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 18),
+                  decoration: InputDecoration(
+                    hintText: 'Entrez le nom de la catégorie',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                  ),
+                ),
+              ),
               const SizedBox(height: 20),
               const Text(
                 'Montant',
@@ -69,6 +129,7 @@ class _AjouterRevenuPage extends State<AjouterRevenuPage> {
                   style: const TextStyle(fontSize: 18),
                   decoration: InputDecoration(
                     hintText: 'Entrez le montant',
+                    suffixText: '€',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20.0),
                     ),
@@ -186,26 +247,6 @@ class _AjouterRevenuPage extends State<AjouterRevenuPage> {
                 },
                 child: const Text('Choisir'),
               ),
-              const SizedBox(height: 30),
-              const Text(
-                'Nom de la catégorie',
-                style: TextStyle(fontSize: 20, color: Colors.indigo),
-              ),
-              const SizedBox(height: 10),
-              SizedBox(
-                width: 300,
-                child: TextField(
-                  controller: nomRevenuControlleur,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 18),
-                  decoration: InputDecoration(
-                    hintText: 'Entrez le nom de la catégorie',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                  ),
-                ),
-              ),
               const SizedBox(height: 40),
               ElevatedButton(
                 onPressed: () {
@@ -213,7 +254,8 @@ class _AjouterRevenuPage extends State<AjouterRevenuPage> {
                       prixControlleur.text.replaceAll(",", ".");
                   if (nomRevenuControlleur.text.isEmpty ||
                       prixControlleur.text.isEmpty ||
-                      chosenIcon == null) {
+                      chosenIcon == null ||
+                      dateControlleur.text.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text(
@@ -235,12 +277,14 @@ class _AjouterRevenuPage extends State<AjouterRevenuPage> {
                         iconNamesRevenu[chosenIcon!] ?? 'icon_inconnu';
                     String iconUrl = iconName;
                     String couleur = selectedColor.value.toRadixString(16);
+                    String date = dateControlleur.text;
                     ajoutRevenu(
                       userId,
                       nomRevenue,
                       prix,
                       iconUrl,
                       couleur,
+                      date,
                     ).then((_) {
                       Navigator.of(context).pop(true);
                     });

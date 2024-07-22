@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 // Ajoutez un revenu en Base de données
 Future<void> ajoutRevenu(String userId, String nomRevenu, double prix,
-    String IconUrl, String CouleurIcon) async {
+    String IconUrl, String CouleurIcon, String date) async {
   try {
     await FirebaseFirestore.instance
         .collection('revenu')
@@ -15,6 +15,7 @@ Future<void> ajoutRevenu(String userId, String nomRevenu, double prix,
       'prix': prix,
       'icon_url': IconUrl,
       'couleur_icon': CouleurIcon,
+      'date': date,
     });
     print('Expense added for user: $userId');
   } catch (e) {
@@ -59,6 +60,7 @@ class RechercheRevenu {
   final String Icon;
   var CouleurIcon;
   final String docId;
+  final String date;
 
   RechercheRevenu({
     required this.nom_revenu,
@@ -66,6 +68,7 @@ class RechercheRevenu {
     required this.Icon,
     required this.CouleurIcon,
     required this.docId,
+    required this.date,
   });
 }
 
@@ -88,6 +91,7 @@ Future<List<RechercheRevenu>> listRevenu() async {
           Icon: doc['icon_url'],
           CouleurIcon: doc['couleur_icon'],
           docId: doc.id,
+          date: doc['date'],
         );
         listRevenu.add(revenu);
         totalRevenu += doc['prix'];
@@ -119,7 +123,7 @@ Future<void> supprimerRevenu(String docId) async {
 
 // Mettre à jour le prix et le nom d'un revenu dans la base de données
 Future<void> updateRevenuPrix(
-    double newPrix, String docId, String newNomRevenu) async {
+    double newPrix, String docId, String newNomRevenu, String newDate) async {
   User? user = FirebaseAuth.instance.currentUser;
   try {
     final revenuRef = FirebaseFirestore.instance
@@ -128,7 +132,8 @@ Future<void> updateRevenuPrix(
         .collection('revenus')
         .doc(docId);
 
-    await revenuRef.update({'prix': newPrix, 'nom_revenu': newNomRevenu});
+    await revenuRef
+        .update({'prix': newPrix, 'nom_revenu': newNomRevenu, 'date': newDate});
     print('Le prix du revenu a été mis à jour avec succès');
   } catch (error) {
     print('Erreur lors de la mise à jour du prix du revenu: $error');

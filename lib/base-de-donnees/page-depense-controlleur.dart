@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 // Ajoutez une dépense en Base de données
 Future<void> ajoutDepense(String userId, String nomDepense, String nomCategorie,
-    double prix, String IconUrl, String CouleurIcon) async {
+    double prix, String IconUrl, String CouleurIcon, String date) async {
   try {
     await FirebaseFirestore.instance
         .collection('depense')
@@ -16,6 +16,7 @@ Future<void> ajoutDepense(String userId, String nomDepense, String nomCategorie,
       'prix': prix,
       'icon_url': IconUrl,
       'couleur_icon': CouleurIcon,
+      'date': date,
     });
     print('Expense added for user: $userId');
   } catch (e) {
@@ -60,6 +61,7 @@ class RechercheDepense {
   final String Icon;
   var CouleurIcon;
   final String docId;
+  String date;
 
   RechercheDepense({
     required this.nom_depense,
@@ -68,6 +70,7 @@ class RechercheDepense {
     required this.Icon,
     required this.CouleurIcon,
     required this.docId,
+    required this.date,
   });
 }
 
@@ -91,6 +94,7 @@ Future<List<RechercheDepense>> listDepense() async {
           Icon: doc['icon_url'],
           CouleurIcon: doc['couleur_icon'],
           docId: doc.id,
+          date: doc['date'],
         );
         listDepense.add(depense);
         totalDepense += doc['prix'];
@@ -122,7 +126,7 @@ Future<void> supprimerDepense(String docId) async {
 
 // Mettre à jour le prix et le nom d'une dépense dans la base de données
 Future<void> updateDepensePrix(double newPrix, String docId,
-    String newNomDepense, String NewNomCategorie) async {
+    String newNomDepense, String NewNomCategorie, String newDate) async {
   User? user = FirebaseAuth.instance.currentUser;
   try {
     final depenseRef = FirebaseFirestore.instance
@@ -134,7 +138,8 @@ Future<void> updateDepensePrix(double newPrix, String docId,
     await depenseRef.update({
       'prix': newPrix,
       'nom_depense': newNomDepense,
-      'nom_categorie': NewNomCategorie
+      'nom_categorie': NewNomCategorie,
+      'date': newDate,
     });
     print('Le prix de la dépense a été mis à jour avec succès');
   } catch (error) {

@@ -22,8 +22,25 @@ class _AjouterObjectifPageState extends State<AjouterObjectifPage> {
 
   TextEditingController montantController = TextEditingController();
   TextEditingController nomObjectifControlleur = TextEditingController();
+  TextEditingController dateControlleur = TextEditingController();
 
   bool showAllIcons = false;
+
+  // Méthode pour afficher le sélecteur de date
+  Future<void> _selectDate(BuildContext context) async {
+    DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+
+    if (pickedDate != null) {
+      setState(() {
+        dateControlleur.text = "${pickedDate.toLocal()}".split(' ')[0];
+      });
+    }
+  }
 
   List<DropdownMenuItem<String>> buildDropdownMenuItems(
       List categoriesWithIcons) {
@@ -49,21 +66,25 @@ class _AjouterObjectifPageState extends State<AjouterObjectifPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         title: const Text(
           'Ajouter un objectif',
           style: TextStyle(
-              color: Colors.black, fontWeight: FontWeight.bold, fontSize: 23),
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 23.0,
+          ),
         ),
+        centerTitle: true,
         flexibleSpace: Container(
           decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Color.fromARGB(255, 21, 41, 255),
-                Color.fromARGB(234, 91, 230, 255),
-                Color.fromARGB(197, 91, 230, 255),
-              ],
+            color: Color(0xFF2196F3), // Bleu pastel
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(20),
+              bottomRight: Radius.circular(20),
             ),
           ),
         ),
@@ -124,6 +145,30 @@ class _AjouterObjectifPageState extends State<AjouterObjectifPage> {
                   ),
                 ),
                 const SizedBox(height: 30),
+                const Text(
+                  'Choix de la date',
+                  style: TextStyle(fontSize: 20, color: Colors.indigo),
+                ),
+                const SizedBox(height: 10),
+                SizedBox(
+                  width: 200,
+                  child: TextField(
+                    controller: dateControlleur,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(fontSize: 18),
+                    decoration: InputDecoration(
+                      hintText: 'Sélectionnez une date',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
+                      suffixIcon: IconButton(
+                        icon: Icon(Icons.calendar_today),
+                        onPressed: () => _selectDate(context),
+                      ),
+                    ),
+                    readOnly: true,
+                  ),
+                ),
                 const SizedBox(height: 30),
                 const Text(
                   'Choisissez une couleur',
@@ -180,7 +225,8 @@ class _AjouterObjectifPageState extends State<AjouterObjectifPage> {
                         montantController.text.replaceAll(",", ".");
                     if (selectedCategory.isEmpty ||
                         montantController.text.isEmpty ||
-                        chosenIcon == '') {
+                        chosenIcon == '' ||
+                        dateControlleur.text.isEmpty) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text(
@@ -202,12 +248,14 @@ class _AjouterObjectifPageState extends State<AjouterObjectifPage> {
                           iconNamesobjectif[chosenIcon!] ?? 'icon_inconnu';
                       String iconUrl = iconName;
                       String couleur = selectedColor.value.toRadixString(16);
+                      String date = dateControlleur.text;
                       ajoutObjectif(
                         userId,
                         nomObjectif,
                         prix,
                         iconUrl,
                         couleur,
+                        date,
                       ).then((_) {
                         Navigator.of(context).pop(true);
                       });

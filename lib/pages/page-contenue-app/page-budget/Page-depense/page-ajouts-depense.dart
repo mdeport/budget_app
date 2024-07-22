@@ -21,6 +21,7 @@ class _AjouterDepensePageState extends State<AjouterDepensePage> {
 
   TextEditingController prixControlleur = TextEditingController();
   TextEditingController nomDepenseControlleur = TextEditingController();
+  TextEditingController dateControlleur = TextEditingController();
 
   bool showAllIcons = false;
 
@@ -44,6 +45,21 @@ class _AjouterDepensePageState extends State<AjouterDepensePage> {
     return items;
   }
 
+  Future<void> _selectDate(BuildContext context) async {
+    DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+
+    if (pickedDate != null) {
+      setState(() {
+        dateControlleur.text = "${pickedDate.toLocal()}".split(' ')[0];
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     List<IconData> displayedIcons =
@@ -51,21 +67,25 @@ class _AjouterDepensePageState extends State<AjouterDepensePage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Ajouter une dépense',
-            style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-                fontSize: 23)),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: const Text(
+          'Ajouter une dépense',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 23.0,
+          ),
+        ),
+        centerTitle: true,
         flexibleSpace: Container(
           decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Color.fromARGB(255, 21, 41, 255),
-                Color.fromARGB(234, 91, 230, 255),
-                Color.fromARGB(197, 91, 230, 255),
-              ],
+            color: Color(0xFF2196F3), // Bleu pastel
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(20),
+              bottomRight: Radius.circular(20),
             ),
           ),
         ),
@@ -76,6 +96,46 @@ class _AjouterDepensePageState extends State<AjouterDepensePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              const SizedBox(height: 10),
+              SizedBox(
+                width: 200,
+                child: TextField(
+                  controller: dateControlleur,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 18),
+                  decoration: InputDecoration(
+                    hintText: 'Date de la dépense',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                    suffixIcon: IconButton(
+                      icon: Icon(Icons.calendar_today),
+                      onPressed: () => _selectDate(context),
+                    ),
+                  ),
+                  readOnly: true,
+                ),
+              ),
+              const SizedBox(height: 10),
+              const Text(
+                'Nom de la dépense',
+                style: TextStyle(fontSize: 20, color: Colors.indigo),
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                width: 300,
+                child: TextField(
+                  controller: nomDepenseControlleur,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 18),
+                  decoration: InputDecoration(
+                    hintText: 'Entrez le nom de la dépense',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                  ),
+                ),
+              ),
               const SizedBox(height: 10),
               const Text(
                 'Montant',
@@ -233,26 +293,6 @@ class _AjouterDepensePageState extends State<AjouterDepensePage> {
                   ),
                 ),
               ),
-              const SizedBox(height: 10),
-              const Text(
-                'Nom de la dépense',
-                style: TextStyle(fontSize: 20, color: Colors.indigo),
-              ),
-              const SizedBox(height: 10),
-              SizedBox(
-                width: 300,
-                child: TextField(
-                  controller: nomDepenseControlleur,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 18),
-                  decoration: InputDecoration(
-                    hintText: 'Entrez le nom de la dépense',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                  ),
-                ),
-              ),
               const SizedBox(height: 40),
               ElevatedButton(
                 onPressed: () {
@@ -261,8 +301,8 @@ class _AjouterDepensePageState extends State<AjouterDepensePage> {
                   if (nomDepenseControlleur.text.isEmpty ||
                       prixControlleur.text.isEmpty ||
                       chosenIcon == null ||
-                      selectedCategory == '') {
-                    // Afficher un message d'alerte si un champ est vide ou si aucune icône n'est choisie
+                      selectedCategory == '' ||
+                      dateControlleur.text.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text(
@@ -284,6 +324,8 @@ class _AjouterDepensePageState extends State<AjouterDepensePage> {
                     String iconName = iconNames[chosenIcon!] ?? 'icon_inconnu';
                     String iconUrl = iconName;
                     String couleur = selectedColor.value.toRadixString(16);
+                    String date = dateControlleur.text;
+
                     ajoutDepense(
                       userId,
                       nomDepense,
@@ -291,6 +333,7 @@ class _AjouterDepensePageState extends State<AjouterDepensePage> {
                       prix,
                       iconUrl,
                       couleur,
+                      date,
                     ).then((_) {
                       Navigator.of(context).pop(true);
                     });
