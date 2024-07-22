@@ -33,7 +33,11 @@ class _DepensePageState extends State<DepensePage> {
     List<RechercheRevenu> revenus = await listRevenu();
     double total = 0;
     for (var revenu in revenus) {
-      total += revenu.prix;
+      DateTime dateRevenu = DateTime.parse(revenu.date);
+      if (dateRevenu.year == selectedMonth.year &&
+          dateRevenu.month == selectedMonth.month) {
+        total += revenu.prix;
+      }
     }
     setState(() {
       totalRevenu = total;
@@ -369,46 +373,63 @@ class _DepensePageState extends State<DepensePage> {
                                                 ),
                                               ),
                                             ),
-                                            DropdownButtonHideUnderline(
-                                              child: DropdownButton<String>(
-                                                value: selectedCategory,
-                                                onChanged: (newValue) {
-                                                  setState(() {
-                                                    selectedCategory =
-                                                        newValue!;
-                                                  });
-                                                },
-                                                items: <String>[
-                                                  'Épicerie',
-                                                  'Maison',
-                                                  'Vêtements & Chaussures',
-                                                  'Sorties au restaurant',
-                                                  'Transport',
-                                                  'Divertissement',
-                                                  'Enfants',
-                                                  'Voyage',
-                                                  'Santé',
-                                                  'Beauté',
-                                                  'Communication',
-                                                  'Voiture',
-                                                  'Animaux de compagnie',
-                                                  'Impôts',
-                                                  'Education',
-                                                  'Divers',
-                                                ].map<DropdownMenuItem<String>>(
-                                                    (String value) {
-                                                  return DropdownMenuItem<
-                                                      String>(
-                                                    value: value,
-                                                    child: Text(value),
-                                                  );
-                                                }).toList(),
-                                                underline: Container(
-                                                  height: 0,
-                                                  color: Colors.transparent,
+                                            const SizedBox(height: 5),
+                                            Container(
+                                              padding: const EdgeInsets.only(
+                                                  left: 10, right: 10),
+                                              decoration: BoxDecoration(
+                                                border: Border.all(
+                                                  color: Colors.black,
+                                                  width: 1.0,
+                                                ),
+                                                borderRadius:
+                                                    BorderRadius.circular(15.0),
+                                              ),
+                                              child:
+                                                  DropdownButtonHideUnderline(
+                                                child: DropdownButton<String>(
+                                                  value: selectedCategory,
+                                                  onChanged: (newValue) {
+                                                    setState(() {
+                                                      selectedCategory =
+                                                          newValue!;
+                                                    });
+                                                  },
+                                                  items: <String>[
+                                                    'Épicerie',
+                                                    'Maison',
+                                                    'Vêtements & Chaussures',
+                                                    'Sorties au restaurant',
+                                                    'Transport',
+                                                    'Divertissement',
+                                                    'Enfants',
+                                                    'Voyage',
+                                                    'Santé',
+                                                    'Beauté',
+                                                    'Communication',
+                                                    'Voiture',
+                                                    'Animaux de compagnie',
+                                                    'Impôts',
+                                                    'Education',
+                                                    'Divers',
+                                                  ].map<
+                                                          DropdownMenuItem<
+                                                              String>>(
+                                                      (String value) {
+                                                    return DropdownMenuItem<
+                                                        String>(
+                                                      value: value,
+                                                      child: Text(value),
+                                                    );
+                                                  }).toList(),
+                                                  underline: Container(
+                                                    height: 0,
+                                                    color: Colors.transparent,
+                                                  ),
                                                 ),
                                               ),
                                             ),
+                                            const SizedBox(height: 5),
                                             Align(
                                               alignment: Alignment.centerLeft,
                                               child: Text(

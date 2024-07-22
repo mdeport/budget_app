@@ -4,7 +4,6 @@ import 'package:application_budget_app/animation/temps-affichage-animation.dart'
 import 'package:google_fonts/google_fonts.dart';
 import 'package:application_budget_app/models/UserModel.dart';
 import 'package:application_budget_app/pages/services/UserService.dart';
-import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class page_connexion_compte extends StatefulWidget {
@@ -15,9 +14,9 @@ class page_connexion_compte extends StatefulWidget {
 }
 
 class _page_connexion_compteState extends State<page_connexion_compte> {
-  UserService _userService = UserService();
+  final UserService _userService = UserService();
 
-  bool _obsuretext1 = true;
+  final bool _obsuretext1 = true;
   String? _email;
   String? _password;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -164,7 +163,7 @@ class _page_connexion_compteState extends State<page_connexion_compte> {
                               fontWeight: FontWeight.w500,
                               color: Colors.grey,
                             ),
-                            suffixIcon: IconButton(
+                            /*suffixIcon: IconButton(
                               icon: Icon(
                                 _obsuretext1
                                     ? Icons.visibility
@@ -178,7 +177,7 @@ class _page_connexion_compteState extends State<page_connexion_compte> {
                                   },
                                 );
                               },
-                            ),
+                            ),*/
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),

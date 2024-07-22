@@ -270,7 +270,7 @@ class _ObjectifPageState extends State<ObjectifPage> {
                                                 decoration: BoxDecoration(
                                                   borderRadius:
                                                       BorderRadius.circular(
-                                                          10.0),
+                                                          15.0),
                                                   border: Border.all(
                                                       color: Colors.black),
                                                 ),
