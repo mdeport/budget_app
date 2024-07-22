@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:application_budget_app/base-de-donnees/page-aide-controlleur.dart';
 
 class PageAide extends StatefulWidget {
   const PageAide({super.key});
@@ -8,6 +10,11 @@ class PageAide extends StatefulWidget {
 }
 
 class _PageAideState extends State<PageAide> {
+  final _emailController = TextEditingController()
+    ..text = FirebaseAuth.instance.currentUser!.email!;
+  final _commentaireController = TextEditingController();
+  final _nomController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,17 +76,84 @@ class _PageAideState extends State<PageAide> {
               '2. Utilisez des catégories spécifiques pour avoir une meilleure vue d\'ensemble.\n'
               '3. Consultez régulièrement vos objectifs pour rester motivé.',
             ),
-            const SizedBox(height: 24.0),
-            Center(
-              child: ElevatedButton.icon(
-                icon: const Icon(Icons.feedback),
-                label: const Text('Envoyer des commentaires'),
-                onPressed: () {},
-              ),
-            ),
+            const SizedBox(height: 40.0),
           ],
         ),
       ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _showFeedbackForm,
+        elevation: 4.0,
+        icon: const Icon(Icons.feedback, color: Colors.white),
+        label: const Text('Envoyer un commentaire',
+            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+        backgroundColor: Colors.indigoAccent,
+      ),
+    );
+  }
+
+  void _showFeedbackForm() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Envoyer un commentaire',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 16.0),
+              TextField(
+                controller: _nomController,
+                decoration: const InputDecoration(
+                  labelText: 'Votre Nom',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 16.0),
+              TextField(
+                controller: _emailController,
+                decoration: const InputDecoration(
+                  labelText: 'Votre Email',
+                  border: OutlineInputBorder(),
+                ),
+                keyboardType: TextInputType.emailAddress,
+              ),
+              const SizedBox(height: 16.0),
+              TextField(
+                controller: _commentaireController,
+                decoration: const InputDecoration(
+                  labelText: 'Vos Commentaires',
+                  border: OutlineInputBorder(),
+                ),
+                maxLines: 4,
+              ),
+              const SizedBox(height: 16.0),
+              ElevatedButton(
+                onPressed: () {
+                  final nom = _nomController.text;
+                  final mail = _emailController.text;
+                  final commentaire = _commentaireController.text;
+                  ajoutCommentaire(nom, mail, commentaire);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Merci pour votre commentaire!'),
+                    ),
+                  );
+                  Navigator.pop(context);
+                  _nomController.text = '';
+                  _emailController.text =
+                      FirebaseAuth.instance.currentUser!.email!;
+                  _commentaireController.text = '';
+                },
+                child: const Text('Envoyer'),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 

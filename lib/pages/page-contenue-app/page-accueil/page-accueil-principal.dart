@@ -34,39 +34,7 @@ class _Page_accueil_principalState extends State<Page_accueil_principal> {
             ),
           ),
         ),
-        
       ),
-      /*appBar: PreferredSize(
-        preferredSize: Size.fromHeight(appBarHeight),
-        child: ClipPath(
-          clipper: AppBarClipper(),
-          child: AppBar(
-            automaticallyImplyLeading: false,
-            flexibleSpace: Container(
-              decoration: const BoxDecoration(
-                color: Color(0xFF2196F3),
-              ),
-              child: const Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.only(bottom: 40.0),
-                    child: Text(
-                      'Acceuil',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 30.0,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            backgroundColor: const Color(0xFF2196F3),
-          ),
-        ),
-      ),*/
       body: ListView(
         children: <Widget>[
           buildShadowedBox(
@@ -170,7 +138,8 @@ class _Page_accueil_principalState extends State<Page_accueil_principal> {
                               text: ' $clickableWord',
                               style: const TextStyle(
                                 color: Colors.blue,
-                                decoration: TextDecoration.underline,
+                                fontSize: 16.0,
+                                //decoration: TextDecoration.underline,
                               ),
                               recognizer: TapGestureRecognizer()
                                 ..onTap = onPressed,
@@ -186,23 +155,5 @@ class _Page_accueil_principalState extends State<Page_accueil_principal> {
         ),
       ),
     );
-  }
-}
-
-class AppBarClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    final Path path = Path();
-    path.lineTo(0, size.height - 80);
-    path.quadraticBezierTo(
-        size.width / 2, size.height, size.width, size.height - 80);
-    path.lineTo(size.width, 0);
-    path.close();
-    return path;
-  }
-
-  @override
-  bool shouldReclip(covariant CustomClipper<Path> oldClipper) {
-    return false;
   }
 }

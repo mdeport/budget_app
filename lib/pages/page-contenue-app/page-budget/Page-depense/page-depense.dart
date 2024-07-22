@@ -227,14 +227,14 @@ class _DepensePageState extends State<DepensePage> {
                               Text(
                                 'Total des revenus : $totalRevenu €',
                                 style: const TextStyle(
-                                  fontSize: 14.5,
+                                  fontSize: 14,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                               Text(
                                 'Reste : $rest €',
                                 style: const TextStyle(
-                                  fontSize: 14.5,
+                                  fontSize: 14,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -606,7 +606,7 @@ class _DepensePageState extends State<DepensePage> {
           });
         },
         label: const Text('Ajouter des dépenses',
-            style: TextStyle(fontWeight: FontWeight.bold)),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
         backgroundColor: Colors.indigoAccent,
       ),
     );

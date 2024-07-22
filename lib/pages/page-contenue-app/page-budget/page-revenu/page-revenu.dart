@@ -494,7 +494,7 @@ class _RevenuePageState extends State<RevenuePage> {
           });
         },
         label: const Text('Ajouter des revenus',
-            style: TextStyle(fontWeight: FontWeight.bold)),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
         backgroundColor: Colors.indigoAccent,
       ),
     );

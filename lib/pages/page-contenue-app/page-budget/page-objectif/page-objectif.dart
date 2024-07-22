@@ -506,7 +506,7 @@ class _ObjectifPageState extends State<ObjectifPage> {
           });
         },
         label: const Text('Ajouter des objectifs',
-            style: TextStyle(fontWeight: FontWeight.bold)),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
         backgroundColor: Colors.indigoAccent,
       ),
     );
