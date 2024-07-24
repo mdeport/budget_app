@@ -58,7 +58,7 @@ class RechercheDepense {
   final String nom_depense;
   final String nom_categorie;
   final double prix;
-  final String Icon;
+  late final String Icon;
   var CouleurIcon;
   final String docId;
   String date;

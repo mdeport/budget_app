@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:application_budget_app/pages/page-contenue-app/page-budget/Page-depense/page-ajouts-depense.dart';
@@ -93,6 +94,7 @@ class _DepensePageState extends State<DepensePage> {
 
   @override
   Widget build(BuildContext context) {
+    List<IconData> displayedIcons = depenseIcons;
     return Scaffold(
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -338,6 +340,11 @@ class _DepensePageState extends State<DepensePage> {
                               String selectedCategory = depense.nom_categorie;
                               DateTime selectedDate =
                                   DateTime.parse(depense.date);
+                              Color selectedColor = depense.CouleurIcon != null
+                                  ? Color(
+                                      int.parse('0xff' + depense.CouleurIcon))
+                                  : Colors.blue;
+                              IconData? selectedIcon = icons[depense.Icon];
                               showDialog(
                                 context: context,
                                 builder: (BuildContext context) {
@@ -485,6 +492,128 @@ class _DepensePageState extends State<DepensePage> {
                                                     style: const TextStyle(
                                                         fontSize: 16),
                                                   ),
+                                                ],
+                                              ),
+                                            ),
+                                            const SizedBox(height: 15),
+                                            ElevatedButton(
+                                              onPressed: () {
+                                                showDialog(
+                                                  context: context,
+                                                  builder:
+                                                      (BuildContext context) {
+                                                    return AlertDialog(
+                                                      title: const Text(
+                                                          'Choisir une icône'),
+                                                      content:
+                                                          SingleChildScrollView(
+                                                        child: Wrap(
+                                                          spacing: 20,
+                                                          runSpacing: 20,
+                                                          children:
+                                                              displayedIcons
+                                                                  .map((icon) {
+                                                            return GestureDetector(
+                                                              onTap: () {
+                                                                setState(() {
+                                                                  selectedIcon =
+                                                                      icon;
+                                                                });
+                                                                Navigator.of(
+                                                                        context)
+                                                                    .pop();
+                                                              },
+                                                              child: Icon(
+                                                                icon,
+                                                                color: selectedIcon ==
+                                                                        icon
+                                                                    ? selectedColor
+                                                                    : Colors
+                                                                        .grey,
+                                                              ),
+                                                            );
+                                                          }).toList(),
+                                                        ),
+                                                      ),
+                                                      actions: <Widget>[
+                                                        TextButton(
+                                                          onPressed: () {
+                                                            Navigator.of(
+                                                                    context)
+                                                                .pop();
+                                                          },
+                                                          child: const Text(
+                                                              'Annuler'),
+                                                        ),
+                                                      ],
+                                                    );
+                                                  },
+                                                );
+                                              },
+                                              child: Row(
+                                                children: [
+                                                  Icon(selectedIcon,
+                                                      color: selectedColor),
+                                                  const SizedBox(width: 17),
+                                                  const Text('Changer l\'icône',
+                                                      style: TextStyle(
+                                                          color: Colors.black)),
+                                                ],
+                                              ),
+                                            ),
+                                            const SizedBox(height: 15),
+                                            ElevatedButton(
+                                              onPressed: () {
+                                                showDialog(
+                                                  context: context,
+                                                  builder:
+                                                      (BuildContext context) {
+                                                    return AlertDialog(
+                                                      title: const Text(
+                                                          'Choisir une couleur'),
+                                                      content:
+                                                          SingleChildScrollView(
+                                                        child:
+                                                            MaterialColorPicker(
+                                                          selectedColor:
+                                                              selectedColor,
+                                                          onColorChange:
+                                                              (Color color) {
+                                                            setState(() {
+                                                              selectedColor =
+                                                                  color;
+                                                            });
+                                                          },
+                                                          circleSize: 40.0,
+                                                          spacing: 10.0,
+                                                        ),
+                                                      ),
+                                                      actions: <Widget>[
+                                                        TextButton(
+                                                          child:
+                                                              const Text('OK'),
+                                                          onPressed: () {
+                                                            Navigator.of(
+                                                                    context)
+                                                                .pop();
+                                                          },
+                                                        ),
+                                                      ],
+                                                    );
+                                                  },
+                                                );
+                                              },
+                                              child: Row(
+                                                children: [
+                                                  Icon(
+                                                    Icons.circle,
+                                                    color: selectedColor,
+                                                  ),
+                                                  const SizedBox(width: 17),
+                                                  const Text(
+                                                      'Changer la couleur',
+                                                      style: TextStyle(
+                                                          color: Colors.black)),
                                                 ],
                                               ),
                                             ),

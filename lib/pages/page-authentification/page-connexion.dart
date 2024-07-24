@@ -191,7 +191,7 @@ class _page_connexion_compteState extends State<page_connexion_compte> {
                               backgroundColor: Colors.blue[900],
                               shape: const StadiumBorder(),
                               padding: const EdgeInsets.symmetric(
-                                horizontal: 125,
+                                horizontal: 115,
                                 vertical: 13,
                               ),
                             ),
