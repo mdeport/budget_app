@@ -24,10 +24,15 @@ class _DepensePageState extends State<DepensePage> {
   void initState() {
     super.initState();
     fetchRevenus();
+    listDepenseChartDataList();
+    listDepense();
   }
 
   Future<void> _refreshData() async {
     setState(() {});
+    fetchRevenus();
+    listDepenseChartDataList();
+    listDepense();
   }
 
   Future<void> fetchRevenus() async {
@@ -344,7 +349,10 @@ class _DepensePageState extends State<DepensePage> {
                                   ? Color(
                                       int.parse('0xff' + depense.CouleurIcon))
                                   : Colors.blue;
-                              IconData? selectedIcon = icons[depense.Icon];
+                              IconData? selectedIcon =
+                                  icons[depense.Icon] ?? Icons.help_outline;
+                              IconData? chosenIcon;
+
                               showDialog(
                                 context: context,
                                 builder: (BuildContext context) {
@@ -352,272 +360,287 @@ class _DepensePageState extends State<DepensePage> {
                                     builder: (context, setState) {
                                       return AlertDialog(
                                         title: const Text("Modifier dépense"),
-                                        content: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            TextField(
-                                              controller: nomDepenseController,
-                                              decoration: const InputDecoration(
-                                                labelText: "Nom de la dépense",
-                                              ),
-                                            ),
-                                            TextField(
-                                              controller: prixController,
-                                              decoration: const InputDecoration(
-                                                labelText: "Prix",
-                                              ),
-                                              keyboardType:
-                                                  TextInputType.number,
-                                            ),
-                                            const SizedBox(height: 5),
-                                            Align(
-                                              alignment: Alignment.centerLeft,
-                                              child: Text(
-                                                'Catégorie',
-                                                style: TextStyle(
-                                                  fontSize: 13,
-                                                  color: Colors.grey[800],
+                                        content: SingleChildScrollView(
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              TextField(
+                                                controller:
+                                                    nomDepenseController,
+                                                decoration:
+                                                    const InputDecoration(
+                                                  labelText:
+                                                      "Nom de la dépense",
                                                 ),
                                               ),
-                                            ),
-                                            const SizedBox(height: 5),
-                                            Container(
-                                              padding: const EdgeInsets.only(
-                                                  left: 10, right: 10),
-                                              decoration: BoxDecoration(
-                                                border: Border.all(
-                                                  color: Colors.black,
-                                                  width: 1.0,
+                                              TextField(
+                                                controller: prixController,
+                                                decoration:
+                                                    const InputDecoration(
+                                                  labelText: "Prix",
                                                 ),
-                                                borderRadius:
-                                                    BorderRadius.circular(15.0),
+                                                keyboardType:
+                                                    TextInputType.number,
                                               ),
-                                              child:
-                                                  DropdownButtonHideUnderline(
-                                                child: DropdownButton<String>(
-                                                  value: selectedCategory,
-                                                  onChanged: (newValue) {
-                                                    setState(() {
-                                                      selectedCategory =
-                                                          newValue!;
-                                                    });
-                                                  },
-                                                  items: <String>[
-                                                    'Épicerie',
-                                                    'Maison',
-                                                    'Vêtements & Chaussures',
-                                                    'Sorties au restaurant',
-                                                    'Transport',
-                                                    'Divertissement',
-                                                    'Enfants',
-                                                    'Voyage',
-                                                    'Santé',
-                                                    'Beauté',
-                                                    'Communication',
-                                                    'Voiture',
-                                                    'Animaux de compagnie',
-                                                    'Impôts',
-                                                    'Education',
-                                                    'Divers',
-                                                  ].map<
-                                                          DropdownMenuItem<
-                                                              String>>(
-                                                      (String value) {
-                                                    return DropdownMenuItem<
-                                                        String>(
-                                                      value: value,
-                                                      child: Text(value),
-                                                    );
-                                                  }).toList(),
-                                                  underline: Container(
-                                                    height: 0,
-                                                    color: Colors.transparent,
+                                              const SizedBox(height: 5),
+                                              Align(
+                                                alignment: Alignment.centerLeft,
+                                                child: Text(
+                                                  'Catégorie',
+                                                  style: TextStyle(
+                                                    fontSize: 13,
+                                                    color: Colors.grey[800],
                                                   ),
                                                 ),
                                               ),
-                                            ),
-                                            const SizedBox(height: 5),
-                                            Align(
-                                              alignment: Alignment.centerLeft,
-                                              child: Text(
-                                                'Date',
-                                                style: TextStyle(
-                                                  fontSize: 13,
-                                                  color: Colors.grey[800],
+                                              const SizedBox(height: 5),
+                                              Container(
+                                                padding: const EdgeInsets.only(
+                                                    left: 10, right: 10),
+                                                decoration: BoxDecoration(
+                                                  border: Border.all(
+                                                    color: Colors.black,
+                                                    width: 1.0,
+                                                  ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          15.0),
+                                                ),
+                                                child:
+                                                    DropdownButtonHideUnderline(
+                                                  child: DropdownButton<String>(
+                                                    value: selectedCategory,
+                                                    onChanged: (newValue) {
+                                                      setState(() {
+                                                        selectedCategory =
+                                                            newValue!;
+                                                      });
+                                                    },
+                                                    items: <String>[
+                                                      'Épicerie',
+                                                      'Maison',
+                                                      'Vêtements & Chaussures',
+                                                      'Sorties au restaurant',
+                                                      'Transport',
+                                                      'Divertissement',
+                                                      'Enfants',
+                                                      'Voyage',
+                                                      'Santé',
+                                                      'Beauté',
+                                                      'Communication',
+                                                      'Voiture',
+                                                      'Animaux de compagnie',
+                                                      'Impôts',
+                                                      'Education',
+                                                      'Divers',
+                                                    ].map<
+                                                            DropdownMenuItem<
+                                                                String>>(
+                                                        (String value) {
+                                                      return DropdownMenuItem<
+                                                          String>(
+                                                        value: value,
+                                                        child: Text(value),
+                                                      );
+                                                    }).toList(),
+                                                    underline: Container(
+                                                      height: 0,
+                                                      color: Colors.transparent,
+                                                    ),
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                            const SizedBox(height: 10),
-                                            GestureDetector(
-                                              onTap: () {
-                                                showDatePicker(
-                                                  context: context,
-                                                  initialDate: selectedDate,
-                                                  firstDate: DateTime(
-                                                      DateTime.now().year - 5),
-                                                  lastDate: DateTime(
-                                                      DateTime.now().year + 5),
-                                                  builder:
-                                                      (BuildContext context,
-                                                          Widget? child) {
-                                                    return Theme(
-                                                      data: ThemeData.light()
-                                                          .copyWith(
-                                                        colorScheme:
-                                                            const ColorScheme
-                                                                .light(
-                                                          primary: Colors
-                                                              .indigoAccent,
-                                                        ),
-                                                      ),
-                                                      child: child!,
-                                                    );
-                                                  },
-                                                ).then((newDate) {
-                                                  if (newDate != null) {
-                                                    setState(() {
-                                                      selectedDate = newDate;
-                                                    });
-                                                  }
-                                                });
-                                              },
-                                              child: Row(
-                                                children: [
-                                                  const Icon(
-                                                      Icons.calendar_today),
-                                                  const SizedBox(width: 10),
-                                                  Text(
-                                                    DateFormat.yMMMd()
-                                                        .format(selectedDate),
-                                                    style: const TextStyle(
-                                                        fontSize: 16),
+                                              const SizedBox(height: 5),
+                                              Align(
+                                                alignment: Alignment.centerLeft,
+                                                child: Text(
+                                                  'Date',
+                                                  style: TextStyle(
+                                                    fontSize: 13,
+                                                    color: Colors.grey[800],
                                                   ),
-                                                ],
+                                                ),
                                               ),
-                                            ),
-                                            const SizedBox(height: 15),
-                                            ElevatedButton(
-                                              onPressed: () {
-                                                showDialog(
-                                                  context: context,
-                                                  builder:
-                                                      (BuildContext context) {
-                                                    return AlertDialog(
-                                                      title: const Text(
-                                                          'Choisir une icône'),
-                                                      content:
-                                                          SingleChildScrollView(
-                                                        child: Wrap(
-                                                          spacing: 20,
-                                                          runSpacing: 20,
-                                                          children:
-                                                              displayedIcons
-                                                                  .map((icon) {
-                                                            return GestureDetector(
-                                                              onTap: () {
-                                                                setState(() {
-                                                                  selectedIcon =
-                                                                      icon;
-                                                                });
-                                                                Navigator.of(
-                                                                        context)
-                                                                    .pop();
-                                                              },
-                                                              child: Icon(
-                                                                icon,
-                                                                color: selectedIcon ==
-                                                                        icon
-                                                                    ? selectedColor
-                                                                    : Colors
-                                                                        .grey,
-                                                              ),
-                                                            );
-                                                          }).toList(),
+                                              const SizedBox(height: 10),
+                                              GestureDetector(
+                                                onTap: () {
+                                                  showDatePicker(
+                                                    context: context,
+                                                    initialDate: selectedDate,
+                                                    firstDate: DateTime(
+                                                        DateTime.now().year -
+                                                            5),
+                                                    lastDate: DateTime(
+                                                        DateTime.now().year +
+                                                            5),
+                                                    builder:
+                                                        (BuildContext context,
+                                                            Widget? child) {
+                                                      return Theme(
+                                                        data: ThemeData.light()
+                                                            .copyWith(
+                                                          colorScheme:
+                                                              const ColorScheme
+                                                                  .light(
+                                                            primary: Colors
+                                                                .indigoAccent,
+                                                          ),
                                                         ),
-                                                      ),
-                                                      actions: <Widget>[
-                                                        TextButton(
-                                                          onPressed: () {
-                                                            Navigator.of(
-                                                                    context)
-                                                                .pop();
-                                                          },
-                                                          child: const Text(
-                                                              'Annuler'),
-                                                        ),
-                                                      ],
-                                                    );
-                                                  },
-                                                );
-                                              },
-                                              child: Row(
-                                                children: [
-                                                  Icon(selectedIcon,
-                                                      color: selectedColor),
-                                                  const SizedBox(width: 17),
-                                                  const Text('Changer l\'icône',
-                                                      style: TextStyle(
-                                                          color: Colors.black)),
-                                                ],
+                                                        child: child!,
+                                                      );
+                                                    },
+                                                  ).then((newDate) {
+                                                    if (newDate != null) {
+                                                      setState(() {
+                                                        selectedDate = newDate;
+                                                      });
+                                                    }
+                                                  });
+                                                },
+                                                child: Row(
+                                                  children: [
+                                                    const Icon(
+                                                        Icons.calendar_today),
+                                                    const SizedBox(width: 10),
+                                                    Text(
+                                                      DateFormat.yMMMd()
+                                                          .format(selectedDate),
+                                                      style: const TextStyle(
+                                                          fontSize: 16),
+                                                    ),
+                                                  ],
+                                                ),
                                               ),
-                                            ),
-                                            const SizedBox(height: 15),
-                                            ElevatedButton(
-                                              onPressed: () {
-                                                showDialog(
-                                                  context: context,
-                                                  builder:
-                                                      (BuildContext context) {
-                                                    return AlertDialog(
-                                                      title: const Text(
-                                                          'Choisir une couleur'),
-                                                      content:
-                                                          SingleChildScrollView(
-                                                        child:
-                                                            MaterialColorPicker(
-                                                          selectedColor:
-                                                              selectedColor,
-                                                          onColorChange:
-                                                              (Color color) {
-                                                            setState(() {
-                                                              selectedColor =
-                                                                  color;
-                                                            });
-                                                          },
-                                                          circleSize: 40.0,
-                                                          spacing: 10.0,
+                                              const SizedBox(height: 15),
+                                              ElevatedButton(
+                                                onPressed: () {
+                                                  showDialog(
+                                                    context: context,
+                                                    builder:
+                                                        (BuildContext context) {
+                                                      return AlertDialog(
+                                                        title: const Text(
+                                                            'Choisir une icône'),
+                                                        content:
+                                                            SingleChildScrollView(
+                                                          child: Wrap(
+                                                            spacing: 20,
+                                                            runSpacing: 20,
+                                                            children:
+                                                                displayedIcons
+                                                                    .map(
+                                                                        (icon) {
+                                                              return GestureDetector(
+                                                                onTap: () {
+                                                                  setState(() {
+                                                                    selectedIcon =
+                                                                        icon;
+                                                                    chosenIcon =
+                                                                        icon;
+                                                                  });
+                                                                  Navigator.of(
+                                                                          context)
+                                                                      .pop();
+                                                                },
+                                                                child: Icon(
+                                                                  icon,
+                                                                  color: selectedIcon ==
+                                                                          icon
+                                                                      ? selectedColor
+                                                                      : Colors
+                                                                          .grey,
+                                                                ),
+                                                              );
+                                                            }).toList(),
+                                                          ),
                                                         ),
-                                                      ),
-                                                      actions: <Widget>[
-                                                        TextButton(
+                                                        actions: <Widget>[
+                                                          TextButton(
+                                                            onPressed: () {
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pop();
+                                                            },
+                                                            child: const Text(
+                                                                'Annuler'),
+                                                          ),
+                                                        ],
+                                                      );
+                                                    },
+                                                  );
+                                                },
+                                                child: Row(
+                                                  children: [
+                                                    Icon(selectedIcon,
+                                                        color: selectedColor),
+                                                    const SizedBox(width: 17),
+                                                    const Text(
+                                                        'Changer l\'icône',
+                                                        style: TextStyle(
+                                                            color:
+                                                                Colors.black)),
+                                                  ],
+                                                ),
+                                              ),
+                                              const SizedBox(height: 15),
+                                              ElevatedButton(
+                                                onPressed: () {
+                                                  showDialog(
+                                                    context: context,
+                                                    builder:
+                                                        (BuildContext context) {
+                                                      return AlertDialog(
+                                                        title: const Text(
+                                                            'Choisir une couleur'),
+                                                        content:
+                                                            SingleChildScrollView(
                                                           child:
-                                                              const Text('OK'),
-                                                          onPressed: () {
-                                                            Navigator.of(
-                                                                    context)
-                                                                .pop();
-                                                          },
+                                                              MaterialColorPicker(
+                                                            selectedColor:
+                                                                selectedColor,
+                                                            onColorChange:
+                                                                (Color color) {
+                                                              setState(() {
+                                                                selectedColor =
+                                                                    color;
+                                                              });
+                                                            },
+                                                            circleSize: 40.0,
+                                                            spacing: 10.0,
+                                                          ),
                                                         ),
-                                                      ],
-                                                    );
-                                                  },
-                                                );
-                                              },
-                                              child: Row(
-                                                children: [
-                                                  Icon(
-                                                    Icons.circle,
-                                                    color: selectedColor,
-                                                  ),
-                                                  const SizedBox(width: 17),
-                                                  const Text(
-                                                      'Changer la couleur',
-                                                      style: TextStyle(
-                                                          color: Colors.black)),
-                                                ],
+                                                        actions: <Widget>[
+                                                          TextButton(
+                                                            child: const Text(
+                                                                'OK'),
+                                                            onPressed: () {
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pop();
+                                                            },
+                                                          ),
+                                                        ],
+                                                      );
+                                                    },
+                                                  );
+                                                },
+                                                child: Row(
+                                                  children: [
+                                                    Icon(
+                                                      Icons.circle,
+                                                      color: selectedColor,
+                                                    ),
+                                                    const SizedBox(width: 17),
+                                                    const Text(
+                                                        'Changer la couleur',
+                                                        style: TextStyle(
+                                                            color:
+                                                                Colors.black)),
+                                                  ],
+                                                ),
                                               ),
-                                            ),
-                                          ],
+                                            ],
+                                          ),
                                         ),
                                         actions: <Widget>[
                                           TextButton(
@@ -638,12 +661,23 @@ class _DepensePageState extends State<DepensePage> {
                                                       0.0;
                                               String newCategorie =
                                                   selectedCategory;
+                                              IconData finalIcon =
+                                                  chosenIcon ?? selectedIcon!;
+                                              String iconName =
+                                                  iconNames[finalIcon] ??
+                                                      'icon_inconnu';
+                                              String iconUrl = iconName;
+                                              String couleur = selectedColor
+                                                  .value
+                                                  .toRadixString(16);
                                               updateDepensePrix(
                                                 newPrice,
                                                 depense.docId,
                                                 newNomDepense,
                                                 newCategorie,
                                                 selectedDate.toIso8601String(),
+                                                couleur,
+                                                iconUrl,
                                               );
                                               Navigator.of(context).pop();
                                               _refreshData();
