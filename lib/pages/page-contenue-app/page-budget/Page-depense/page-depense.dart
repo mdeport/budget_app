@@ -679,8 +679,10 @@ class _DepensePageState extends State<DepensePage> {
                                                 couleur,
                                                 iconUrl,
                                               );
+                                              setState(() {
+                                                _refreshData();
+                                              });
                                               Navigator.of(context).pop();
-                                              _refreshData();
                                             },
                                             child: const Text("Confirmer"),
                                           ),
