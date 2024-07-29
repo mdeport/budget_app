@@ -12,11 +12,11 @@ List<IconData> depenseIcons = [
   FontAwesomeIcons.briefcase,
   FontAwesomeIcons.bus,
   FontAwesomeIcons.plane,
-  FontAwesomeIcons.creditCard,
+  FontAwesomeIcons.creditCard, //
   FontAwesomeIcons.bed,
   FontAwesomeIcons.dumbbell,
   FontAwesomeIcons.fileInvoiceDollar,
-  FontAwesomeIcons.gasPump,
+  FontAwesomeIcons.gasPump, //
   FontAwesomeIcons.graduationCap,
   FontAwesomeIcons.mortarPestle,
   FontAwesomeIcons.music,
@@ -51,7 +51,7 @@ Map<IconData, String> iconNames = {
   FontAwesomeIcons.bed: 'bed',
   FontAwesomeIcons.dumbbell: 'dumbbell',
   FontAwesomeIcons.fileInvoiceDollar: 'file_invoice_dollar',
-  FontAwesomeIcons.gasPump: 'gas_pump',
+  FontAwesomeIcons.gasPump: 'gas_pump', //
   FontAwesomeIcons.graduationCap: 'graduation_cap',
   FontAwesomeIcons.mortarPestle: 'mortar_pestle',
   FontAwesomeIcons.music: 'music',

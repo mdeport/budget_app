@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:application_budget_app/pages/page-contenue-app/page-budget/Page-revenu/page-ajouts-revenu.dart';
 import 'package:application_budget_app/base-de-donnees/page-revenu-controlleur.dart';
 import 'package:application_budget_app/base-de-donnees/Icons/list-icon-revenu.dart';
+import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -71,6 +72,7 @@ class _RevenuePageState extends State<RevenuePage> {
 
   @override
   Widget build(BuildContext context) {
+    List<IconData> displayedIcons = revenuIcons;
     return Scaffold(
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -300,6 +302,15 @@ class _RevenuePageState extends State<RevenuePage> {
 
                                     DateTime selectedDate =
                                         DateTime.parse(revenu.date);
+                                    Color selectedColor =
+                                        revenu.CouleurIcon != null
+                                            ? Color(int.parse(
+                                                '0xff' + revenu.CouleurIcon))
+                                            : Colors.blue;
+                                    IconData? selectedIcon =
+                                        iconsRevenus[revenu.Icon] ??
+                                            Icons.help_outline;
+                                    IconData? chosenIcon;
                                     return StatefulBuilder(
                                       builder: (BuildContext context,
                                           StateSetter setState) {
@@ -388,6 +399,134 @@ class _RevenuePageState extends State<RevenuePage> {
                                                   ],
                                                 ),
                                               ),
+                                              const SizedBox(height: 15),
+                                              ElevatedButton(
+                                                onPressed: () {
+                                                  showDialog(
+                                                    context: context,
+                                                    builder:
+                                                        (BuildContext context) {
+                                                      return AlertDialog(
+                                                        title: const Text(
+                                                            'Choisir une icône'),
+                                                        content:
+                                                            SingleChildScrollView(
+                                                          child: Wrap(
+                                                            spacing: 20,
+                                                            runSpacing: 20,
+                                                            children:
+                                                                displayedIcons
+                                                                    .map(
+                                                                        (icon) {
+                                                              return GestureDetector(
+                                                                onTap: () {
+                                                                  setState(() {
+                                                                    selectedIcon =
+                                                                        icon;
+                                                                    chosenIcon =
+                                                                        icon;
+                                                                  });
+                                                                  Navigator.of(
+                                                                          context)
+                                                                      .pop();
+                                                                },
+                                                                child: Icon(
+                                                                  icon,
+                                                                  color: selectedIcon ==
+                                                                          icon
+                                                                      ? selectedColor
+                                                                      : Colors
+                                                                          .grey,
+                                                                ),
+                                                              );
+                                                            }).toList(),
+                                                          ),
+                                                        ),
+                                                        actions: <Widget>[
+                                                          TextButton(
+                                                            onPressed: () {
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pop();
+                                                            },
+                                                            child: const Text(
+                                                                'Annuler'),
+                                                          ),
+                                                        ],
+                                                      );
+                                                    },
+                                                  );
+                                                },
+                                                child: Row(
+                                                  children: [
+                                                    Icon(selectedIcon,
+                                                        color: selectedColor),
+                                                    const SizedBox(width: 17),
+                                                    const Text(
+                                                        'Changer l\'icône',
+                                                        style: TextStyle(
+                                                            color:
+                                                                Colors.black)),
+                                                  ],
+                                                ),
+                                              ),
+                                              const SizedBox(height: 15),
+                                              ElevatedButton(
+                                                onPressed: () {
+                                                  showDialog(
+                                                    context: context,
+                                                    builder:
+                                                        (BuildContext context) {
+                                                      return AlertDialog(
+                                                        title: const Text(
+                                                            'Choisir une couleur'),
+                                                        content:
+                                                            SingleChildScrollView(
+                                                          child:
+                                                              MaterialColorPicker(
+                                                            selectedColor:
+                                                                selectedColor,
+                                                            onColorChange:
+                                                                (Color color) {
+                                                              setState(() {
+                                                                selectedColor =
+                                                                    color;
+                                                              });
+                                                            },
+                                                            circleSize: 40.0,
+                                                            spacing: 10.0,
+                                                          ),
+                                                        ),
+                                                        actions: <Widget>[
+                                                          TextButton(
+                                                            child: const Text(
+                                                                'OK'),
+                                                            onPressed: () {
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pop();
+                                                            },
+                                                          ),
+                                                        ],
+                                                      );
+                                                    },
+                                                  );
+                                                },
+                                                child: Row(
+                                                  children: [
+                                                    Icon(
+                                                      Icons.circle,
+                                                      color: selectedColor,
+                                                    ),
+                                                    const SizedBox(width: 17),
+                                                    const Text(
+                                                      'Changer la couleur',
+                                                      style: TextStyle(
+                                                          color: Colors.black),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
                                             ],
                                           ),
                                           actions: <Widget>[
@@ -407,6 +546,17 @@ class _RevenuePageState extends State<RevenuePage> {
                                                 double newPrice =
                                                     double.tryParse(newPrix) ??
                                                         0.0;
+
+                                                IconData finalIcon =
+                                                    chosenIcon ?? selectedIcon!;
+                                                String iconName =
+                                                    iconNamesRevenu[
+                                                            finalIcon] ??
+                                                        'icon_inconnu';
+                                                String iconUrl = iconName;
+                                                String couleur = selectedColor
+                                                    .value
+                                                    .toRadixString(16);
                                                 updateRevenuPrix(
                                                   newPrice,
                                                   revenu.docId,
