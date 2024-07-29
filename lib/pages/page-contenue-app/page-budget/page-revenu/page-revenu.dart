@@ -563,6 +563,8 @@ class _RevenuePageState extends State<RevenuePage> {
                                                   newNomRevenu,
                                                   selectedDate
                                                       .toIso8601String(),
+                                                  couleur,
+                                                  iconUrl,
                                                 );
                                                 Navigator.of(context).pop();
                                                 refreshData();
