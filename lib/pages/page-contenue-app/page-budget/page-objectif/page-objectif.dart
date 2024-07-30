@@ -173,8 +173,11 @@ class _ObjectifPageState extends State<ObjectifPage> {
                     }).toList();
 
                     return ListView.builder(
-                      itemCount: filteredObjectif.length,
+                      itemCount: filteredObjectif.length + 1,
                       itemBuilder: (context, index) {
+                        if (index == filteredObjectif.length) {
+                          return const SizedBox(height: 70);
+                        }
                         RechercheObjectif objectif = filteredObjectif[index];
                         return Container(
                           margin: const EdgeInsets.symmetric(

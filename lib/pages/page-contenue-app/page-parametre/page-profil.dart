@@ -1,3 +1,5 @@
+import 'package:application_budget_app/pages/page-authentification/page-social.dart';
+import 'package:application_budget_app/pages/services/UserService.dart';
 import 'package:flutter/material.dart';
 import 'package:application_budget_app/pages/page-contenue-app/page-parametre/page-email.dart';
 import 'package:application_budget_app/pages/page-contenue-app/page-parametre/page-mots-de-passe.dart';
@@ -22,6 +24,7 @@ class _PageProfilState extends State<PageProfil> {
   final PageProfilController _controller = PageProfilController();
   final _emailController = TextEditingController()
     ..text = FirebaseAuth.instance.currentUser!.email!;
+  final UserService _userService = UserService();
 
   @override
   void initState() {
@@ -30,16 +33,23 @@ class _PageProfilState extends State<PageProfil> {
   }
 
   Future<void> _loadProfileData() async {
-    UserProfile? profileData = await _controller.getProfile();
-    if (profileData != null) {
-      setState(() {
-        _firstNameController.text = profileData.prenom;
-        _phoneController.text = profileData.telephone;
-        _postalCodeController.text = profileData.codePostal;
-        _countryController.text = profileData.pays;
-        _birthDateController.text = profileData.aniverssaire;
-        _selectedGender = profileData.genre;
-      });
+    try {
+      UserProfile? profileData = await _controller.getProfile();
+      if (profileData != null) {
+        setState(() {
+          _firstNameController.text = profileData.prenom;
+          _phoneController.text = profileData.telephone;
+          _postalCodeController.text = profileData.codePostal;
+          _countryController.text = profileData.pays;
+          _birthDateController.text = profileData.aniverssaire;
+          _selectedGender = profileData.genre;
+        });
+      }
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text('Erreur lors du chargement des données: $error')),
+      );
     }
   }
 
@@ -47,8 +57,28 @@ class _PageProfilState extends State<PageProfil> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profil'),
-        backgroundColor: const Color(0xFF2196F3),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: const Text(
+          'Profil',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 23.0,
+          ),
+        ),
+        centerTitle: true,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            color: Color(0xFF2196F3), // Bleu pastel
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(20),
+              bottomRight: Radius.circular(20),
+            ),
+          ),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -114,12 +144,6 @@ class _PageProfilState extends State<PageProfil> {
                             _selectedGender = newValue!;
                           });
                         },
-                        /*validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Veuillez sélectionner votre genre';
-                          }
-                          return null;
-                        },*/
                       ),
                     ),
                   ],
@@ -150,12 +174,6 @@ class _PageProfilState extends State<PageProfil> {
                             });
                           }
                         },
-                        /*validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Veuillez entrer votre date de naissance';
-                          }
-                          return null;
-                        },*/
                       ),
                     ),
                   ],
@@ -188,8 +206,63 @@ class _PageProfilState extends State<PageProfil> {
                     });
                   }
                 },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                ),
                 child: const Text('Mettre à jour le profil'),
               ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text('Confirmation de suppression'),
+                        content: const Text(
+                            'Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.'),
+                        actions: <Widget>[
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text('Annuler'),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              _userService.deleteUser().then((_) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content: Text('Compte supprimé')),
+                                );
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const PageSocial(),
+                                    ));
+                              }).catchError((error) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Erreur: $error')),
+                                );
+                              });
+                            },
+                            child: const Text('Supprimer',
+                                style: TextStyle(color: Colors.red)),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                ),
+                child: const Text(
+                  'Supprimer mon compte',
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+              const SizedBox(height: 2),
             ],
           ),
         ),
@@ -212,12 +285,6 @@ class _PageProfilState extends State<PageProfil> {
               textAlign: TextAlign.right,
               keyboardType: keyboardType,
               maxLength: maxLength,
-              /*validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Veuillez entrer votre $label';
-                }
-                return null;
-              },*/
             ),
           ),
         ],

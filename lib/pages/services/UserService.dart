@@ -103,6 +103,10 @@ class UserService {
   Future<void> signOut() async {
     await _auth.signOut();
   }
+
+  Future<void> deleteUser() async {
+    await _auth.currentUser!.delete();
+  }
 }
 
 /*import 'package:application_budget_app/models/UserModel.dart';
