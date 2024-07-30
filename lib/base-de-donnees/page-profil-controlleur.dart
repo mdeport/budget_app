@@ -75,6 +75,4 @@ class PageProfilController {
     }
     return null;
   }
-
-  
 }
