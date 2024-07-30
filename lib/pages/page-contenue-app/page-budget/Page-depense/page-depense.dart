@@ -276,7 +276,7 @@ class _DepensePageState extends State<DepensePage> {
                     itemCount: filteredDepenses.length + 1,
                     itemBuilder: (context, index) {
                       if (index == filteredDepenses.length) {
-                        return const SizedBox(height: 30);
+                        return const SizedBox(height: 70);
                       }
                       RechercheDepense depense = filteredDepenses[index];
                       return Container(

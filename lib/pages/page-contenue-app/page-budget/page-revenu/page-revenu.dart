@@ -230,8 +230,11 @@ class _RevenuePageState extends State<RevenuePage> {
                     }).toList();
 
                     return ListView.builder(
-                      itemCount: filteredRevenus.length,
+                      itemCount: filteredRevenus.length + 1,
                       itemBuilder: (context, index) {
+                        if (index == filteredRevenus.length) {
+                          return const SizedBox(height: 70);
+                        }
                         RechercheRevenu revenu = filteredRevenus[index];
                         return Container(
                           margin: const EdgeInsets.symmetric(
