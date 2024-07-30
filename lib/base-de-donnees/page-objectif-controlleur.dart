@@ -122,8 +122,13 @@ Future<void> supprimerObjectif(String docId) async {
 }
 
 // Mettre à jour le prix et le nom d'un objectif dans la base de données
-Future<void> updateObjectifPrix(double newPrix, String docId,
-    String newNomObjectif, String newIconUrl, String newDate) async {
+Future<void> updateObjectifPrix(
+    double newPrix,
+    String docId,
+    String newNomObjectif,
+    String newIconUrl,
+    String newDate,
+    String newCouleur) async {
   User? user = FirebaseAuth.instance.currentUser;
   try {
     final objectifRef = FirebaseFirestore.instance
@@ -137,6 +142,7 @@ Future<void> updateObjectifPrix(double newPrix, String docId,
       'nom_objectif': newNomObjectif,
       'icon_url': newIconUrl,
       'date': newDate,
+      'couleur_icon': newCouleur,
     });
     print('Le prix de la objectif a été mis à jour avec succès');
   } catch (error) {

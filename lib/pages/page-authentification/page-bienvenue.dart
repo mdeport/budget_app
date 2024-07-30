@@ -72,11 +72,12 @@ class bienvenuePage extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue[900],
                         shape: const StadiumBorder(),
-                        padding: const EdgeInsets.all(16)),
+                        padding: const EdgeInsets.only(
+                            top: 14, bottom: 14, left: 14, right: 14)),
                     child: const Text("CONTINUER",
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 16,
+                          fontSize: 15,
                           fontWeight: FontWeight.bold,
                         )),
                     onPressed: () {

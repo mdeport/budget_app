@@ -3,6 +3,7 @@ import 'package:application_budget_app/base-de-donnees/page-revenu-controlleur.d
 import 'package:application_budget_app/base-de-donnees/page-objectif-controlleur.dart';
 import 'package:application_budget_app/pages/page-contenue-app/page-budget/page-objectif/page-ajouts-objectif.dart';
 import 'package:application_budget_app/base-de-donnees/Icons/list-icon-objectif.dart';
+import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:flutter/material.dart';
@@ -242,7 +243,11 @@ class _ObjectifPageState extends State<ObjectifPage> {
                                         objectif.nom_objectif;
                                     DateTime selectedDate =
                                         DateTime.parse(objectif.date);
-
+                                    Color selectedColor =
+                                        objectif.CouleurIcon != null
+                                            ? Color(int.parse(
+                                                '0xff' + objectif.CouleurIcon))
+                                            : Colors.blue;
                                     return StatefulBuilder(
                                       builder: (BuildContext context,
                                           StateSetter setState) {
@@ -389,6 +394,63 @@ class _ObjectifPageState extends State<ObjectifPage> {
                                                   ],
                                                 ),
                                               ),
+                                              const SizedBox(height: 15),
+                                              ElevatedButton(
+                                                onPressed: () {
+                                                  showDialog(
+                                                    context: context,
+                                                    builder:
+                                                        (BuildContext context) {
+                                                      return AlertDialog(
+                                                        title: const Text(
+                                                            'Choisir une couleur'),
+                                                        content:
+                                                            SingleChildScrollView(
+                                                          child:
+                                                              MaterialColorPicker(
+                                                            selectedColor:
+                                                                selectedColor,
+                                                            onColorChange:
+                                                                (Color color) {
+                                                              setState(() {
+                                                                selectedColor =
+                                                                    color;
+                                                              });
+                                                            },
+                                                            circleSize: 40.0,
+                                                            spacing: 10.0,
+                                                          ),
+                                                        ),
+                                                        actions: <Widget>[
+                                                          TextButton(
+                                                            child: const Text(
+                                                                'OK'),
+                                                            onPressed: () {
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pop();
+                                                            },
+                                                          ),
+                                                        ],
+                                                      );
+                                                    },
+                                                  );
+                                                },
+                                                child: Row(
+                                                  children: [
+                                                    Icon(
+                                                      Icons.circle,
+                                                      color: selectedColor,
+                                                    ),
+                                                    const SizedBox(width: 17),
+                                                    const Text(
+                                                      'Changer la couleur',
+                                                      style: TextStyle(
+                                                          color: Colors.black),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
                                             ],
                                           ),
                                           actions: <Widget>[
@@ -411,6 +473,9 @@ class _ObjectifPageState extends State<ObjectifPage> {
                                                 String newIconUrl =
                                                     newUrlIconParNomCategorie(
                                                         newNomObjectif);
+                                                String couleur = selectedColor
+                                                    .value
+                                                    .toRadixString(16);
                                                 updateObjectifPrix(
                                                   newPrice,
                                                   objectif.docId,
@@ -418,6 +483,7 @@ class _ObjectifPageState extends State<ObjectifPage> {
                                                   newIconUrl,
                                                   selectedDate
                                                       .toIso8601String(),
+                                                  couleur,
                                                 );
                                                 Navigator.of(context).pop();
                                                 _refreshData();
@@ -506,7 +572,7 @@ class _ObjectifPageState extends State<ObjectifPage> {
           });
         },
         label: const Text('Ajouter des objectifs',
-            style: TextStyle(fontWeight: FontWeight.bold)),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
         backgroundColor: Colors.indigoAccent,
       ),
     );

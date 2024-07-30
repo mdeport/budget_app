@@ -58,7 +58,7 @@ class RechercheDepense {
   final String nom_depense;
   final String nom_categorie;
   final double prix;
-  final String Icon;
+  late final String Icon;
   var CouleurIcon;
   final String docId;
   String date;
@@ -125,8 +125,14 @@ Future<void> supprimerDepense(String docId) async {
 }
 
 // Mettre à jour le prix et le nom d'une dépense dans la base de données
-Future<void> updateDepensePrix(double newPrix, String docId,
-    String newNomDepense, String NewNomCategorie, String newDate) async {
+Future<void> updateDepensePrix(
+    double newPrix,
+    String docId,
+    String newNomDepense,
+    String NewNomCategorie,
+    String newDate,
+    String newCouleur,
+    String newIconUrl) async {
   User? user = FirebaseAuth.instance.currentUser;
   try {
     final depenseRef = FirebaseFirestore.instance
@@ -140,6 +146,8 @@ Future<void> updateDepensePrix(double newPrix, String docId,
       'nom_depense': newNomDepense,
       'nom_categorie': NewNomCategorie,
       'date': newDate,
+      'couleur_icon': newCouleur,
+      'icon_url': newIconUrl,
     });
     print('Le prix de la dépense a été mis à jour avec succès');
   } catch (error) {

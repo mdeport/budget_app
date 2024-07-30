@@ -208,7 +208,7 @@ class _page_creation_compteState extends State<page_creation_compte> {
                           backgroundColor: Colors.blue[900],
                           shape: const StadiumBorder(),
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 125,
+                            horizontal: 115,
                             vertical: 13,
                           ),
                         ),

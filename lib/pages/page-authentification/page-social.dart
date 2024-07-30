@@ -1,3 +1,4 @@
+import 'package:application_budget_app/pages/page-authentification/page-bienvenue.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:application_budget_app/animation/temps-affichage-animation.dart';
@@ -33,7 +34,12 @@ class PageSocial extends StatelessWidget {
               size: 30,
             ),
             onPressed: () {
-              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const bienvenuePage(),
+                ),
+              );
             },
           ),
         ),

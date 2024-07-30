@@ -123,7 +123,13 @@ Future<void> supprimerRevenu(String docId) async {
 
 // Mettre à jour le prix et le nom d'un revenu dans la base de données
 Future<void> updateRevenuPrix(
-    double newPrix, String docId, String newNomRevenu, String newDate) async {
+  double newPrix,
+  String docId,
+  String newNomRevenu,
+  String newDate,
+  String newCouleur,
+  String newIconUrl,
+) async {
   User? user = FirebaseAuth.instance.currentUser;
   try {
     final revenuRef = FirebaseFirestore.instance
@@ -132,8 +138,13 @@ Future<void> updateRevenuPrix(
         .collection('revenus')
         .doc(docId);
 
-    await revenuRef
-        .update({'prix': newPrix, 'nom_revenu': newNomRevenu, 'date': newDate});
+    await revenuRef.update({
+      'prix': newPrix,
+      'nom_revenu': newNomRevenu,
+      'date': newDate,
+      'couleur_icon': newCouleur,
+      'icon_url': newIconUrl,
+    });
     print('Le prix du revenu a été mis à jour avec succès');
   } catch (error) {
     print('Erreur lors de la mise à jour du prix du revenu: $error');
