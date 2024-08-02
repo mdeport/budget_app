@@ -85,7 +85,7 @@ class _DepensePageState extends State<DepensePage> {
           DateTime date = DateTime.parse(doc['date']);
           if (date.year == selectedMonth.year &&
               date.month == selectedMonth.month) {
-            double prix = doc['prix'] ?? 0.0;
+            double prix = (doc['prix'] as num).toDouble();
             String CouleurIcon = doc['couleur_icon'];
             chartDataList.add(ChartData(doc['nom_depense'], prix, CouleurIcon));
           }
@@ -234,14 +234,14 @@ class _DepensePageState extends State<DepensePage> {
                               Text(
                                 'Total des revenus : $totalRevenu €',
                                 style: const TextStyle(
-                                  fontSize: 14,
+                                  fontSize: 12.5,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                               Text(
                                 'Reste : $rest €',
                                 style: const TextStyle(
-                                  fontSize: 14,
+                                  fontSize: 12.5,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),

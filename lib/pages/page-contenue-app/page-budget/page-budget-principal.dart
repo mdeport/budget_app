@@ -45,13 +45,13 @@ class _Page_budget_principalState extends State<Page_budget_principal> {
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(40.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Container(
                 height: 2,
                 color: Colors.grey,
               ),
-              const SizedBox(height: 5.0),
+              const SizedBox(height: 0.0),
               Center(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -107,7 +107,7 @@ class _Page_budget_principalState extends State<Page_budget_principal> {
                   ],
                 ),
               ),
-              const SizedBox(height: 10.0),
+              const SizedBox(height: 0.0),
             ],
           ),
         ),

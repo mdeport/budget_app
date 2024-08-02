@@ -43,7 +43,7 @@ Future<List<ChartData>> listDepenseChartDataList() async {
           .collection('depenses')
           .get();
       querySnapshot.docs.forEach((doc) {
-        double prix = doc['prix'] ?? 0.0;
+        double prix = (doc['prix'] as num).toDouble();
         String CouleurIcon = doc['couleur_icon'];
         chartDataList.add(ChartData(doc['nom_depense'], prix, CouleurIcon));
       });
@@ -87,10 +87,11 @@ Future<List<RechercheDepense>> listDepense() async {
           .collection('depenses')
           .get();
       querySnapshot.docs.forEach((doc) {
+        double prix = (doc['prix'] as num).toDouble();
         RechercheDepense depense = RechercheDepense(
           nom_depense: doc['nom_depense'],
           nom_categorie: doc['nom_categorie'],
-          prix: doc['prix'],
+          prix: prix,
           Icon: doc['icon_url'],
           CouleurIcon: doc['couleur_icon'],
           docId: doc.id,
@@ -159,11 +160,13 @@ class RechercheCategorieDepense {
   final String nom_categorie;
   final double prix;
   final String docId;
+  String date;
 
   RechercheCategorieDepense({
     required this.nom_categorie,
     required this.prix,
     required this.docId,
+    required this.date,
   });
 }
 
@@ -179,10 +182,12 @@ Future<List<RechercheCategorieDepense>> listCategorieDepense() async {
           .collection('depenses')
           .get();
       querySnapshot.docs.forEach((doc) {
+        double prix = (doc['prix'] as num).toDouble();
         RechercheCategorieDepense depense = RechercheCategorieDepense(
           nom_categorie: doc['nom_categorie'],
-          prix: doc['prix'],
+          prix: prix,
           docId: doc.id,
+          date: doc['date'],
         );
         listCategorieDepense.add(depense);
       });
