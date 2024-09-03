@@ -97,7 +97,7 @@ class _AjouterRevenuPage extends State<AjouterRevenuPage> {
               ),
               const SizedBox(height: 20),
               const Text(
-                'Nom de la catégorie',
+                'Nom du revenu',
                 style: TextStyle(fontSize: 20, color: Colors.indigo),
               ),
               const SizedBox(height: 10),
@@ -108,7 +108,7 @@ class _AjouterRevenuPage extends State<AjouterRevenuPage> {
                   textAlign: TextAlign.center,
                   style: const TextStyle(fontSize: 18),
                   decoration: InputDecoration(
-                    hintText: 'Entrez le nom de la catégorie',
+                    hintText: 'Entrez le nom du revenu',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20.0),
                     ),

@@ -23,19 +23,19 @@ class _DepensePageState extends State<DepensePage> {
   @override
   void initState() {
     super.initState();
-    fetchRevenus();
+    ListRevenus();
     listDepenseChartDataList();
     listDepense();
   }
 
   Future<void> _refreshData() async {
     setState(() {});
-    fetchRevenus();
+    ListRevenus();
     listDepenseChartDataList();
     listDepense();
   }
 
-  Future<void> fetchRevenus() async {
+  Future<void> ListRevenus() async {
     List<RechercheRevenu> revenus = await listRevenu();
     double total = 0;
     for (var revenu in revenus) {
@@ -53,12 +53,14 @@ class _DepensePageState extends State<DepensePage> {
   void _previousMonth() {
     setState(() {
       selectedMonth = DateTime(selectedMonth.year, selectedMonth.month - 1);
+      _refreshData();
     });
   }
 
   void _nextMonth() {
     setState(() {
       selectedMonth = DateTime(selectedMonth.year, selectedMonth.month + 1);
+      _refreshData();
     });
   }
 
