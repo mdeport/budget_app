@@ -57,7 +57,7 @@ class _RevenuePageState extends State<RevenuePage> {
           DateTime date = DateTime.parse(doc['date']);
           if (date.year == selectedMonth.year &&
               date.month == selectedMonth.month) {
-            double prix = doc['prix'] ?? 0.0;
+            double prix = (doc['prix'] as num).toDouble();
             String CouleurIcon = doc['couleur_icon'];
             chartDataList
                 .add(ChartDatarevenu(doc['nom_revenu'], prix, CouleurIcon));

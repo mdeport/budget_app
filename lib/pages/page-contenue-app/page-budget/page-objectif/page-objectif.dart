@@ -26,7 +26,7 @@ class _ObjectifPageState extends State<ObjectifPage> {
     super.initState();
     ListDepense();
     ListRevenus();
-    calculateTotalDepensesParCategorie().then((totals) {
+    calculateTotalDepensesParCategorie(selectedMonth).then((totals) {
       setState(() {
         totalDepensesParCategorie = totals;
       });
@@ -38,6 +38,11 @@ class _ObjectifPageState extends State<ObjectifPage> {
       listObjectif();
       ListRevenus();
       ListDepense();
+      calculateTotalDepensesParCategorie(selectedMonth).then((totals) {
+        setState(() {
+          totalDepensesParCategorie = totals;
+        });
+      });
     });
   }
 
@@ -521,7 +526,7 @@ class _ObjectifPageState extends State<ObjectifPage> {
                                 ),
                               ),
                               trailing: SizedBox(
-                                width: 120,
+                                width: 170,
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
@@ -582,7 +587,26 @@ class _ObjectifPageState extends State<ObjectifPage> {
   }
 }
 
-Future<Map<String, double>> calculateTotalDepensesParCategorie() async {
+Future<Map<String, double>> calculateTotalDepensesParCategorie(
+    DateTime selectedMonth) async {
+  List<RechercheDepense> depenses = await listDepense();
+  Map<String, double> totals = {};
+
+  for (var depense in depenses) {
+    DateTime dateDepense = DateTime.parse(depense.date);
+    if (dateDepense.year == selectedMonth.year &&
+        dateDepense.month == selectedMonth.month) {
+      if (totals.containsKey(depense.nom_categorie)) {
+        totals[depense.nom_categorie] =
+            totals[depense.nom_categorie]! + depense.prix;
+      } else {
+        totals[depense.nom_categorie] = depense.prix;
+      }
+    }
+  }
+  return totals;
+}
+/*Future<Map<String, double>> calculateTotalDepensesParCategorie() async {
   Map<String, double> totalDepensesParCategorie = {};
 
   List<RechercheCategorieDepense> depenses = await listCategorieDepense();
@@ -598,4 +622,4 @@ Future<Map<String, double>> calculateTotalDepensesParCategorie() async {
   }
 
   return totalDepensesParCategorie;
-}
+}*/

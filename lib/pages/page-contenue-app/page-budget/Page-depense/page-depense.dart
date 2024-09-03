@@ -23,19 +23,19 @@ class _DepensePageState extends State<DepensePage> {
   @override
   void initState() {
     super.initState();
-    fetchRevenus();
+    ListRevenus();
     listDepenseChartDataList();
     listDepense();
   }
 
   Future<void> _refreshData() async {
     setState(() {});
-    fetchRevenus();
+    ListRevenus();
     listDepenseChartDataList();
     listDepense();
   }
 
-  Future<void> fetchRevenus() async {
+  Future<void> ListRevenus() async {
     List<RechercheRevenu> revenus = await listRevenu();
     double total = 0;
     for (var revenu in revenus) {
@@ -53,12 +53,14 @@ class _DepensePageState extends State<DepensePage> {
   void _previousMonth() {
     setState(() {
       selectedMonth = DateTime(selectedMonth.year, selectedMonth.month - 1);
+      _refreshData();
     });
   }
 
   void _nextMonth() {
     setState(() {
       selectedMonth = DateTime(selectedMonth.year, selectedMonth.month + 1);
+      _refreshData();
     });
   }
 
@@ -85,7 +87,7 @@ class _DepensePageState extends State<DepensePage> {
           DateTime date = DateTime.parse(doc['date']);
           if (date.year == selectedMonth.year &&
               date.month == selectedMonth.month) {
-            double prix = doc['prix'] ?? 0.0;
+            double prix = (doc['prix'] as num).toDouble();
             String CouleurIcon = doc['couleur_icon'];
             chartDataList.add(ChartData(doc['nom_depense'], prix, CouleurIcon));
           }
@@ -234,14 +236,14 @@ class _DepensePageState extends State<DepensePage> {
                               Text(
                                 'Total des revenus : $totalRevenu €',
                                 style: const TextStyle(
-                                  fontSize: 14,
+                                  fontSize: 12.5,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                               Text(
                                 'Reste : $rest €',
                                 style: const TextStyle(
-                                  fontSize: 14,
+                                  fontSize: 12.5,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),

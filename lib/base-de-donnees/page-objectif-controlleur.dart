@@ -42,7 +42,7 @@ Future<List<ChartDataObjectif>> listObjectifChartDataList() async {
           .collection('objectifs')
           .get();
       querySnapshot.docs.forEach((doc) {
-        double prix = doc['prix'] ?? 0.0;
+        double prix = (doc['prix'] as num).toDouble();
         String CouleurIcon = doc['couleur_icon'];
         chartDataList
             .add(ChartDataObjectif(doc['nom_objectif'], prix, CouleurIcon));
@@ -85,9 +85,10 @@ Future<List<RechercheObjectif>> listObjectif() async {
           .collection('objectifs')
           .get();
       querySnapshot.docs.forEach((doc) {
+        double prix = (doc['prix'] as num).toDouble();
         RechercheObjectif objectif = RechercheObjectif(
           nom_objectif: doc['nom_objectif'],
-          prix: doc['prix'],
+          prix: prix,
           Icon: doc['icon_url'],
           CouleurIcon: doc['couleur_icon'],
           docId: doc.id,
